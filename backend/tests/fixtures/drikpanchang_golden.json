@@ -1,0 +1,89 @@
+{
+  "metadata": {
+    "source": "DrikPanchang manual cross-check via Hermes browser tools on 2026-08-03",
+    "notes": "Frozen fixtures for 5 cities x 5 dates. Discrete values are day-at-sunrise values; nakshatra pada from DrikPanchang 'Rashi and Nakshatra' section when available, otherwise engine-derived and manually aligned. Sunrise/sunset use local civil time HH:MM. No runtime scraping.",
+    "tolerance_minutes": 5
+  },
+  "fixtures": [
+    {
+      "city": "Delhi",
+      "lat": 28.6139,
+      "lng": 77.209,
+      "tz": "Asia/Kolkata",
+      "date": "2026-08-03",
+      "source": "drikpanchang",
+      "sunrise": "05:43",
+      "sunset": "19:11",
+      "tithi": {"index": 20, "name": "Krishna Panchami"},
+      "nakshatra": {"name": "Uttara Bhadrapada", "pada": 2},
+      "yoga": "Sukarman",
+      "karana": "Kaulava",
+      "moon_sign": "Meena",
+      "rahu_kaal": {"start": "07:24", "end": "09:05"}
+    },
+    {
+      "city": "Mumbai",
+      "lat": 19.076,
+      "lng": 72.8777,
+      "tz": "Asia/Kolkata",
+      "date": "2026-10-02",
+      "source": "drikpanchang",
+      "sunrise": "06:29",
+      "sunset": "18:26",
+      "tithi": {"index": 21, "name": "Krishna Shashthi"},
+      "nakshatra": {"name": "Mrigashirsha", "pada": 1},
+      "yoga": "Vyatipata",
+      "karana": "Vanija",
+      "moon_sign": "Vrishabha",
+      "rahu_kaal": {"start": "10:58", "end": "12:27"}
+    },
+    {
+      "city": "London",
+      "lat": 51.5074,
+      "lng": -0.1278,
+      "tz": "Europe/London",
+      "date": "2026-12-25",
+      "source": "drikpanchang",
+      "sunrise": "08:05",
+      "sunset": "15:56",
+      "tithi": {"index": 17, "name": "Krishna Dwitiya"},
+      "nakshatra": {"name": "Punarvasu", "pada": 3},
+      "yoga": "Indra",
+      "karana": "Garaja",
+      "moon_sign": "Mithuna",
+      "rahu_kaal": {"start": "11:01", "end": "12:00"}
+    },
+    {
+      "city": "New York",
+      "lat": 40.7128,
+      "lng": -74.006,
+      "tz": "America/New_York",
+      "date": "2027-01-14",
+      "source": "drikpanchang",
+      "sunrise": "07:18",
+      "sunset": "16:52",
+      "tithi": {"index": 7, "name": "Shukla Saptami"},
+      "nakshatra": {"name": "Uttara Bhadrapada", "pada": 4},
+      "yoga": "Shiva",
+      "karana": "Garaja",
+      "moon_sign": "Meena",
+      "rahu_kaal": {"start": "13:17", "end": "14:29"}
+    },
+    {
+      "city": "Sydney",
+      "lat": -33.8688,
+      "lng": 151.2093,
+      "tz": "Australia/Sydney",
+      "date": "2027-03-25",
+      "source": "drikpanchang",
+      "sunrise": "07:01",
+      "sunset": "19:00",
+      "tithi": {"index": 18, "name": "Krishna Tritiya"},
+      "nakshatra": {"name": "Swati", "pada": 2},
+      "yoga": "Vyaghata",
+      "karana": "Vishti",
+      "moon_sign": "Tula",
+      "rahu_kaal": {"start": "14:31", "end": "16:00"}
+    }
+  ]
+}

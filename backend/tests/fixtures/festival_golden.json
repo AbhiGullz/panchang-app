@@ -1,0 +1,20 @@
+{
+  "year": 2027,
+  "fixtures": [
+    {"name": "Makar Sankranti", "date": "2027-01-15", "status": "verified"},
+    {"name": "Pongal", "date": "2027-01-15", "status": "verified"},
+    {"name": "Mahashivaratri", "date": "2027-02-05", "status": "verified"},
+    {"name": "Holi", "date": "2027-03-22", "status": "verified"},
+    {"name": "Gudi Padwa", "date": "2027-04-08", "status": "verified"},
+    {"name": "Ugadi", "date": "2027-04-08", "status": "verified"},
+    {"name": "Baisakhi", "date": "2027-04-15", "status": "verified"},
+    {"name": "Raksha Bandhan", "date": "2027-08-17", "status": "verified"},
+    {"name": "Onam", "date": "2027-08-18", "status": "unverified"},
+    {"name": "Janmashtami", "date": "2027-08-25", "status": "verified"},
+    {"name": "Ganesh Chaturthi", "date": "2027-09-04", "status": "verified"},
+    {"name": "Navratri Day 1", "date": "2027-10-01", "status": "verified"},
+    {"name": "Dussehra", "date": "2027-10-10", "status": "verified"},
+    {"name": "Karva Chauth", "date": "2027-10-19", "status": "verified"},
+    {"name": "Diwali", "date": "unverified", "status": "unverified"}
+  ]
+}

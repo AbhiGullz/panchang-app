@@ -1,0 +1,10 @@
+__pycache__/
+.pytest_cache/
+.venv/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# Swiss Ephemeris data (keep local, do not commit binaries)
+data/*.se1

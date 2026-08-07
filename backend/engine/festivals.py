@@ -1,0 +1,188 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import date, datetime, time, timezone, timedelta
+from zoneinfo import ZoneInfo
+
+import swisseph as swe
+
+from .core import init_swisseph
+
+LUNAR_MONTH_NAMES = [
+    "Chaitra",
+    "Vaishakha",
+    "Jyeshtha",
+    "Ashadha",
+    "Shravana",
+    "Bhadrapada",
+    "Ashwin",
+    "Kartika",
+    "Margashirsha",
+    "Pausha",
+    "Magha",
+    "Phalguna",
+]
+
+LUNAR_MONTH_INDEX = {name: index + 1 for index, name in enumerate(LUNAR_MONTH_NAMES)}
+
+
+@dataclass(frozen=True)
+class FestivalRule:
+    name: str
+    month: str
+    paksha: str
+    tithi: int
+    calendar_school: str
+    region: str
+    source: str
+    notes: str = ""
+    duration_days: int = 1
+
+
+FESTIVAL_RULES = [
+    FestivalRule("Diwali", "Kartika", "Krishna", 30, "amanta", "pan-India", "DrikPanchang festival page", "Amavasya observance; month label differs by school."),
+    FestivalRule("Holi", "Phalguna", "Shukla", 15, "amanta", "north-india", "DrikPanchang festival page", "Holika Dahan/Purnima observance."),
+    FestivalRule("Raksha Bandhan", "Shravana", "Shukla", 15, "amanta", "pan-India", "DrikPanchang festival page"),
+    FestivalRule("Janmashtami", "Bhadrapada", "Krishna", 8, "amanta", "pan-India", "ISKCON calendar", "Smarta-style sunrise tithi simplification."),
+    FestivalRule("Mahashivaratri", "Magha", "Krishna", 14, "amanta", "pan-India", "DrikPanchang festival page"),
+    FestivalRule("Navratri Day 1", "Ashwin", "Shukla", 1, "amanta", "pan-India", "DrikPanchang festival page", "Sharad Navratri begins.", duration_days=9),
+    FestivalRule("Dussehra", "Ashwin", "Shukla", 10, "amanta", "pan-India", "DrikPanchang festival page"),
+    FestivalRule("Makar Sankranti", "solar-makara", "solar", 1, "solar", "pan-India", "DrikPanchang festival page", "Sun enters sidereal Makara."),
+    FestivalRule("Pongal", "solar-makara", "solar", 1, "solar", "tamil-nadu", "DrikPanchang festival page", "Aligned to Makara Sankranti day in this simplified engine."),
+    FestivalRule("Onam", "Simha", "solar", 1, "solar", "kerala", "DrikPanchang festival page", "Simplified to Thiruvonam solar month anchor."),
+    FestivalRule("Ganesh Chaturthi", "Bhadrapada", "Shukla", 4, "amanta", "maharashtra", "DrikPanchang festival page"),
+    FestivalRule("Karva Chauth", "Kartika", "Krishna", 4, "amanta", "north-india", "DrikPanchang festival page"),
+    FestivalRule("Gudi Padwa", "Chaitra", "Shukla", 1, "amanta", "maharashtra", "DrikPanchang festival page"),
+    FestivalRule("Ugadi", "Chaitra", "Shukla", 1, "amanta", "andhra-karnataka-telangana", "DrikPanchang festival page"),
+    FestivalRule("Baisakhi", "Mesha", "solar", 1, "solar", "punjab", "DrikPanchang festival page", "Sidereal Mesha ingress approximation."),
+]
+
+
+def _local_midnight_to_jd(target_date: date, timezone_name: str) -> float:
+    local_dt = datetime.combine(target_date, time.min, tzinfo=ZoneInfo(timezone_name))
+    utc_dt = local_dt.astimezone(timezone.utc)
+    return swe.julday(
+        utc_dt.year,
+        utc_dt.month,
+        utc_dt.day,
+        utc_dt.hour + utc_dt.minute / 60.0 + utc_dt.second / 3600.0,
+        swe.GREG_CAL,
+    )
+
+
+def _gregorian_from_jd(jd_ut: float, timezone_name: str) -> date:
+    year, month, day, hour = swe.revjul(jd_ut, swe.GREG_CAL)
+    hour_int = int(hour)
+    minute = int((hour - hour_int) * 60)
+    second = int(round((((hour - hour_int) * 60) - minute) * 60))
+    dt_utc = datetime(year, month, day, hour_int, minute, min(second, 59), tzinfo=timezone.utc)
+    return dt_utc.astimezone(ZoneInfo(timezone_name)).date()
+
+
+def _phase_details(jd_ut: float) -> tuple[int, str, int]:
+    sun = swe.calc_ut(jd_ut, swe.SUN, swe.FLG_SWIEPH)[0][0] % 360.0
+    moon = swe.calc_ut(jd_ut, swe.MOON, swe.FLG_SWIEPH)[0][0] % 360.0
+    phase = (moon - sun) % 360.0
+    tithi_index = int(phase // 12.0) + 1
+    if tithi_index <= 15:
+        return tithi_index, "Shukla", tithi_index
+    return tithi_index, "Krishna", tithi_index - 15
+
+
+def _new_moon_before(jd_ut: float) -> float:
+    current = jd_ut
+    previous_phase = None
+    previous_jd = current
+    for _ in range(70):
+        phase = (swe.calc_ut(current, swe.MOON, swe.FLG_SWIEPH)[0][0] - swe.calc_ut(current, swe.SUN, swe.FLG_SWIEPH)[0][0]) % 360.0
+        if previous_phase is not None and phase > previous_phase:
+            low, high = current, previous_jd
+            for _ in range(40):
+                mid = (low + high) / 2
+                mid_phase = (swe.calc_ut(mid, swe.MOON, swe.FLG_SWIEPH)[0][0] - swe.calc_ut(mid, swe.SUN, swe.FLG_SWIEPH)[0][0]) % 360.0
+                if mid_phase < 180:
+                    high = mid
+                else:
+                    low = mid
+            return (low + high) / 2
+        previous_phase = phase
+        previous_jd = current
+        current -= 1.0
+    return jd_ut
+
+
+def _amanta_month_name(jd_ut: float) -> str:
+    _, paksha, _ = _phase_details(jd_ut)
+    reference_jd = jd_ut if paksha == "Shukla" else jd_ut + 15.0
+    new_moon_jd = _new_moon_before(reference_jd)
+    sun_sidereal = swe.calc_ut(new_moon_jd + 0.1, swe.SUN, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)[0][0] % 360.0
+    solar_index = int(sun_sidereal // 30.0)
+    return LUNAR_MONTH_NAMES[(solar_index - 11) % 12]
+
+
+def _solar_rashi_name(jd_ut: float) -> str:
+    solar_index = int((swe.calc_ut(jd_ut, swe.SUN, swe.FLG_SWIEPH | swe.FLG_SIDEREAL)[0][0] % 360.0) // 30.0)
+    return ["Mesha", "Vrishabha", "Mithuna", "Karka", "Simha", "Kanya", "Tula", "Vrischika", "Dhanu", "Makara", "Kumbha", "Meena"][solar_index]
+
+
+def _find_lunar_date(year: int, month_name: str, paksha: str, tithi: int, timezone_name: str = "Asia/Kolkata") -> date | None:
+    for offset in range(366):
+        current_date = date(year, 1, 1) + timedelta(days=offset)
+        jd_ut = _local_midnight_to_jd(current_date, timezone_name)
+        _, current_paksha, current_tithi = _phase_details(jd_ut)
+        current_month = _amanta_month_name(jd_ut)
+        if current_month == month_name and current_paksha == paksha and current_tithi == tithi:
+            return current_date
+    return None
+
+
+def _find_solar_date(year: int, rashi_name: str, timezone_name: str = "Asia/Kolkata") -> date | None:
+    previous = None
+    for offset in range(366):
+        current_date = date(year, 1, 1) + timedelta(days=offset)
+        jd_ut = _local_midnight_to_jd(current_date, timezone_name)
+        current = _solar_rashi_name(jd_ut)
+        if current == rashi_name and previous != rashi_name:
+            return current_date
+        previous = current
+    return None
+
+
+def compute_festivals_for_year(year: int, calendar: str = "amanta", lang: str = "en") -> list[dict[str, str | list[str]]]:
+    init_swisseph()
+    festivals: list[dict[str, str | list[str]]] = []
+    for rule in FESTIVAL_RULES:
+        if rule.calendar_school == "solar":
+            mapping = {
+                "solar-makara": "Makara",
+                "Simha": "Simha",
+                "Mesha": "Mesha",
+            }
+            target = _find_solar_date(year, mapping[rule.month])
+        else:
+            target = _find_lunar_date(year, rule.month, rule.paksha, rule.tithi)
+        if target is None:
+            festivals.append(
+                {
+                    "name": rule.name,
+                    "date": "unverified",
+                    "calendar_school": calendar,
+                    "region": rule.region,
+                    "source": rule.source,
+                    "notes": f"{rule.notes} Unable to verify in engine run.",
+                }
+            )
+            continue
+        item = {
+            "name": rule.name,
+            "date": target.isoformat(),
+            "calendar_school": calendar,
+            "region": rule.region,
+            "source": rule.source,
+            "notes": rule.notes,
+        }
+        if rule.duration_days > 1:
+            item["dates"] = [(target + timedelta(days=i)).isoformat() for i in range(rule.duration_days)]
+        festivals.append(item)
+    festivals.sort(key=lambda item: item["date"])
+    return festivals
