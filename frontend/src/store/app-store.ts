@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { DEFAULT_PREFERENCES } from '../lib/constants'
 import { loadPreferences, savePreferences } from '../lib/storage'
 import { formatDateInput } from '../lib/utils'
+import i18n from '../locales/i18n'
 import type { AppPreferences, CalendarSchool, LanguageCode, LocationPreference } from '../types/api'
 
 interface AppState {
@@ -35,10 +36,12 @@ export const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       preferences: persist({ ...state.preferences, location }),
     })),
-  updateLanguage: (language) =>
+  updateLanguage: (language) => {
+    void i18n.changeLanguage(language)
     set((state) => ({
       preferences: persist({ ...state.preferences, language }),
-    })),
+    }))
+  },
   updateCalendar: (calendar) =>
     set((state) => ({
       preferences: persist({ ...state.preferences, calendar }),
