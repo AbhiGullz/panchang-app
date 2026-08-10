@@ -9,7 +9,7 @@ export const SUPPORTED_CALENDARS = [
   'malayalam',
   'bengali',
 ] as const
-export const MUHURTA_CATEGORIES = ['travel', 'wedding', 'housewarming', 'business', 'education'] as const
+export const MUHURTA_CATEGORIES = ['travel', 'wedding', 'griha-pravesh', 'naming', 'vehicle', 'property'] as const
 
 export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]
 export type CalendarSchool = (typeof SUPPORTED_CALENDARS)[number]

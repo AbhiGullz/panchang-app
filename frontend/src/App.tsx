@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useRegisterSW } from 'virtual:pwa-register/react'
@@ -15,7 +15,7 @@ import { usePanchang } from './hooks/use-panchang'
 import { reverseGeocode } from './lib/location'
 import { subscribeForPush } from './lib/push'
 import { loadPushSubscription, savePushSubscription } from './lib/storage'
-import { formatDateInput, humanizeCalendar } from './lib/utils'
+import { addDaysDateInput, formatDateInput, humanizeCalendar } from './lib/utils'
 import { useAppStore } from './store/app-store'
 import type { MuhurtaCategory } from './types/api'
 
@@ -48,6 +48,10 @@ function AppShell() {
   const [notice, setNotice] = useState('')
 
   useRegisterSW()
+
+  useEffect(() => {
+    void i18n.changeLanguage(preferences.language)
+  }, [i18n, preferences.language])
 
   const { data: panchangData } = usePanchang(
     selectedDate,
@@ -128,7 +132,7 @@ function AppShell() {
         </div>
         <div className="mt-4 flex gap-2">
           <button className="rounded-2xl bg-orange-100 px-3 py-2 text-sm font-medium text-orange-700" onClick={() => setSelectedDate(formatDateInput(new Date()))} type="button">{t('today')}</button>
-          <button className="rounded-2xl bg-orange-50 px-3 py-2 text-sm text-orange-700" onClick={() => setSelectedDate(formatDateInput(new Date(Date.now() + 86400000)))} type="button">Tomorrow</button>
+          <button className="rounded-2xl bg-orange-50 px-3 py-2 text-sm text-orange-700" onClick={() => setSelectedDate(addDaysDateInput(new Date(), 1))} type="button">Tomorrow</button>
         </div>
       </header>
 

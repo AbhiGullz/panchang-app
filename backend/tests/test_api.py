@@ -1,8 +1,9 @@
 import pytest
+from datetime import date
 from fastapi.testclient import TestClient
 
 pytest.importorskip("api.main")
-from api.main import app
+from api.main import app, _cache_key
 
 client = TestClient(app)
 
@@ -73,3 +74,36 @@ def test_invalid_date_returns_422():
         },
     )
     assert response.status_code == 422
+
+
+def test_invalid_coordinates_return_422():
+    response = client.get(
+        "/api/v1/panchang",
+        params={"date": "2026-08-03", "lat": 91, "lng": 77, "tz": "Asia/Kolkata"},
+    )
+    assert response.status_code == 422
+
+
+def test_festivals_reject_unknown_language():
+    response = client.get("/api/v1/festivals", params={"year": 2026, "lang": "xx"})
+    assert response.status_code == 400
+
+
+def test_muhurta_rejects_unknown_category():
+    response = client.get(
+        "/api/v1/muhurta",
+        params={
+            "date": "2026-08-03",
+            "lat": 28.6139,
+            "lng": 77.2090,
+            "tz": "Asia/Kolkata",
+            "category": "not-a-category",
+        },
+    )
+    assert response.status_code == 400
+
+
+def test_cache_key_preserves_close_coordinates():
+    first = _cache_key(date(2026, 8, 3), 28.611, 77.209, "Asia/Kolkata", "amanta", "en")
+    second = _cache_key(date(2026, 8, 3), 28.619, 77.209, "Asia/Kolkata", "amanta", "en")
+    assert first != second

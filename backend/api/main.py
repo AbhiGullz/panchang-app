@@ -85,7 +85,11 @@ async def get_cached_panchang(cache_key: str) -> dict[str, Any] | None:
         return None
     if not cached:
         return None
-    return json.loads(cached)
+    try:
+        return json.loads(cached)
+    except (TypeError, json.JSONDecodeError) as exc:
+        logger.warning("Invalid cached payload for %s: %s", cache_key, exc)
+        return None
 
 
 async def set_cached_panchang(cache_key: str, payload: dict[str, Any]) -> None:
@@ -100,7 +104,7 @@ async def set_cached_panchang(cache_key: str, payload: dict[str, Any]) -> None:
 
 def _cache_key(target_date: date, lat: float, lng: float, tz: str, calendar: str, lang: str) -> str:
     return (
-        f"panchang:{target_date.isoformat()}:{lat:.2f}:{lng:.2f}:{tz}:"
+        f"panchang:{target_date.isoformat()}:{lat:.6f}:{lng:.6f}:{tz}:"
         f"{calendar}:{lang}:{AYANAMSA}:{ENGINE_VERSION}"
     )
 
@@ -117,8 +121,8 @@ def health() -> dict[str, str]:
 @app.get("/api/v1/panchang", response_model=PanchangResponseModel)
 async def get_panchang(
     date_value: date = Query(..., alias="date"),
-    lat: float = Query(...),
-    lng: float = Query(...),
+    lat: float = Query(..., ge=-90, le=90),
+    lng: float = Query(..., ge=-180, le=180),
     tz: str = Query(...),
     calendar: str = Query("purnimanta"),
     lang: str = Query("en"),
@@ -153,28 +157,32 @@ async def get_panchang(
 @app.get("/api/v1/muhurta", response_model=MuhurtaResponseModel)
 async def get_muhurta(
     date_value: date = Query(..., alias="date"),
-    lat: float = Query(...),
-    lng: float = Query(...),
+    lat: float = Query(..., ge=-90, le=90),
+    lng: float = Query(..., ge=-180, le=180),
     tz: str = Query(...),
     category: str = Query("travel"),
     calendar: str = Query("purnimanta"),
 ) -> MuhurtaResponseModel:
     if calendar not in VALID_CALENDARS:
         raise HTTPException(status_code=400, detail=f"Unsupported calendar: {calendar}")
-    panchang = compute_daily_panchang(
-        date_iso=date_value.isoformat(),
-        latitude=lat,
-        longitude=lng,
-        timezone_name=tz,
-        location_name=_location_name(lat, lng),
-        calendar_school=calendar,
-        lang="en",
-    )
-    normalized_category = category if category in CATEGORY_RULES else "travel"
-    windows = compute_category_windows(panchang, normalized_category)
+    if category not in CATEGORY_RULES:
+        raise HTTPException(status_code=400, detail=f"Unsupported category: {category}")
+    try:
+        panchang = compute_daily_panchang(
+            date_iso=date_value.isoformat(),
+            latitude=lat,
+            longitude=lng,
+            timezone_name=tz,
+            location_name=_location_name(lat, lng),
+            calendar_school=calendar,
+            lang="en",
+        )
+        windows = compute_category_windows(panchang, category)
+    except Exception as exc:  # pragma: no cover
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     return MuhurtaResponseModel(
         date=date_value.isoformat(),
-        category=normalized_category,
+        category=category,
         location={"lat": lat, "lng": lng, "tz": tz, "calendar": calendar},
         windows=[MuhurtaWindowModel.model_validate(window) for window in windows],
         guidance="Calculated timing reference only; not a claim of religious authority.",
@@ -189,6 +197,8 @@ async def get_festivals(
 ) -> FestivalsResponseModel:
     if calendar not in VALID_CALENDARS:
         raise HTTPException(status_code=400, detail=f"Unsupported calendar: {calendar}")
+    if lang not in LANGUAGES:
+        raise HTTPException(status_code=400, detail=f"Unsupported language: {lang}")
     return FestivalsResponseModel(
         year=year,
         calendar=calendar,

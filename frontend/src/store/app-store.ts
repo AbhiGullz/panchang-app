@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { DEFAULT_PREFERENCES } from '../lib/constants'
 import { loadPreferences, savePreferences } from '../lib/storage'
+import { formatDateInput } from '../lib/utils'
 import type { AppPreferences, CalendarSchool, LanguageCode, LocationPreference } from '../types/api'
 
 interface AppState {
@@ -27,7 +28,7 @@ const persist = (preferences: AppPreferences) => {
 export const useAppStore = create<AppState>((set) => ({
   preferences: initialPreferences,
   activeTab: 'today',
-  selectedDate: new Date().toISOString().slice(0, 10),
+  selectedDate: formatDateInput(new Date()),
   setActiveTab: (activeTab) => set({ activeTab }),
   setSelectedDate: (selectedDate) => set({ selectedDate }),
   updateLocation: (location) =>
