@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SUPPORTED_CALENDARS, SUPPORTED_LANGUAGES } from '../types/api'
+import { SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } from '../types/api'
 import { humanizeCalendar } from '../lib/utils'
 import { LocationPicker } from './LocationPicker'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
@@ -38,7 +38,7 @@ export function SettingsTab(props: Props) {
           value={props.preferences.language}
           onChange={(event) => props.onLanguageChange(event.target.value as LanguageCode)}
         >
-          {SUPPORTED_LANGUAGES.map((option) => <option key={option} value={option}>{option.toUpperCase()}</option>)}
+          {SUPPORTED_LANGUAGE_OPTIONS.map((option) => <option key={option.code} value={option.code}>{option.label}</option>)}
         </select>
       </label>
 

@@ -1,4 +1,4 @@
-export const SUPPORTED_LANGUAGES = ['en', 'hi', 'pa', 'ta', 'te', 'kn', 'ml', 'mr', 'gu', 'bn'] as const
+export const SUPPORTED_LANGUAGES = ['en', 'hi', 'mr', 'ta', 'te', 'kn', 'ml', 'gu', 'bn', 'pa'] as const
 export const SUPPORTED_CALENDARS = [
   'purnimanta',
   'amanta',
@@ -12,6 +12,24 @@ export const SUPPORTED_CALENDARS = [
 export const MUHURTA_CATEGORIES = ['travel', 'wedding', 'griha-pravesh', 'naming', 'vehicle', 'property'] as const
 
 export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]
+export interface LanguageOption {
+  code: LanguageCode
+  label: string
+}
+
+export const SUPPORTED_LANGUAGE_OPTIONS = [
+  { code: 'en', label: 'English' },
+  { code: 'hi', label: 'हिंदी' },
+  { code: 'mr', label: 'मराठी' },
+  { code: 'ta', label: 'தமிழ்' },
+  { code: 'te', label: 'తెలుగు' },
+  { code: 'kn', label: 'ಕನ್ನಡ' },
+  { code: 'ml', label: 'മലയാളം' },
+  { code: 'gu', label: 'ગુજરાતી' },
+  { code: 'bn', label: 'বাংলা' },
+  { code: 'pa', label: 'ਪੰਜਾਬੀ' },
+] satisfies readonly LanguageOption[]
+
 export type CalendarSchool = (typeof SUPPORTED_CALENDARS)[number]
 export type MuhurtaCategory = (typeof MUHURTA_CATEGORIES)[number]
 
