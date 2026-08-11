@@ -161,6 +161,7 @@ function AppShell() {
           onCalendarChange={updateCalendar}
           onNotificationTimeChange={updateNotificationTime}
           onAyanamsaChange={updateAyanamsa}
+          onLocationChange={updateLocation}
           onSubscribePush={subscribePush}
           pushReady={pushReady}
         />

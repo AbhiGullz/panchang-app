@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_CALENDARS, SUPPORTED_LANGUAGES } from '../types/api'
 import { humanizeCalendar } from '../lib/utils'
+import { LocationPicker } from './LocationPicker'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
 
 interface Props {
@@ -9,16 +11,25 @@ interface Props {
   onCalendarChange: (calendar: CalendarSchool) => void
   onNotificationTimeChange: (time: string) => void
   onAyanamsaChange: (value: string) => void
+  onLocationChange: (location: AppPreferences['location']) => void
   onSubscribePush: () => Promise<void>
   pushReady: boolean
 }
 
 export function SettingsTab(props: Props) {
   const { t } = useTranslation()
+  const [editingLocation, setEditingLocation] = useState(false)
 
   return (
     <section className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
       <h2 className="text-lg font-semibold text-slate-900">{t('settings')}</h2>
+      <div className="rounded-2xl bg-orange-50 p-4">
+        <div className="flex items-start justify-between gap-3">
+          <div><p className="text-sm font-medium text-slate-700">{t('location')}</p><p className="font-semibold text-slate-900">{props.preferences.location.city}</p><p className="text-xs text-slate-500">{props.preferences.location.lat}, {props.preferences.location.lng} · {props.preferences.location.tz}</p></div>
+          {!editingLocation && <button className="rounded-xl border border-orange-300 px-3 py-2 text-sm font-semibold text-orange-700" onClick={() => setEditingLocation(true)} type="button">{t('changeLocation')}</button>}
+        </div>
+        {editingLocation && <div className="mt-3"><p className="mb-2 text-sm font-medium text-slate-700">{t('changeLocationTitle')}</p><LocationPicker location={props.preferences.location} onLocationChange={(location) => { props.onLocationChange(location); setEditingLocation(false) }} onCancel={() => setEditingLocation(false)} showCancel /></div>}
+      </div>
       <label className="block text-sm font-medium text-slate-700">
         {t('language')}
         <select
