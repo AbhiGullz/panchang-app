@@ -8,13 +8,17 @@ This backend milestone contains the Swiss Ephemeris-based calculation engine for
 2. Create the virtual environment:
    `uv venv backend/.venv`
 3. Install dependencies:
-   `uv pip install --python backend/.venv/bin/python pyswisseph pydantic pytest`
+   `uv pip install --python backend/.venv/bin/python -r backend/requirements.txt`
 4. Place Swiss Ephemeris data files in `backend/data/`:
    - `seas_18.se1`
    - `semo_18.se1`
    - `sepl_18.se1`
 5. Run the smoke test:
    `backend/.venv/bin/python -m pytest backend/tests/test_engine.py -s -q`
+
+## Location search
+
+`GET /api/v1/geocode` proxies debounced, limited searches to OpenStreetMap Nominatim. The backend sends the descriptive `PanchangApp/0.1` User-Agent, keeps a short cache and one-request-per-second process-level throttle, and returns only validated results with an IANA timezone resolved offline by `timezonefinder` and Python `zoneinfo`. `GET /api/v1/reverse-geocode` uses the same provider and timezone validation for browser geolocation. Do not bulk preload or autocomplete against Nominatim; respect its usage policy and attribution requirements: https://operations.osmfoundation.org/policies/nominatim/.
 
 ## Module map
 

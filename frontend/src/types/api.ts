@@ -24,6 +24,13 @@ export interface LocationPreference {
   tz: string
 }
 
+export interface GeocodeResult {
+  display_name: string
+  lat: number
+  lng: number
+  tz: string
+}
+
 export interface PanchangResponse {
   date: string
   location: {

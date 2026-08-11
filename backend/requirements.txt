@@ -1,0 +1,7 @@
+fastapi
+httpx
+pydantic
+pyswisseph
+redis
+timezonefinder
+uvicorn

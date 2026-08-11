@@ -1,8 +1,10 @@
+import { useEffect, useRef, useState } from 'react'
 import { MapPin, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { SUPPORTED_CALENDARS, SUPPORTED_LANGUAGES } from '../types/api'
+import { fetchGeocode } from '../lib/api'
 import { humanizeCalendar } from '../lib/utils'
-import type { CalendarSchool, LanguageCode, LocationPreference } from '../types/api'
+import type { CalendarSchool, GeocodeResult, LanguageCode, LocationPreference } from '../types/api'
 
 interface Props {
   location: LocationPreference
@@ -15,15 +17,62 @@ interface Props {
   onContinue: () => void
 }
 
-const cityOptions: LocationPreference[] = [
-  { city: 'Delhi', lat: 28.6139, lng: 77.209, tz: 'Asia/Kolkata' },
-  { city: 'Mumbai', lat: 19.076, lng: 72.8777, tz: 'Asia/Kolkata' },
-  { city: 'London', lat: 51.5072, lng: -0.1276, tz: 'Europe/London' },
-  { city: 'New York', lat: 40.7128, lng: -74.006, tz: 'America/New_York' },
-]
-
 export function OnboardingCard(props: Props) {
   const { t } = useTranslation()
+  const [query, setQuery] = useState(props.location.city)
+  const [results, setResults] = useState<GeocodeResult[]>([])
+  const [status, setStatus] = useState<'idle' | 'loading' | 'empty' | 'error'>('idle')
+  const [activeIndex, setActiveIndex] = useState(-1)
+  const requestId = useRef(0)
+
+  useEffect(() => {
+    const trimmed = query.trim()
+    if (trimmed.length < 2 || trimmed === props.location.city) {
+      setResults([])
+      setStatus('idle')
+      return
+    }
+    const timer = window.setTimeout(() => {
+      const currentRequest = ++requestId.current
+      setStatus('loading')
+      void fetchGeocode(trimmed).then((nextResults) => {
+        if (currentRequest !== requestId.current) return
+        setResults(nextResults)
+        setActiveIndex(-1)
+        setStatus(nextResults.length ? 'idle' : 'empty')
+      }).catch(() => {
+        if (currentRequest === requestId.current) {
+          setResults([])
+          setStatus('error')
+        }
+      })
+    }, 400)
+    return () => window.clearTimeout(timer)
+  }, [props.location.city, query])
+
+  const selectResult = (result: GeocodeResult) => {
+    setQuery(result.display_name)
+    setResults([])
+    setStatus('idle')
+    props.onLocationChange({ city: result.display_name, lat: result.lat, lng: result.lng, tz: result.tz })
+  }
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Escape') {
+      setResults([])
+      setActiveIndex(-1)
+    } else if (event.key === 'ArrowDown' && results.length) {
+      event.preventDefault()
+      setActiveIndex((index) => (index + 1) % results.length)
+    } else if (event.key === 'ArrowUp' && results.length) {
+      event.preventDefault()
+      setActiveIndex((index) => (index - 1 + results.length) % results.length)
+    } else if (event.key === 'Enter' && activeIndex >= 0) {
+      event.preventDefault()
+      const result = results[activeIndex]
+      if (result) selectResult(result)
+    }
+  }
 
   return (
     <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-orange-100">
@@ -40,20 +89,36 @@ export function OnboardingCard(props: Props) {
       <div className="space-y-4">
         <label className="block text-sm font-medium text-slate-700">
           {t('city')}
-          <select
+          <input
+            aria-autocomplete="list"
+            aria-controls="location-results"
+            aria-expanded={results.length > 0}
+            aria-label={t('searchLocation')}
             className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
-            value={props.location.city}
-            onChange={(event) => {
-              const next = cityOptions.find((city) => city.city === event.target.value)
-              if (next) props.onLocationChange(next)
-            }}
-          >
-            {cityOptions.map((option) => (
-              <option key={option.city} value={option.city}>
-                {option.city}
-              </option>
-            ))}
-          </select>
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={handleKeyDown}
+            role="combobox"
+            value={query}
+          />
+          {status === 'loading' && <p className="mt-2 text-xs text-slate-500" role="status">{t('searchingLocations')}</p>}
+          {status === 'empty' && <p className="mt-2 text-xs text-slate-500" role="status">{t('noLocationsFound')}</p>}
+          {status === 'error' && <p className="mt-2 text-xs text-red-600" role="alert">{t('locationSearchError')}</p>}
+          {results.length > 0 && (
+            <ul className="mt-2 overflow-hidden rounded-2xl border border-orange-200 bg-white shadow-lg" id="location-results" role="listbox">
+              {results.map((result, index) => (
+                <li key={`${result.display_name}-${result.lat}-${result.lng}`} role="option" aria-selected={activeIndex === index}>
+                  <button
+                    className="w-full px-4 py-3 text-left text-sm hover:bg-orange-50"
+                    onClick={() => selectResult(result)}
+                    type="button"
+                  >
+                    <span className="block font-medium text-slate-900">{result.display_name}</span>
+                    <span className="block text-xs text-slate-500">{result.tz}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
         </label>
 
         <button
@@ -75,9 +140,7 @@ export function OnboardingCard(props: Props) {
               onChange={(event) => props.onCalendarChange(event.target.value as CalendarSchool)}
             >
               {SUPPORTED_CALENDARS.map((option) => (
-                <option key={option} value={option}>
-                  {humanizeCalendar(option)}
-                </option>
+                <option key={option} value={option}>{humanizeCalendar(option)}</option>
               ))}
             </select>
           </label>
@@ -90,22 +153,13 @@ export function OnboardingCard(props: Props) {
               value={props.language}
               onChange={(event) => props.onLanguageChange(event.target.value as LanguageCode)}
             >
-              {SUPPORTED_LANGUAGES.map((option) => (
-                <option key={option} value={option}>
-                  {option.toUpperCase()}
-                </option>
-              ))}
+              {SUPPORTED_LANGUAGES.map((option) => <option key={option} value={option}>{option.toUpperCase()}</option>)}
             </select>
           </label>
         </div>
 
         <p className="rounded-2xl bg-orange-50 p-3 text-xs text-slate-600">{t('schoolSelectorHint')}</p>
-
-        <button
-          className="w-full rounded-2xl bg-orange-600 px-4 py-3 font-semibold text-white"
-          onClick={props.onContinue}
-          type="button"
-        >
+        <button className="w-full rounded-2xl bg-orange-600 px-4 py-3 font-semibold text-white" onClick={props.onContinue} type="button">
           {t('continue')}
         </button>
       </div>

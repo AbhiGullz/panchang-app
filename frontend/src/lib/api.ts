@@ -1,4 +1,4 @@
-import type { CalendarSchool, FestivalsResponse, LanguageCode, MuhurtaCategory, MuhurtaResponse, PanchangResponse } from '../types/api'
+import type { CalendarSchool, FestivalsResponse, GeocodeResult, LanguageCode, MuhurtaCategory, MuhurtaResponse, PanchangResponse } from '../types/api'
 
 const API_BASE = '/api/v1'
 
@@ -8,6 +8,16 @@ async function request<T>(path: string) {
     throw new Error(`API request failed: ${response.status}`)
   }
   return (await response.json()) as T
+}
+
+export function fetchGeocode(query: string, limit = 8) {
+  const search = new URLSearchParams({ q: query, limit: String(limit) })
+  return request<GeocodeResult[]>(`/geocode?${search.toString()}`)
+}
+
+export function fetchReverseGeocode(lat: number, lng: number) {
+  const search = new URLSearchParams({ lat: String(lat), lng: String(lng) })
+  return request<GeocodeResult>(`/reverse-geocode?${search.toString()}`)
 }
 
 export function fetchPanchang(params: {

@@ -1,13 +1,18 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import logging
+import os
+import time
 from datetime import date
 from typing import Any
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
+import httpx
 from fastapi import FastAPI, HTTPException, Query
-from pydantic import BaseModel
-import os
+from pydantic import BaseModel, Field
+from timezonefinder import TimezoneFinder
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
 
@@ -31,8 +36,125 @@ VALID_CALENDARS = {
 }
 
 _CACHE_TTL_SECONDS = 60 * 60 * 24
+_GEOCODE_CACHE_TTL_SECONDS = 60 * 5
+_GEOCODE_MIN_INTERVAL_SECONDS = 1.0
+_GEOCODE_USER_AGENT = os.environ.get(
+    "PANCHANG_GEOCODER_USER_AGENT",
+    "PanchangApp/0.1 (https://github.com/AbhiGullz/panchang-app)",
+)
+_geocode_cache: dict[tuple[str, int], tuple[float, list[dict[str, Any]]]] = {}
+_last_geocode_request = 0.0
+_geocode_lock = asyncio.Lock()
+_timezone_finder = TimezoneFinder()
 _redis_client: Redis | None = None
 _warned_redis_unavailable = False
+
+
+class GeocodeResultModel(BaseModel):
+    display_name: str = Field(min_length=1)
+    lat: float = Field(ge=-90, le=90)
+    lng: float = Field(ge=-180, le=180)
+    tz: str = Field(min_length=1)
+
+    @classmethod
+    def from_nominatim(cls, item: dict[str, Any]) -> "GeocodeResultModel | None":
+        try:
+            lat = float(item["lat"])
+            lng = float(item["lon"])
+            timezone_name = _timezone_for_coordinates(lat, lng)
+            if timezone_name is None:
+                return None
+            return cls(display_name=str(item["display_name"]).strip(), lat=lat, lng=lng, tz=timezone_name)
+        except (KeyError, TypeError, ValueError):
+            return None
+
+
+def _timezone_for_coordinates(lat: float, lng: float) -> str | None:
+    timezone_name = _timezone_finder.timezone_at(lat=lat, lng=lng)
+    if not timezone_name:
+        return None
+    try:
+        ZoneInfo(timezone_name)
+    except ZoneInfoNotFoundError:
+        return None
+    return timezone_name
+
+
+async def _search_nominatim(query: str, limit: int) -> list[dict[str, Any]]:
+    global _last_geocode_request
+    cache_key = (query.casefold(), limit)
+    now = time.monotonic()
+    cached = _geocode_cache.get(cache_key)
+    if cached and now - cached[0] < _GEOCODE_CACHE_TTL_SECONDS:
+        return cached[1]
+    async with _geocode_lock:
+        wait = _GEOCODE_MIN_INTERVAL_SECONDS - (time.monotonic() - _last_geocode_request)
+        if wait > 0:
+            await asyncio.sleep(wait)
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            response = await client.get(
+                "https://nominatim.openstreetmap.org/search",
+                params={"q": query, "format": "jsonv2", "limit": limit, "addressdetails": 1},
+                headers={"User-Agent": _GEOCODE_USER_AGENT, "Accept": "application/json"},
+            )
+        _last_geocode_request = time.monotonic()
+        response.raise_for_status()
+        result = response.json()
+        if not isinstance(result, list):
+            raise ValueError("Unexpected geocoder response")
+        _geocode_cache[cache_key] = (time.monotonic(), result)
+        return result
+
+
+async def _reverse_nominatim(lat: float, lng: float) -> dict[str, Any]:
+    global _last_geocode_request
+    async with _geocode_lock:
+        wait = _GEOCODE_MIN_INTERVAL_SECONDS - (time.monotonic() - _last_geocode_request)
+        if wait > 0:
+            await asyncio.sleep(wait)
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            response = await client.get(
+                "https://nominatim.openstreetmap.org/reverse",
+                params={"lat": lat, "lon": lng, "format": "jsonv2", "addressdetails": 1},
+                headers={"User-Agent": _GEOCODE_USER_AGENT, "Accept": "application/json"},
+            )
+        _last_geocode_request = time.monotonic()
+        response.raise_for_status()
+        result = response.json()
+        if not isinstance(result, dict):
+            raise ValueError("Unexpected reverse geocoder response")
+        return result
+
+
+@app.get("/api/v1/reverse-geocode", response_model=GeocodeResultModel)
+async def reverse_geocode(
+    lat: float = Query(..., ge=-90, le=90),
+    lng: float = Query(..., ge=-180, le=180),
+) -> GeocodeResultModel:
+    try:
+        result = GeocodeResultModel.from_nominatim(await _reverse_nominatim(lat, lng))
+    except Exception as exc:
+        logger.warning("Reverse geocoder request failed: %s", exc)
+        raise HTTPException(status_code=502, detail="Location lookup is temporarily unavailable.") from exc
+    if result is None:
+        raise HTTPException(status_code=422, detail="A timezone could not be resolved for this location.")
+    return result
+
+
+@app.get("/api/v1/geocode", response_model=list[GeocodeResultModel])
+async def geocode(
+    q: str = Query(..., min_length=2, max_length=120),
+    limit: int = Query(8, ge=1, le=8),
+) -> list[GeocodeResultModel]:
+    query = q.strip()
+    if len(query) < 2:
+        raise HTTPException(status_code=422, detail="Search query must contain at least 2 characters.")
+    try:
+        raw_results = await _search_nominatim(query, limit)
+    except Exception as exc:
+        logger.warning("Geocoder request failed: %s", exc)
+        raise HTTPException(status_code=502, detail="Location search is temporarily unavailable.") from exc
+    return [result for item in raw_results if (result := GeocodeResultModel.from_nominatim(item)) is not None]
 
 
 class MuhurtaResponseModel(BaseModel):
