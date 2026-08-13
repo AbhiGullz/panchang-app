@@ -15,6 +15,7 @@ const resources = {
       festivals: 'Festivals',
       settings: 'Settings',
       dateLabel: 'Date',
+      selectDate: 'Select date',
       language: 'Language',
       calendarSchool: 'Calendar school',
       notificationTime: 'Notification time',
@@ -26,6 +27,9 @@ const resources = {
       version: 'Version',
       offlineReady: 'Offline cache ready for the last 7 days.',
       calculatedReference: 'Calculated timing reference only.',
+      noMuhurta: 'No suitable muhurta was found for this date.',
+      retry: 'Retry',
+      details: 'Technical details',
       festivalsForYear: 'Festival calendar',
       save: 'Save',
       geolocationDenied: 'Location permission denied. Using Delhi fallback.',
@@ -55,7 +59,7 @@ const resources = {
   },
   hi: {
     translation: {
-      appName: 'पंचांग', onboardingTitle: 'दैनिक डिफ़ॉल्ट चुनें', onboardingBody: 'अपना शहर, पंचांग परंपरा और भाषा चुनें। आप इन्हें बाद में सेटिंग्स में बदल सकते हैं।', useCurrentLocation: 'वर्तमान स्थान का उपयोग करें', continue: 'आगे बढ़ें', today: 'आज', muhurta: 'मुहूर्त', festivals: 'पर्व', settings: 'सेटिंग्स', dateLabel: 'तारीख', language: 'भाषा', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचना का समय', ayanamsa: 'अयनांश', howCalculated: 'इसकी गणना कैसे हुई', traditionMeta: 'परंपरा', timezone: 'समय क्षेत्र', location: 'स्थान', version: 'संस्करण', offlineReady: 'पिछले 7 दिनों के लिए ऑफ़लाइन कैश तैयार है।', calculatedReference: 'केवल गणना किए गए समय का संदर्भ।', festivalsForYear: 'पर्व कैलेंडर', save: 'सहेजें', geolocationDenied: 'स्थान की अनुमति नहीं मिली। दिल्ली का डिफ़ॉल्ट उपयोग हो रहा है।', city: 'शहर', changeLocation: 'स्थान बदलें', changeLocationTitle: 'नया स्थान खोजें', cancel: 'रद्द करें', schoolSelectorHint: 'नाम बैकएंड से आते हैं; UI के शब्द यहां तुरंत बदलते हैं।', pushNotifications: 'पुश सूचनाएं', subscribe: 'सदस्यता लें', subscribed: 'सदस्यता ली गई', tithi: 'तिथि', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहु काल', moonSign: 'चंद्र राशि', yoga: 'योग', karana: 'करण', loading: 'लोड हो रहा है…', noData: 'अभी ऑफ़लाइन कोई डेटा उपलब्ध नहीं है।',
+      appName: 'पंचांग', onboardingTitle: 'दैनिक डिफ़ॉल्ट चुनें', onboardingBody: 'अपना शहर, पंचांग परंपरा और भाषा चुनें। आप इन्हें बाद में सेटिंग्स में बदल सकते हैं।', useCurrentLocation: 'वर्तमान स्थान का उपयोग करें', continue: 'आगे बढ़ें', today: 'आज', muhurta: 'मुहूर्त', festivals: 'पर्व', settings: 'सेटिंग्स', dateLabel: 'तारीख', selectDate: 'तारीख चुनें', language: 'भाषा', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचना का समय', ayanamsa: 'अयनांश', howCalculated: 'इसकी गणना कैसे हुई', traditionMeta: 'परंपरा', timezone: 'समय क्षेत्र', location: 'स्थान', version: 'संस्करण', offlineReady: 'पिछले 7 दिनों के लिए ऑफ़लाइन कैश तैयार है।', calculatedReference: 'केवल गणना किए गए समय का संदर्भ।', noMuhurta: 'इस तारीख के लिए उपयुक्त मुहूर्त नहीं मिला।', retry: 'पुनः प्रयास करें', details: 'तकनीकी विवरण', festivalsForYear: 'पर्व कैलेंडर', save: 'सहेजें', geolocationDenied: 'स्थान की अनुमति नहीं मिली। दिल्ली का डिफ़ॉल्ट उपयोग हो रहा है।', city: 'शहर', changeLocation: 'स्थान बदलें', changeLocationTitle: 'नया स्थान खोजें', cancel: 'रद्द करें', schoolSelectorHint: 'नाम बैकएंड से आते हैं; UI के शब्द यहां तुरंत बदलते हैं।', pushNotifications: 'पुश सूचनाएं', subscribe: 'सदस्यता लें', subscribed: 'सदस्यता ली गई', tithi: 'तिथि', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहु काल', moonSign: 'चंद्र राशि', yoga: 'योग', karana: 'करण', loading: 'लोड हो रहा है…', noData: 'अभी ऑफ़लाइन कोई डेटा उपलब्ध नहीं है।',
     },
   },
   ta: {
@@ -80,7 +84,8 @@ const resources = {
   },
   mr: {
     translation: {
-      appName: 'पंचांग', onboardingTitle: 'दैनंदिन डीफॉल्ट निवडा', onboardingBody: 'तुमचे शहर, पंचांग परंपरा आणि भाषा निवडा. नंतर सेटिंग्जमध्ये बदल करू शकता.', useCurrentLocation: 'सध्याचे स्थान वापरा', continue: 'पुढे जा', today: 'आज', muhurta: 'मुहूर्त', festivals: 'सण', settings: 'सेटिंग्ज', dateLabel: 'तारीख', language: 'भाषा', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचनेची वेळ', ayanamsa: 'अयनांश', howCalculated: 'याची गणना कशी झाली', traditionMeta: 'परंपरा', timezone: 'वेळ क्षेत्र', location: 'स्थान', version: 'आवृत्ती', offlineReady: 'मागील 7 दिवसांसाठी ऑफलाइन कॅश तयार आहे.', calculatedReference: 'गणना केलेल्या वेळेचा फक्त संदर्भ.', festivalsForYear: 'सणांचे कॅलेंडर', save: 'जतन करा', geolocationDenied: 'स्थान परवानगी नाकारली. दिल्ली डीफॉल्ट वापरले जात आहे.', city: 'शहर', changeLocation: 'स्थान बदला', changeLocationTitle: 'नवीन स्थान शोधा', cancel: 'रद्द करा', schoolSelectorHint: 'नावे बॅकएंडमधून येतात; UI शब्द लगेच बदलतात.', pushNotifications: 'पुश सूचना', subscribe: 'सदस्यता घ्या', subscribed: 'सदस्यता घेतली', tithi: 'तिथी', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहुकाळ', moonSign: 'चंद्रराशी', yoga: 'योग', karana: 'करण', loading: 'लोड होत आहे…', noData: 'अद्याप ऑफलाइन डेटा उपलब्ध नाही.',
+      appName: 'पंचांग', onboardingTitle: 'दैनंदिन डीफॉल्ट निवडा', onboardingBody: 'तुमचे शहर, पंचांग परंपरा आणि भाषा निवडा. नंतर सेटिंग्जमध्ये बदल करू शकता.', useCurrentLocation: 'सध्याचे स्थान वापरा', continue: 'पुढे जा', today: 'आज', muhurta: 'मुहूर्त', festivals: 'सण', settings: 'सेटिंग्ज',
+      dateLabel: 'तारीख', selectDate: 'दिनांक निवडा', language: 'भाषा', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचनेची वेळ', ayanamsa: 'अयनांश', howCalculated: 'याची गणना कशी झाली', traditionMeta: 'परंपरा', timezone: 'वेळ क्षेत्र', location: 'स्थान', version: 'आवृत्ती', offlineReady: 'मागील 7 दिवसांसाठी ऑफलाइन कॅश तयार आहे.', calculatedReference: 'गणना केलेल्या वेळेचा फक्त संदर्भ.', noMuhurta: 'या तारखेसाठी योग्य मुहूर्त सापडला नाही.', retry: 'पुन्हा प्रयत्न करा', details: 'तांत्रिक तपशील', festivalsForYear: 'सणांचे कॅलेंडर', save: 'जतन करा', geolocationDenied: 'स्थान परवानगी नाकारली. दिल्ली डीफॉल्ट वापरले जात आहे.', city: 'शहर', changeLocation: 'स्थान बदला', changeLocationTitle: 'नवीन स्थान शोधा', cancel: 'रद्द करा', schoolSelectorHint: 'नावे बॅकएंडमधून येतात; UI शब्द लगेच बदलतात.', pushNotifications: 'पुश सूचना', subscribe: 'सदस्यता घ्या', subscribed: 'सदस्यता घेतली', tithi: 'तिथी', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहुकाळ', moonSign: 'चंद्रराशी', yoga: 'योग', karana: 'करण', loading: 'लोड होत आहे…', noData: 'अद्याप ऑफलाइन डेटा उपलब्ध नाही.',
     },
   },
   gu: {

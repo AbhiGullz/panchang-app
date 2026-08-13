@@ -25,7 +25,7 @@ export function SettingsTab(props: Props) {
       <h2 className="text-lg font-semibold text-slate-900">{t('settings')}</h2>
       <div className="rounded-2xl bg-orange-50 p-4">
         <div className="flex items-start justify-between gap-3">
-          <div><p className="text-sm font-medium text-slate-700">{t('location')}</p><p className="font-semibold text-slate-900">{props.preferences.location.city}</p><p className="text-xs text-slate-500">{props.preferences.location.lat}, {props.preferences.location.lng} · {props.preferences.location.tz}</p></div>
+          <div className="min-w-0"><p className="text-sm font-medium text-slate-700">{t('location')}</p><p className="break-words font-semibold text-slate-900">{props.preferences.location.city}</p><details className="mt-1 text-xs text-slate-500"><summary className="cursor-pointer">{t('details')}</summary><span>{props.preferences.location.lat}, {props.preferences.location.lng} · {props.preferences.location.tz}</span></details></div>
           {!editingLocation && <button className="rounded-xl border border-orange-300 px-3 py-2 text-sm font-semibold text-orange-700" onClick={() => setEditingLocation(true)} type="button">{t('changeLocation')}</button>}
         </div>
         {editingLocation && <div className="mt-3"><p className="mb-2 text-sm font-medium text-slate-700">{t('changeLocationTitle')}</p><LocationPicker location={props.preferences.location} onLocationChange={(location) => { props.onLocationChange(location); setEditingLocation(false) }} onCancel={() => setEditingLocation(false)} showCancel /></div>}
@@ -49,7 +49,7 @@ export function SettingsTab(props: Props) {
           value={props.preferences.calendar}
           onChange={(event) => props.onCalendarChange(event.target.value as CalendarSchool)}
         >
-          {SUPPORTED_CALENDARS.map((option) => <option key={option} value={option}>{humanizeCalendar(option)}</option>)}
+          {SUPPORTED_CALENDARS.map((option) => <option key={option} value={option}>{humanizeCalendar(option, props.preferences.language)}</option>)}
         </select>
       </label>
 

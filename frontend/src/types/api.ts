@@ -129,6 +129,8 @@ export interface FestivalItem {
   date: string
   lunar_month?: string
   notes?: string
+  localized_name?: string
+  localized_notes?: string
 }
 
 export interface FestivalsResponse {

@@ -15,7 +15,7 @@ import { usePanchang } from './hooks/use-panchang'
 import { reverseGeocode } from './lib/location'
 import { subscribeForPush } from './lib/push'
 import { loadPushSubscription, savePushSubscription } from './lib/storage'
-import { addDaysDateInput, formatDateInput, humanizeCalendar } from './lib/utils'
+import { humanizeCalendar } from './lib/utils'
 import { useAppStore } from './store/app-store'
 import type { MuhurtaCategory } from './types/api'
 
@@ -120,20 +120,17 @@ function AppShell() {
           <div>
             <div className="text-xs uppercase tracking-[0.2em] text-orange-500">{t('appName')}</div>
             <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
-            <p className="text-sm text-slate-500">{humanizeCalendar(preferences.calendar)} · {preferences.location.tz}</p>
+            <p className="text-sm text-slate-500">{humanizeCalendar(preferences.calendar, i18n.language)}</p>
           </div>
           <input
-            aria-label={t('dateLabel')}
+            aria-label={t('selectDate')}
             className="rounded-2xl border border-orange-200 bg-orange-50 px-3 py-2 text-sm"
             type="date"
             value={selectedDate}
             onChange={(event) => setSelectedDate(event.target.value)}
           />
         </div>
-        <div className="mt-4 flex gap-2">
-          <button className="rounded-2xl bg-orange-100 px-3 py-2 text-sm font-medium text-orange-700" onClick={() => setSelectedDate(formatDateInput(new Date()))} type="button">{t('today')}</button>
-          <button className="rounded-2xl bg-orange-50 px-3 py-2 text-sm text-orange-700" onClick={() => setSelectedDate(addDaysDateInput(new Date(), 1))} type="button">Tomorrow</button>
-        </div>
+
       </header>
 
       {!preferences.onboardingComplete ? (
@@ -151,7 +148,7 @@ function AppShell() {
 
       {notice ? <div className="rounded-2xl bg-orange-100 px-4 py-3 text-sm text-orange-800">{notice}</div> : null}
 
-      {activeTab === 'today' ? <TodayView data={panchangData} calendar={humanizeCalendar(preferences.calendar)} ayanamsa={preferences.ayanamsa} /> : null}
+      {activeTab === 'today' ? <TodayView data={panchangData} calendar={humanizeCalendar(preferences.calendar, i18n.language)} ayanamsa={preferences.ayanamsa} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab category={category} onCategoryChange={setCategory} data={muhurtaData} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
       {activeTab === 'settings' ? (

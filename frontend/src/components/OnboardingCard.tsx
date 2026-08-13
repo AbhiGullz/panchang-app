@@ -140,7 +140,7 @@ export function OnboardingCard(props: Props) {
               onChange={(event) => props.onCalendarChange(event.target.value as CalendarSchool)}
             >
               {SUPPORTED_CALENDARS.map((option) => (
-                <option key={option} value={option}>{humanizeCalendar(option)}</option>
+                <option key={option} value={option}>{humanizeCalendar(option, props.language)}</option>
               ))}
             </select>
           </label>

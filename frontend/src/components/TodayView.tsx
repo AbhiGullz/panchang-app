@@ -1,6 +1,7 @@
 import { MoonStar, Sunrise, Sunset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { PanchangResponse } from '../types/api'
+import { formatDisplayDate } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
@@ -24,7 +25,7 @@ export function TodayView({ data, calendar, ayanamsa }: Props) {
     <section className="space-y-4">
       <div className="rounded-3xl bg-gradient-to-br from-orange-600 to-amber-500 p-6 text-white shadow-lg">
         <div className="flex items-center justify-between text-sm opacity-90">
-          <span>{data.date}</span>
+          <span>{formatDisplayDate(data.date, i18n.language)}</span>
           <span>{data.location.name}</span>
         </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
@@ -65,8 +66,7 @@ export function TodayView({ data, calendar, ayanamsa }: Props) {
           <dl className="mt-3 space-y-2 text-sm text-slate-600">
             <div className="flex justify-between gap-4"><dt>{t('calendarSchool')}</dt><dd>{calendar}</dd></div>
             <div className="flex justify-between gap-4"><dt>{t('ayanamsa')}</dt><dd>{ayanamsa}</dd></div>
-            <div className="flex justify-between gap-4"><dt>{t('timezone')}</dt><dd>{data.location.tz}</dd></div>
-            <div className="flex justify-between gap-4"><dt>{t('version')}</dt><dd>{data.names_version}</dd></div>
+
             <div className="flex justify-between gap-4"><dt>{t('location')}</dt><dd>{data.location.name}</dd></div>
           </dl>
         </div>
