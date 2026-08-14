@@ -30,6 +30,11 @@ export const SUPPORTED_LANGUAGE_OPTIONS = [
   { code: 'pa', label: 'ਪੰਜਾਬੀ' },
 ] satisfies readonly LanguageOption[]
 
+export const LANGUAGE_LABELS = {
+  en: 'English', hi: 'हिंदी', mr: 'मराठी', ta: 'தமிழ்', te: 'తెలుగు',
+  kn: 'ಕನ್ನಡ', ml: 'മലയാളം', gu: 'ગુજરાતી', bn: 'বাংলা', pa: 'ਪੰਜਾਬੀ',
+} satisfies Record<LanguageCode, string>
+
 export type CalendarSchool = (typeof SUPPORTED_CALENDARS)[number]
 export type MuhurtaCategory = (typeof MUHURTA_CATEGORIES)[number]
 

@@ -15,7 +15,7 @@ import { usePanchang } from './hooks/use-panchang'
 import { reverseGeocode } from './lib/location'
 import { subscribeForPush } from './lib/push'
 import { loadPushSubscription, savePushSubscription } from './lib/storage'
-import { humanizeCalendar } from './lib/utils'
+import { humanizeCalendar, humanizeLanguage } from './lib/utils'
 import { useAppStore } from './store/app-store'
 import type { MuhurtaCategory } from './types/api'
 
@@ -120,7 +120,7 @@ function AppShell() {
           <div>
             <div className="text-xs uppercase tracking-[0.2em] text-orange-500">{t('appName')}</div>
             <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
-            <p className="text-sm text-slate-500">{humanizeCalendar(preferences.calendar, i18n.language)}</p>
+            <p className="text-sm text-slate-500">{humanizeLanguage(preferences.language)}</p>
           </div>
           <input
             aria-label={t('selectDate')}
@@ -148,7 +148,7 @@ function AppShell() {
 
       {notice ? <div className="rounded-2xl bg-orange-100 px-4 py-3 text-sm text-orange-800">{notice}</div> : null}
 
-      {activeTab === 'today' ? <TodayView data={panchangData} calendar={humanizeCalendar(preferences.calendar, i18n.language)} ayanamsa={preferences.ayanamsa} /> : null}
+      {activeTab === 'today' ? <TodayView data={panchangData} calendar={humanizeCalendar(preferences.calendar, preferences.language)} ayanamsa={preferences.ayanamsa} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab category={category} onCategoryChange={setCategory} data={muhurtaData} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
       {activeTab === 'settings' ? (

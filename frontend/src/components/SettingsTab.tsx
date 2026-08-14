@@ -77,7 +77,7 @@ export function SettingsTab(props: Props) {
         onClick={() => void props.onSubscribePush()}
         type="button"
       >
-        {props.pushReady ? t('subscribed') : t('subscribe')} {t('pushNotifications')}
+        {props.pushReady ? t('subscribedPush') : t('subscribePush')}
       </button>
 
       <a className="block text-sm font-medium text-orange-700 underline" href="/README.md" target="_blank" rel="noreferrer">

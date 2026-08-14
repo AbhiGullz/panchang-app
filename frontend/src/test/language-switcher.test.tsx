@@ -4,10 +4,16 @@ import userEvent from '@testing-library/user-event'
 import App from '../App'
 import { renderWithProviders } from './render'
 import i18n from '../locales/i18n'
+import { SUPPORTED_LANGUAGES } from '../types/api'
 
 afterEach(() => cleanup())
 
 describe('language switcher', () => {
+  it('keeps the Settings field label in English for every supported locale', () => {
+    for (const language of SUPPORTED_LANGUAGES) {
+      expect(i18n.t('language', { lng: language })).toBe('Language')
+    }
+  })
   it('changes visible strings', async () => {
     const user = userEvent.setup()
     renderWithProviders(<App />)
@@ -34,5 +40,19 @@ describe('language switcher', () => {
 
     await user.selectOptions(selector, 'mr')
     expect(changeLanguage).toHaveBeenCalledWith('mr')
+  })
+
+  it('updates the header language subtitle and metadata immediately', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<App />)
+    const selector = screen.getAllByRole('combobox', { name: 'Language' })[0]!
+    await user.selectOptions(selector, 'mr')
+    expect(await screen.findByRole('banner')).toHaveTextContent('मराठी')
+    await user.selectOptions(selector, 'kn')
+    expect(await screen.findByRole('banner')).toHaveTextContent('ಕನ್ನಡ')
+    expect(screen.getByRole('banner')).not.toHaveTextContent('मराठी')
+    await user.selectOptions(selector, 'pa')
+    expect(await screen.findByRole('banner')).toHaveTextContent('ਪੰਜਾਬੀ')
+    expect(screen.getByRole('banner')).not.toHaveTextContent('ಕನ್ನಡ')
   })
 })

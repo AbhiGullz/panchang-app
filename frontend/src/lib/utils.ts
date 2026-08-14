@@ -1,5 +1,7 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+import { LANGUAGE_LABELS } from '../types/api'
+import type { CalendarSchool, LanguageCode, LocalizedNames } from '../types/api'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -24,15 +26,24 @@ export function addDaysDateInput(value: Date, days: number) {
   return formatDateInput(result)
 }
 
-const CALENDAR_LABELS: Record<string, Record<string, string>> = {
-  purnimanta: { en: 'Purnimanta', mr: 'पौर्णिमान्त' }, amanta: { en: 'Amanta', mr: 'अमान्त' },
-  gujarati: { en: 'Gujarati', mr: 'गुजराती' }, marathi: { en: 'Marathi', mr: 'मराठी' },
-  nanakshahi: { en: 'Nanakshahi', mr: 'नानकशाही' }, tamil: { en: 'Tamil', mr: 'तमिळ' },
-  malayalam: { en: 'Malayalam', mr: 'मल्याळम' }, bengali: { en: 'Bengali', mr: 'बंगाली' },
+const CALENDAR_LABELS: Record<CalendarSchool, LocalizedNames> = {
+  purnimanta: { en: 'Purnimanta', hi: 'पूर्णिमांत', mr: 'पौर्णिमान्त', ta: 'பௌர்ணிமாந்த', te: 'పౌర్ణిమాంత', kn: 'ಪೂರ್ಣಿಮಾಂತ', ml: 'പൗർണമാന്ത', gu: 'પૂર્ણિમાંત', bn: 'পূর্ণিমান্ত', pa: 'ਪੂਰਨਿਮਾਂਤ' },
+  amanta: { en: 'Amanta', hi: 'अमांत', mr: 'अमान्त', ta: 'அமாந்த', te: 'అమాంత', kn: 'ಅಮಾಂತ', ml: 'അമാന്ത', gu: 'અમાન્ત', bn: 'অমান্ত', pa: 'ਅਮਾਂਤ' },
+  gujarati: { en: 'Gujarati', hi: 'गुजराती', mr: 'गुजराती', ta: 'குஜராத்தி', te: 'గుజరాతీ', kn: 'ಗುಜರಾತಿ', ml: 'ഗുജറാത്തി', gu: 'ગુજરાતી', bn: 'গুজরাটি', pa: 'ਗੁਜਰਾਤੀ' },
+  marathi: { en: 'Marathi', hi: 'मराठी', mr: 'मराठी', ta: 'மராத்தி', te: 'మరాఠీ', kn: 'ಮರಾಠಿ', ml: 'മറാത്തി', gu: 'મરાઠી', bn: 'মারাঠি', pa: 'ਮਰਾਠੀ' },
+  nanakshahi: { en: 'Nanakshahi', hi: 'नानकशाही', mr: 'नानकशाही', ta: 'நானக்ஷாஹி', te: 'నానక్‌షాహీ', kn: 'ನಾನಕ್‌ಶಾಹಿ', ml: 'നാനക്‌ഷാഹി', gu: 'નાનકશાહી', bn: 'নানকশাহী', pa: 'ਨਾਨਕਸ਼ਾਹੀ' },
+  tamil: { en: 'Tamil', hi: 'तमिल', mr: 'तमिळ', ta: 'தமிழ்', te: 'తమిళ', kn: 'ತಮಿಳು', ml: 'തമിഴ്', gu: 'તમિલ', bn: 'তামিল', pa: 'ਤਮਿਲ' },
+  malayalam: { en: 'Malayalam', hi: 'मलयालम', mr: 'മल्याळम', ta: 'மலையாளம்', te: 'మలయాళం', kn: 'മലയാളം', ml: 'മലയാളം', gu: 'મલયાલમ', bn: 'মালয়ালম', pa: 'ਮਲਿਆਲਮ' },
+  bengali: { en: 'Bengali', hi: 'बंगाली', mr: 'बंगाली', ta: 'வங்காளம்', te: 'బెంగాలీ', kn: 'ಬಂಗಾಳಿ', ml: 'ബംഗാളി', gu: 'બંગાળી', bn: 'বাংলা', pa: 'ਬੰਗਾਲੀ' },
 }
 
-export function humanizeCalendar(calendar: string, language = 'en') {
-  return CALENDAR_LABELS[calendar]?.[language] ?? CALENDAR_LABELS[calendar]?.en ?? calendar.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
+export function humanizeLanguage(language: LanguageCode) {
+  return LANGUAGE_LABELS[language]
+}
+
+export function humanizeCalendar(calendar: string, language: string = 'en') {
+  const labels = CALENDAR_LABELS[calendar as CalendarSchool]
+  return labels?.[language as LanguageCode] ?? labels?.en ?? calendar.split('-').map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(' ')
 }
 
 export const MUHURTA_LABELS: Record<string, Record<string, string>> = {
