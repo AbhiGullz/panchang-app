@@ -10,6 +10,7 @@ export const SUPPORTED_CALENDARS = [
   'bengali',
 ] as const
 export const MUHURTA_CATEGORIES = ['travel', 'wedding', 'griha-pravesh', 'naming', 'vehicle', 'property'] as const
+export const AYANAMSA_OPTIONS = [{ value: 'Lahiri', label: 'Lahiri' }] as const
 
 export type LanguageCode = (typeof SUPPORTED_LANGUAGES)[number]
 export interface LanguageOption {
@@ -110,6 +111,7 @@ export interface TimeRange {
 }
 
 export interface MuhurtaWindow extends TimeRange {
+  date: string
   label?: string | null
   reference?: string | null
   notes?: string | null
@@ -125,6 +127,7 @@ export interface MuhurtaResponse {
     calendar: CalendarSchool
   }
   windows: MuhurtaWindow[]
+  horizon_exhausted?: boolean
   guidance: string
   source: string
 }

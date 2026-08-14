@@ -9,7 +9,7 @@ interface Props {
 export function BottomNav({ activeTab, onTabChange }: Props) {
   const { t } = useTranslation()
   const tabs = [
-    { key: 'today', label: t('today'), icon: Home },
+    { key: 'today', label: t('home'), icon: Home },
     { key: 'muhurta', label: t('muhurta'), icon: Sparkles },
     { key: 'festivals', label: t('festivals'), icon: CalendarDays },
     { key: 'settings', label: t('settings'), icon: Settings },

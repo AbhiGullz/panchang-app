@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } from '../types/api'
+import { AYANAMSA_OPTIONS, SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } from '../types/api'
 import { humanizeCalendar } from '../lib/utils'
 import { LocationPicker } from './LocationPicker'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
@@ -65,11 +65,14 @@ export function SettingsTab(props: Props) {
 
       <label className="block text-sm font-medium text-slate-700">
         {t('ayanamsa')}
-        <input
+        <select
+          aria-label={t('ayanamsa')}
           className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
           value={props.preferences.ayanamsa}
           onChange={(event) => props.onAyanamsaChange(event.target.value)}
-        />
+        >
+          {AYANAMSA_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+        </select>
       </label>
 
       <button

@@ -31,3 +31,14 @@ def test_festivals_endpoint_returns_annual_calendar():
     assert body["year"] == 2027
     assert len(body["festivals"]) == 15
     assert any(item["name"] == "Diwali" for item in body["festivals"])
+
+
+def test_festival_tradition_and_language_change_calculated_data():
+    amanta = client.get("/api/v1/festivals", params={"year": 2027, "calendar": "amanta", "lang": "en"}).json()
+    marathi = client.get("/api/v1/festivals", params={"year": 2027, "calendar": "marathi", "lang": "mr"}).json()
+    amanta_diwali = next(item for item in amanta["festivals"] if item["name"] == "Diwali")
+    marathi_diwali = next(item for item in marathi["festivals"] if item["name"] == "Diwali")
+
+    assert marathi["calendar"] == "marathi"
+    assert marathi_diwali["lunar_month"] != amanta_diwali["lunar_month"]
+    assert marathi_diwali["localized_name"] == "दिवाळी"

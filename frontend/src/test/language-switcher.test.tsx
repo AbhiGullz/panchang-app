@@ -23,7 +23,7 @@ describe('language switcher', () => {
 
     await user.selectOptions(screen.getByLabelText('Language'), 'hi')
     expect(await screen.findByRole('button', { name: 'आगे बढ़ें' })).toBeInTheDocument()
-    expect(await screen.findByText('पिछले 7 दिनों के लिए ऑफ़लाइन कैश तैयार है।')).toBeInTheDocument()
+    expect(screen.queryByText(/ऑफ़लाइन कैश/)).not.toBeInTheDocument()
   })
 
   it('shows native language names and switches using their internal codes', async () => {

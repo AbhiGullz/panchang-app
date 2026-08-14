@@ -5,7 +5,7 @@ import json
 import logging
 import os
 import time
-from datetime import date
+from datetime import date, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -162,6 +162,7 @@ class MuhurtaResponseModel(BaseModel):
     category: str
     location: dict[str, Any]
     windows: list[MuhurtaWindowModel]
+    horizon_exhausted: bool = False
     guidance: str
     source: str = "swiss-ephemeris"
 
@@ -290,16 +291,23 @@ async def get_muhurta(
     if category not in CATEGORY_RULES:
         raise HTTPException(status_code=400, detail=f"Unsupported category: {category}")
     try:
-        panchang = compute_daily_panchang(
-            date_iso=date_value.isoformat(),
-            latitude=lat,
-            longitude=lng,
-            timezone_name=tz,
-            location_name=_location_name(lat, lng),
-            calendar_school=calendar,
-            lang="en",
-        )
-        windows = compute_category_windows(panchang, category)
+        windows: list[dict[str, str]] = []
+        current_date = date_value
+        for _ in range(366):
+            panchang = compute_daily_panchang(
+                date_iso=current_date.isoformat(),
+                latitude=lat,
+                longitude=lng,
+                timezone_name=tz,
+                location_name=_location_name(lat, lng),
+                calendar_school=calendar,
+                lang="en",
+            )
+            windows.extend({"date": current_date.isoformat(), **window} for window in compute_category_windows(panchang, category))
+            if len(windows) >= 10:
+                windows = windows[:10]
+                break
+            current_date += timedelta(days=1)
     except Exception as exc:  # pragma: no cover
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     return MuhurtaResponseModel(
@@ -307,6 +315,7 @@ async def get_muhurta(
         category=category,
         location={"lat": lat, "lng": lng, "tz": tz, "calendar": calendar},
         windows=[MuhurtaWindowModel.model_validate(window) for window in windows],
+        horizon_exhausted=len(windows) < 10,
         guidance="Calculated timing reference only; not a claim of religious authority.",
     )
 

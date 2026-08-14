@@ -56,6 +56,7 @@ class TimeWindowModel(BaseModel):
 
 
 class MuhurtaWindowModel(TimeWindowModel):
+    date: str
     label: str | None = None
     reference: str | None = None
     notes: str | None = None

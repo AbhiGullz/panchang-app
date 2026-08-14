@@ -7,6 +7,7 @@ from zoneinfo import ZoneInfo
 import swisseph as swe
 
 from .core import init_swisseph
+from .i18n.names import get_month_name
 
 LUNAR_MONTH_NAMES = [
     "Chaitra",
@@ -24,6 +25,12 @@ LUNAR_MONTH_NAMES = [
 ]
 
 LUNAR_MONTH_INDEX = {name: index + 1 for index, name in enumerate(LUNAR_MONTH_NAMES)}
+
+FESTIVAL_NAMES = {
+    "hi": {"Diwali": "दीवाली", "Holi": "होली", "Raksha Bandhan": "रक्षाबंधन", "Janmashtami": "जन्माष्टमी", "Ganesh Chaturthi": "गणेश चतुर्थी"},
+    "mr": {"Diwali": "दिवाळी", "Holi": "होळी", "Raksha Bandhan": "रक्षाबंधन", "Ganesh Chaturthi": "गणेश चतुर्थी", "Gudi Padwa": "गुढी पाडवा"},
+    "ta": {"Diwali": "தீபாவளி", "Pongal": "பொங்கல்", "Holi": "ஹோலி"},
+}
 
 
 @dataclass(frozen=True)
@@ -162,25 +169,30 @@ def compute_festivals_for_year(year: int, calendar: str = "amanta", lang: str = 
         else:
             target = _find_lunar_date(year, rule.month, rule.paksha, rule.tithi)
         if target is None:
-            festivals.append(
-                {
+            item = {
                     "name": rule.name,
                     "date": "unverified",
                     "calendar_school": calendar,
+                    "localized_name": FESTIVAL_NAMES.get(lang, {}).get(rule.name, rule.name),
                     "region": rule.region,
                     "source": rule.source,
                     "notes": f"{rule.notes} Unable to verify in engine run.",
                 }
-            )
+            if rule.calendar_school != "solar":
+                item["lunar_month"] = get_month_name(calendar, LUNAR_MONTH_INDEX[rule.month], lang)
+            festivals.append(item)
             continue
         item = {
             "name": rule.name,
             "date": target.isoformat(),
             "calendar_school": calendar,
+            "localized_name": FESTIVAL_NAMES.get(lang, {}).get(rule.name, rule.name),
             "region": rule.region,
             "source": rule.source,
             "notes": rule.notes,
         }
+        if rule.calendar_school != "solar":
+            item["lunar_month"] = get_month_name(calendar, LUNAR_MONTH_INDEX[rule.month], lang)
         if rule.duration_days > 1:
             item["dates"] = [(target + timedelta(days=i)).isoformat() for i in range(rule.duration_days)]
         festivals.append(item)

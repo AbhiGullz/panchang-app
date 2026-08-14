@@ -164,7 +164,6 @@ function AppShell() {
         />
       ) : null}
 
-      <div className="rounded-3xl bg-white p-4 text-sm text-slate-600 shadow-sm ring-1 ring-orange-100">{t('offlineReady')}</div>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )

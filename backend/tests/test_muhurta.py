@@ -81,3 +81,23 @@ def test_muhurta_endpoint_supports_category():
     assert body["category"] == "travel"
     assert body["windows"] == [] or all(window["reference"] == "calculated timing reference" for window in body["windows"])
     assert body["guidance"] == "Calculated timing reference only; not a claim of religious authority."
+
+
+def test_muhurta_endpoint_returns_next_ten_after_empty_selected_day(monkeypatch):
+    def fake_panchang(*, date_iso, **kwargs):
+        return {"date": date_iso}
+
+    def fake_windows(panchang, category):
+        if panchang["date"] == "2026-08-03":
+            return []
+        return [{"start": "09:00", "end": "10:00", "label": "Travel"}]
+
+    monkeypatch.setattr("api.main.compute_daily_panchang", fake_panchang)
+    monkeypatch.setattr("api.main.compute_category_windows", fake_windows)
+    response = client.get("/api/v1/muhurta", params={"date": "2026-08-03", "lat": 28, "lng": 77, "tz": "Asia/Kolkata"})
+
+    assert response.status_code == 200
+    windows = response.json()["windows"]
+    assert len(windows) == 10
+    assert windows[0]["date"] == "2026-08-04"
+    assert [window["date"] for window in windows] == sorted(window["date"] for window in windows)

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import type { MuhurtaCategory, MuhurtaResponse } from '../types/api'
 import { MUHURTA_CATEGORIES } from '../types/api'
-import { humanizeMuhurta } from '../lib/utils'
+import { formatDisplayDate, humanizeMuhurta } from '../lib/utils'
 
 interface Props {
   category: MuhurtaCategory
@@ -31,10 +31,11 @@ export function MuhurtaTab({ category, onCategoryChange, data }: Props) {
       <p className="rounded-2xl bg-orange-50 p-3 text-sm text-slate-600">{i18n.language === 'mr' ? t('calculatedReference') : (data?.guidance ?? t('calculatedReference'))}</p>
 
       <div className="space-y-3">
-        {data && data.windows.length === 0 ? <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">{t('noMuhurta')}</div> : null}
+        {data && (data.windows.length === 0 || data.horizon_exhausted) ? <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">{t('muhurtaHorizonEnd')}</div> : null}
         {data?.windows?.map((window, index) => (
           <div key={`${window.start}-${index}`} className="rounded-2xl border border-orange-100 p-4">
             <div className="font-medium text-slate-900">{window.label ?? humanizeMuhurta(category, i18n.language)}</div>
+            <div className="text-sm font-medium text-orange-700">{formatDisplayDate(window.date, i18n.language)}</div>
             <div className="text-sm text-slate-600">{window.start} — {window.end}</div>
             {window.reference ? <div className="mt-1 text-xs text-slate-500">{window.reference}</div> : null}
           </div>
