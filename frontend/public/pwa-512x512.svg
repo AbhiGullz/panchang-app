@@ -1,5 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Panchang</title><desc id="desc">Saffron sun, crescent moon and calendar mark</desc>
   <rect width="512" height="512" rx="128" fill="#ea580c"/>
-  <circle cx="256" cy="192" r="108" fill="#fff7ed"/>
-  <path d="M132 378c14-75 63-122 124-122s110 47 124 122" stroke="#fff7ed" stroke-width="40" stroke-linecap="round"/>
+  <circle cx="256" cy="224" r="104" fill="#fbbf24"/>
+  <path d="M328 117a120 120 0 1 0 56 208 104 104 0 1 1-56-208Z" fill="#fff7ed"/>
+  <path d="M120 382h272a26 26 0 0 1 26 26v18H94v-18a26 26 0 0 1 26-26Z" fill="#fff7ed"/>
+  <path d="M147 382v-78h218v78" stroke="#fff7ed" stroke-width="26" stroke-linejoin="round"/>
+  <path d="M165 331h182M205 304v52M307 304v52" stroke="#ea580c" stroke-width="18" stroke-linecap="round"/>
 </svg>

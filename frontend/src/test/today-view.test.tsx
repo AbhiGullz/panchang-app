@@ -1,8 +1,7 @@
-import { describe, expect, it } from 'vitest'
-import { screen } from '@testing-library/react'
+import { cleanup, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it } from 'vitest'
 import { TodayView } from '../components/TodayView'
 import { renderWithProviders } from './render'
-
 const sample = {
   date: '2026-08-04',
   location: { name: 'Delhi', lat: 28.61, lng: 77.21, tz: 'Asia/Kolkata' },
@@ -22,10 +21,19 @@ const sample = {
   source: 'swiss-ephemeris',
 } as const
 
+afterEach(() => cleanup())
+
 describe('TodayView', () => {
   it('renders tithi details', () => {
     renderWithProviders(<TodayView data={sample} calendar="Purnimanta" ayanamsa="Lahiri" />)
     expect(screen.getByText('Krishna Panchami')).toBeInTheDocument()
     expect(screen.getByText(/Rohini/)).toBeInTheDocument()
+  })
+
+  it('shows the same timezone style for sunrise, sunset, and rahu kaal', () => {
+    renderWithProviders(<TodayView data={sample} calendar="Purnimanta" ayanamsa="Lahiri" />)
+    expect(screen.getByText('05:47 IST')).toBeInTheDocument()
+    expect(screen.getByText('19:09 IST')).toBeInTheDocument()
+    expect(screen.getByText('12:15 IST — 13:50 IST')).toBeInTheDocument()
   })
 })

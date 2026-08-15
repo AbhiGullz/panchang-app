@@ -20,6 +20,15 @@ export function formatDisplayDate(value: string, language: string) {
   return new Intl.DateTimeFormat(language, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(year, month - 1, day))
 }
 
+export function formatTimeWithTimezone(time: string, timezone: string, date: string) {
+  const abbreviation = timezone === 'Asia/Kolkata'
+    ? 'IST'
+    : new Intl.DateTimeFormat('en-US', { timeZone: timezone, timeZoneName: 'short' })
+      .formatToParts(new Date(`${date}T12:00:00Z`))
+      .find((part) => part.type === 'timeZoneName')?.value ?? timezone
+  return `${time} ${abbreviation}`
+}
+
 export function addDaysDateInput(value: Date, days: number) {
   const result = new Date(value)
   result.setDate(result.getDate() + days)

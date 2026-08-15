@@ -32,6 +32,13 @@ describe('settings location change', () => {
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(onLocationChange).not.toHaveBeenCalled(); expect(screen.getByText('Delhi')).toBeInTheDocument()
   })
+  it('keeps exact location data in technical details while showing the friendly city', () => {
+    renderWithProviders(<SettingsTab preferences={preferences} onLocationChange={vi.fn()} onLanguageChange={vi.fn()} onCalendarChange={vi.fn()} onNotificationTimeChange={vi.fn()} onAyanamsaChange={vi.fn()} onSubscribePush={vi.fn(async () => undefined)} pushReady={false} />)
+    expect(screen.getByText('Delhi')).toBeInTheDocument()
+    const details = document.querySelector('details')
+    expect(details?.textContent).toContain('28.6')
+    expect(details?.textContent).toContain('Asia/Kolkata')
+  })
   it('persists the selected location and changes the panchang cache key', () => {
     const next = { ...preferences, location: { city: 'London', lat: 51.5, lng: -0.12, tz: 'Europe/London' } }
     savePreferences(next)

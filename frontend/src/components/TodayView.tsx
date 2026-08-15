@@ -1,7 +1,7 @@
 import { MoonStar, Sunrise, Sunset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { PanchangResponse } from '../types/api'
-import { formatDisplayDate } from '../lib/utils'
+import { formatDisplayDate, formatTimeWithTimezone } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
@@ -37,11 +37,16 @@ export function TodayView({ data, calendar, ayanamsa }: Props) {
             <div className="mt-1 text-sm text-orange-50">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
           </div>
           <div className="rounded-3xl bg-white/10 p-4 backdrop-blur-sm">
-            <div className="mb-2 flex items-center gap-2 text-sm uppercase tracking-wide text-orange-100">
-              <Sunrise className="h-4 w-4" /> {t('sunrise')}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-2 text-sm uppercase tracking-wide text-orange-100"><Sunrise className="h-4 w-4" /> {t('sunrise')}</span>
+                <span className="text-2xl font-semibold leading-none">{formatTimeWithTimezone(data.sun.rise, data.location.tz, data.date)}</span>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="flex items-center gap-2 text-sm uppercase tracking-wide text-orange-100"><Sunset className="h-4 w-4" /> {t('sunset')}</span>
+                <span className="text-2xl font-semibold leading-none">{formatTimeWithTimezone(data.sun.set, data.location.tz, data.date)}</span>
+              </div>
             </div>
-            <div className="text-2xl font-semibold">{data.sun.rise}</div>
-            <div className="mt-1 flex items-center gap-2 text-sm text-orange-50"><Sunset className="h-4 w-4" /> {t('sunset')}: {data.sun.set}</div>
           </div>
         </div>
       </div>
@@ -49,10 +54,8 @@ export function TodayView({ data, calendar, ayanamsa }: Props) {
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
           <h2 className="text-sm font-semibold text-slate-900">{t('rahuKaal')}</h2>
-          <div className="mt-3 rounded-full bg-orange-100 p-1">
-            <div className="rounded-full bg-orange-500 px-4 py-2 text-center text-sm font-semibold text-white">
-              {data.rahu_kaal.start} — {data.rahu_kaal.end}
-            </div>
+          <div className="mt-3 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-medium text-slate-700 ring-1 ring-slate-200">
+            {formatTimeWithTimezone(data.rahu_kaal.start, data.location.tz, data.date)} — {formatTimeWithTimezone(data.rahu_kaal.end, data.location.tz, data.date)}
           </div>
           <div className="mt-4 grid gap-2 text-sm text-slate-600">
             <div>{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>

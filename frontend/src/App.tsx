@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import './locales/i18n'
 import { BottomNav } from './components/BottomNav'
+import { AdvertisementSlot } from './components/AdvertisementSlot'
 import { FestivalsTab } from './components/FestivalsTab'
 import { MuhurtaTab } from './components/MuhurtaTab'
 import { OnboardingCard } from './components/OnboardingCard'
@@ -117,10 +118,13 @@ function AppShell() {
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col gap-4 px-4 py-5 text-slate-900">
       <header className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <div className="text-xs uppercase tracking-[0.2em] text-orange-500">{t('appName')}</div>
-            <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
-            <p className="text-sm text-slate-500">{humanizeLanguage(preferences.language)}</p>
+          <div className="flex min-w-0 items-center gap-3">
+            <img src="/favicon.svg" alt="" className="h-10 w-10 shrink-0" />
+            <div>
+              <div className="text-xs uppercase tracking-[0.2em] text-orange-500">{t('appName')}</div>
+              <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
+              <p className="text-sm text-slate-500">{humanizeLanguage(preferences.language)}</p>
+            </div>
           </div>
           <input
             aria-label={t('selectDate')}
@@ -148,6 +152,8 @@ function AppShell() {
 
       {notice ? <div className="rounded-2xl bg-orange-100 px-4 py-3 text-sm text-orange-800">{notice}</div> : null}
 
+      <AdvertisementSlot />
+
       {activeTab === 'today' ? <TodayView data={panchangData} calendar={humanizeCalendar(preferences.calendar, preferences.language)} ayanamsa={preferences.ayanamsa} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab category={category} onCategoryChange={setCategory} data={muhurtaData} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
@@ -164,6 +170,7 @@ function AppShell() {
         />
       ) : null}
 
+      <AdvertisementSlot />
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )
