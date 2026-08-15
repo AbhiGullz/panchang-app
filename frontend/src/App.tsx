@@ -116,20 +116,20 @@ function AppShell() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col gap-4 px-4 py-5 text-slate-900">
-      <header className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
+    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col gap-4 px-4 py-5 text-[#12233A]">
+      <header className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <MoonPhaseLogo elongationDegrees={panchangData?.phase?.elongation_degrees} label={panchangData?.tithi.name[i18n.language as keyof typeof panchangData.tithi.name] ?? t('tithi')} />
             <div>
-              <div className="text-xs uppercase tracking-[0.2em] text-orange-500">{t('appName')}</div>
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">{t('appName')}</div>
               <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
-              <p className="text-sm text-slate-500">{humanizeLanguage(preferences.language)}</p>
+              <p className="text-sm text-[#64748B]">{humanizeLanguage(preferences.language)}</p>
             </div>
           </div>
           <input
             aria-label={t('selectDate')}
-            className="rounded-2xl border border-orange-200 bg-orange-50 px-3 py-2 text-sm"
+            className="rounded-2xl border border-[#D7E7F0] bg-[#F5FAFD] px-3 py-2 text-sm text-[#12233A]"
             type="date"
             value={selectedDate}
             onChange={(event) => setSelectedDate(event.target.value)}
@@ -151,11 +151,11 @@ function AppShell() {
         />
       ) : null}
 
-      {notice ? <div className="rounded-2xl bg-orange-100 px-4 py-3 text-sm text-orange-800">{notice}</div> : null}
+      {notice ? <div className="rounded-2xl bg-[#DDF3FC] px-4 py-3 text-sm text-[#163B63]">{notice}</div> : null}
 
       <AdvertisementSlot />
 
-      {activeTab === 'today' ? <TodayView data={panchangData} calendar={humanizeCalendar(preferences.calendar, preferences.language)} ayanamsa={preferences.ayanamsa} /> : null}
+      {activeTab === 'today' ? <TodayView data={panchangData} city={preferences.location.city} calendar={humanizeCalendar(preferences.calendar, preferences.language)} ayanamsa={preferences.ayanamsa} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab category={category} onCategoryChange={setCategory} data={muhurtaData} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
       {activeTab === 'settings' ? (

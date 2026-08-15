@@ -9,13 +9,13 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],
+      includeAssets: ['favicon.svg', 'logo-monochrome.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],
       manifest: {
         name: 'Panchang PWA',
         short_name: 'Panchang',
         description: 'Daily panchang with tradition-aware calculations and offline support.',
-        theme_color: '#ea580c',
-        background_color: '#fff7ed',
+        theme_color: '#0F2747',
+        background_color: '#F5FAFD',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',

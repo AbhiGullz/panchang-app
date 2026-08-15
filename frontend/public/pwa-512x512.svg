@@ -1,9 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
-  <title id="title">Panchang</title><desc id="desc">Saffron sun, crescent moon and calendar mark</desc>
-  <rect width="512" height="512" rx="128" fill="#ea580c"/>
-  <circle cx="256" cy="224" r="104" fill="#fbbf24"/>
-  <path d="M328 117a120 120 0 1 0 56 208 104 104 0 1 1-56-208Z" fill="#fff7ed"/>
-  <path d="M120 382h272a26 26 0 0 1 26 26v18H94v-18a26 26 0 0 1 26-26Z" fill="#fff7ed"/>
-  <path d="M147 382v-78h218v78" stroke="#fff7ed" stroke-width="26" stroke-linejoin="round"/>
-  <path d="M165 331h182M205 304v52M307 304v52" stroke="#ea580c" stroke-width="18" stroke-linecap="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title"><title id="title">Panchang</title><rect width="512" height="512" rx="112" fill="#F5FAFD"/><g transform="translate(128 128) scale(2)" stroke-linecap="round" stroke-linejoin="round"><path d="M46 10c40-8 72 20 72 58 0 31-23 55-54 55-29 0-52-20-57-46 14 18 32 26 48 22 20-5 32-23 32-43 0-20-15-38-41-46Z" fill="#0F2747"/><circle cx="55" cy="58" r="18" fill="#63B7E6"/><path d="M55 25 58 40h-6l3-15ZM34 30l9 13-5 3-4-16ZM76 30l-4 16-5-3 9-13ZM23 47l15 6-2 5-13-11ZM87 47 74 58l-2-5 15-6ZM24 68h17v5H24ZM70 68h17v5H70Z" fill="#63B7E6"/><path d="M25 73c18-8 42-8 61 0-16-2-45-2-61 0Z" fill="#0F2747"/><rect x="31" y="76" width="50" height="38" rx="9" fill="#0F2747"/><rect x="34" y="85" width="44" height="27" rx="6" fill="white"/><path d="M42 75v10M70 75v10" stroke="#0F2747" stroke-width="5"/></g></svg>

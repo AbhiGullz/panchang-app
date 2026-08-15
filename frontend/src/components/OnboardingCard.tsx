@@ -75,9 +75,9 @@ export function OnboardingCard(props: Props) {
   }
 
   return (
-    <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-orange-100">
+    <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-sky-100">
       <div className="mb-4 flex items-center gap-3">
-        <div className="rounded-2xl bg-orange-100 p-3 text-orange-600">
+        <div className="rounded-2xl bg-sky-100 p-3 text-sky-600">
           <Sparkles className="h-5 w-5" />
         </div>
         <div>
@@ -94,7 +94,7 @@ export function OnboardingCard(props: Props) {
             aria-controls="location-results"
             aria-expanded={results.length > 0}
             aria-label={t('searchLocation')}
-            className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+            className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={handleKeyDown}
             role="combobox"
@@ -104,11 +104,11 @@ export function OnboardingCard(props: Props) {
           {status === 'empty' && <p className="mt-2 text-xs text-slate-500" role="status">{t('noLocationsFound')}</p>}
           {status === 'error' && <p className="mt-2 text-xs text-red-600" role="alert">{t('locationSearchError')}</p>}
           {results.length > 0 && (
-            <ul className="mt-2 overflow-hidden rounded-2xl border border-orange-200 bg-white shadow-lg" id="location-results" role="listbox">
+            <ul className="mt-2 overflow-hidden rounded-2xl border border-sky-200 bg-white shadow-lg" id="location-results" role="listbox">
               {results.map((result, index) => (
                 <li key={`${result.display_name}-${result.lat}-${result.lng}`} role="option" aria-selected={activeIndex === index}>
                   <button
-                    className="w-full px-4 py-3 text-left text-sm hover:bg-orange-50"
+                    className="w-full px-4 py-3 text-left text-sm hover:bg-sky-50"
                     onClick={() => selectResult(result)}
                     type="button"
                   >
@@ -122,7 +122,7 @@ export function OnboardingCard(props: Props) {
         </label>
 
         <button
-          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-orange-300 px-4 py-3 text-sm font-medium text-orange-700"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-sky-300 px-4 py-3 text-sm font-medium text-sky-700"
           onClick={() => void props.onUseCurrentLocation()}
           type="button"
         >
@@ -135,7 +135,7 @@ export function OnboardingCard(props: Props) {
             {t('calendarSchool')}
             <select
               data-testid="school-selector"
-              className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+              className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
               value={props.calendar}
               onChange={(event) => props.onCalendarChange(event.target.value as CalendarSchool)}
             >
@@ -149,7 +149,7 @@ export function OnboardingCard(props: Props) {
             {t('language')}
             <select
               aria-label={t('language')}
-              className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+              className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
               value={props.language}
               onChange={(event) => props.onLanguageChange(event.target.value as LanguageCode)}
             >
@@ -158,8 +158,8 @@ export function OnboardingCard(props: Props) {
           </label>
         </div>
 
-        <p className="rounded-2xl bg-orange-50 p-3 text-xs text-slate-600">{t('schoolSelectorHint')}</p>
-        <button className="w-full rounded-2xl bg-orange-600 px-4 py-3 font-semibold text-white" onClick={props.onContinue} type="button">
+        <p className="rounded-2xl bg-sky-50 p-3 text-xs text-slate-600">{t('schoolSelectorHint')}</p>
+        <button className="w-full rounded-2xl bg-sky-600 px-4 py-3 font-semibold text-white" onClick={props.onContinue} type="button">
           {t('continue')}
         </button>
       </div>

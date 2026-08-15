@@ -21,12 +21,12 @@ export function SettingsTab(props: Props) {
   const [editingLocation, setEditingLocation] = useState(false)
 
   return (
-    <section className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
+    <section className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-sky-100">
       <h2 className="text-lg font-semibold text-slate-900">{t('settings')}</h2>
-      <div className="rounded-2xl bg-orange-50 p-4">
+      <div className="rounded-2xl bg-sky-50 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0"><p className="text-sm font-medium text-slate-700">{t('location')}</p><p className="break-words font-semibold text-slate-900">{props.preferences.location.city}</p><details className="mt-1 text-xs text-slate-500"><summary className="cursor-pointer">{t('details')}</summary><span>{t('coordinates')}: {props.preferences.location.lat}, {props.preferences.location.lng} · {t('timezone')}: {props.preferences.location.tz}</span></details></div>
-          {!editingLocation && <button className="rounded-xl border border-orange-300 px-3 py-2 text-sm font-semibold text-orange-700" onClick={() => setEditingLocation(true)} type="button">{t('changeLocation')}</button>}
+          {!editingLocation && <button className="rounded-xl border border-sky-300 px-3 py-2 text-sm font-semibold text-sky-700" onClick={() => setEditingLocation(true)} type="button">{t('changeLocation')}</button>}
         </div>
         {editingLocation && <div className="mt-3"><p className="mb-2 text-sm font-medium text-slate-700">{t('changeLocationTitle')}</p><LocationPicker location={props.preferences.location} onLocationChange={(location) => { props.onLocationChange(location); setEditingLocation(false) }} onCancel={() => setEditingLocation(false)} showCancel /></div>}
       </div>
@@ -34,7 +34,7 @@ export function SettingsTab(props: Props) {
         {t('language')}
         <select
           aria-label={t('language')}
-          className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+          className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
           value={props.preferences.language}
           onChange={(event) => props.onLanguageChange(event.target.value as LanguageCode)}
         >
@@ -45,7 +45,7 @@ export function SettingsTab(props: Props) {
       <label className="block text-sm font-medium text-slate-700">
         {t('calendarSchool')}
         <select
-          className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+          className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
           value={props.preferences.calendar}
           onChange={(event) => props.onCalendarChange(event.target.value as CalendarSchool)}
         >
@@ -56,7 +56,7 @@ export function SettingsTab(props: Props) {
       <label className="block text-sm font-medium text-slate-700">
         {t('notificationTime')}
         <input
-          className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+          className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
           type="time"
           value={props.preferences.notificationTime}
           onChange={(event) => props.onNotificationTimeChange(event.target.value)}
@@ -67,7 +67,7 @@ export function SettingsTab(props: Props) {
         {t('ayanamsa')}
         <select
           aria-label={t('ayanamsa')}
-          className="mt-1 w-full rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3"
+          className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
           value={props.preferences.ayanamsa}
           onChange={(event) => props.onAyanamsaChange(event.target.value)}
         >
@@ -76,14 +76,14 @@ export function SettingsTab(props: Props) {
       </label>
 
       <button
-        className="w-full rounded-2xl border border-orange-200 px-4 py-3 text-sm font-semibold text-orange-700"
+        className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm font-semibold text-sky-700"
         onClick={() => void props.onSubscribePush()}
         type="button"
       >
         {props.pushReady ? t('subscribedPush') : t('subscribePush')}
       </button>
 
-      <a className="block text-sm font-medium text-orange-700 underline" href="/README.md" target="_blank" rel="noreferrer">
+      <a className="block text-sm font-medium text-sky-700 underline" href="/README.md" target="_blank" rel="noreferrer">
         {t('howCalculated')}
       </a>
     </section>
