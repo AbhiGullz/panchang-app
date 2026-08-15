@@ -58,13 +58,17 @@ const resources = {
       moonSign: 'Moon sign',
       yoga: 'Yoga',
       karana: 'Karana',
+      moonrise: 'Moonrise',
+      moonset: 'Moonset',
+      until: 'until',
+      panchangDetails: 'Panchang details',
       loading: 'Loading…',
       noData: 'No data available offline yet.',
     },
   },
   hi: {
     translation: {
-      appName: 'पंचांग', onboardingTitle: 'दैनिक डिफ़ॉल्ट चुनें', onboardingBody: 'अपना शहर, पंचांग परंपरा और भाषा चुनें। आप इन्हें बाद में सेटिंग्स में बदल सकते हैं।', useCurrentLocation: 'वर्तमान स्थान का उपयोग करें', continue: 'आगे बढ़ें', today: 'आज', home: 'मुख्य पृष्ठ', muhurta: 'मुहूर्त', festivals: 'पर्व', settings: 'सेटिंग्स', dateLabel: 'तारीख', selectDate: 'तारीख चुनें', language: 'Language', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचना का समय', ayanamsa: 'अयनांश', howCalculated: 'इसकी गणना कैसे हुई', traditionMeta: 'परंपरा', timezone: 'समय क्षेत्र', location: 'स्थान', version: 'संस्करण', calculatedReference: 'केवल गणना किए गए समय का संदर्भ।', muhurtaHorizonEnd: 'समर्थित अवधि में और कोई मुहूर्त विंडो नहीं मिली।', retry: 'पुनः प्रयास करें', details: 'तकनीकी विवरण', coordinates: 'निर्देशांक', advertisement: 'विज्ञापन', advertisementEmpty: 'सहमति-आधारित अनुपालक प्रदाता के लिए आरक्षित।', festivalsForYear: 'पर्व कैलेंडर', save: 'सहेजें', geolocationDenied: 'स्थान की अनुमति नहीं मिली। दिल्ली का डिफ़ॉल्ट उपयोग हो रहा है।', city: 'शहर', changeLocation: 'स्थान बदलें', changeLocationTitle: 'नया स्थान खोजें', cancel: 'रद्द करें', schoolSelectorHint: 'नाम बैकएंड से आते हैं; UI के शब्द यहां तुरंत बदलते हैं।', pushNotifications: 'पुश सूचनाएं', subscribe: 'सदस्यता लें', subscribed: 'सदस्यता ली गई', tithi: 'तिथि', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहु काल', moonSign: 'चंद्र राशि', yoga: 'योग', karana: 'करण', loading: 'लोड हो रहा है…', noData: 'अभी ऑफ़लाइन कोई डेटा उपलब्ध नहीं है।',
+      appName: 'पंचांग', onboardingTitle: 'दैनिक डिफ़ॉल्ट चुनें', onboardingBody: 'अपना शहर, पंचांग परंपरा और भाषा चुनें। आप इन्हें बाद में सेटिंग्स में बदल सकते हैं।', useCurrentLocation: 'वर्तमान स्थान का उपयोग करें', continue: 'आगे बढ़ें', today: 'आज', home: 'मुख्य पृष्ठ', muhurta: 'मुहूर्त', festivals: 'पर्व', settings: 'सेटिंग्स', dateLabel: 'तारीख', selectDate: 'तारीख चुनें', language: 'Language', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचना का समय', ayanamsa: 'अयनांश', howCalculated: 'इसकी गणना कैसे हुई', traditionMeta: 'परंपरा', timezone: 'समय क्षेत्र', location: 'स्थान', version: 'संस्करण', calculatedReference: 'केवल गणना किए गए समय का संदर्भ।', muhurtaHorizonEnd: 'समर्थित अवधि में और कोई मुहूर्त विंडो नहीं मिली।', retry: 'पुनः प्रयास करें', details: 'तकनीकी विवरण', coordinates: 'निर्देशांक', advertisement: 'विज्ञापन', advertisementEmpty: 'सहमति-आधारित अनुपालक प्रदाता के लिए आरक्षित।', festivalsForYear: 'पर्व कैलेंडर', save: 'सहेजें', geolocationDenied: 'स्थान की अनुमति नहीं मिली। दिल्ली का डिफ़ॉल्ट उपयोग हो रहा है।', city: 'शहर', changeLocation: 'स्थान बदलें', changeLocationTitle: 'नया स्थान खोजें', cancel: 'रद्द करें', schoolSelectorHint: 'नाम बैकएंड से आते हैं; UI के शब्द यहां तुरंत बदलते हैं।', pushNotifications: 'पुश सूचनाएं', subscribe: 'सदस्यता लें', subscribed: 'सदस्यता ली गई', tithi: 'तिथि', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहु काल', moonSign: 'चंद्र राशि', yoga: 'योग', karana: 'करण', moonrise: 'चंद्रोदय', moonset: 'चंद्रास्त', until: 'तक', panchangDetails: 'पंचांग विवरण', loading: 'लोड हो रहा है…', noData: 'अभी ऑफ़लाइन कोई डेटा उपलब्ध नहीं है।',
     },
   },
   ta: {

@@ -16,7 +16,7 @@ from timezonefinder import TimezoneFinder
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
 
-from engine.core import AYANAMSA, ENGINE_VERSION, compute_daily_panchang
+from engine.core import AYANAMSA, ENGINE_VERSION, _window_with_iso, compute_daily_panchang
 from engine.festivals import compute_festivals_for_year
 from engine.i18n.names import LANGUAGES, get_lang_names
 from engine.models import MuhurtaWindowModel, PanchangResponseModel
@@ -303,7 +303,7 @@ async def get_muhurta(
                 calendar_school=calendar,
                 lang="en",
             )
-            windows.extend({"date": current_date.isoformat(), **window} for window in compute_category_windows(panchang, category))
+            windows.extend({"date": current_date.isoformat(), **_window_with_iso(window, tz, current_date)} for window in compute_category_windows(panchang, category))
             if len(windows) >= 10:
                 windows = windows[:10]
                 break

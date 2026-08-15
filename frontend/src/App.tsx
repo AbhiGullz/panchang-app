@@ -6,6 +6,7 @@ import './locales/i18n'
 import { BottomNav } from './components/BottomNav'
 import { AdvertisementSlot } from './components/AdvertisementSlot'
 import { FestivalsTab } from './components/FestivalsTab'
+import { MoonPhaseLogo } from './components/MoonPhaseLogo'
 import { MuhurtaTab } from './components/MuhurtaTab'
 import { OnboardingCard } from './components/OnboardingCard'
 import { SettingsTab } from './components/SettingsTab'
@@ -119,7 +120,7 @@ function AppShell() {
       <header className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-orange-100">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <img src="/favicon.svg" alt="" className="h-10 w-10 shrink-0" />
+            <MoonPhaseLogo elongationDegrees={panchangData?.phase?.elongation_degrees} label={panchangData?.tithi.name[i18n.language as keyof typeof panchangData.tithi.name] ?? t('tithi')} />
             <div>
               <div className="text-xs uppercase tracking-[0.2em] text-orange-500">{t('appName')}</div>
               <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>

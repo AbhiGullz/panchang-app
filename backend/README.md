@@ -28,7 +28,8 @@ This backend milestone contains the Swiss Ephemeris-based calculation engine for
 - `engine/yoga.py` — yoga from sidereal Sun + Moon longitude
 - `engine/rashi.py` — moon sign from sidereal Moon longitude
 - `engine/muhurta.py` — rahu kaal and abhijit muhurta windows
-- `engine/sunrise.py` — sunrise/sunset computation with Swiss Ephemeris
+- `engine/sunrise.py` — sunrise/sunset/moonrise/moonset computation with Swiss Ephemeris
+- `engine/transitions.py` — independent local-time boundary search and 30-state lunar phase mapping
 - `engine/models.py` — Pydantic response schemas
 - `tests/test_engine.py` — Delhi/London smoke test for 2026-08-03
 

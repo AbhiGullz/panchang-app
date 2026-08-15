@@ -46,4 +46,31 @@ def compute_sunrise_sunset(julian_day_ut: float, latitude: float, longitude: flo
         raise RuntimeError("Swiss Ephemeris failed to compute sunrise/sunset")
     rise_dt = to_local_datetime(rise_time[0], timezone_name)
     set_dt = to_local_datetime(set_time[0], timezone_name)
-    return {"rise_dt": rise_dt, "set_dt": set_dt, "rise": rise_dt.strftime("%H:%M"), "set": set_dt.strftime("%H:%M")}
+    moonrise_dt = _compute_moon_event(julian_day_ut, latitude, longitude, timezone_name, swe.CALC_RISE)
+    moonset_dt = _compute_moon_event(julian_day_ut, latitude, longitude, timezone_name, swe.CALC_SET)
+    return {
+        "rise_dt": rise_dt,
+        "set_dt": set_dt,
+        "rise": rise_dt.strftime("%H:%M"),
+        "set": set_dt.strftime("%H:%M"),
+        "moonrise_dt": moonrise_dt,
+        "moonset_dt": moonset_dt,
+    }
+
+
+def _compute_moon_event(julian_day_ut: float, latitude: float, longitude: float, timezone_name: str, event: int) -> datetime | None:
+    try:
+        result, event_time = swe.rise_trans(
+            julian_day_ut,
+            swe.MOON,
+            event,
+            (longitude, latitude, 0.0),
+            atpress=1013.25,
+            attemp=15.0,
+            flags=swe.FLG_SWIEPH,
+        )
+        if result != 0:
+            return None
+        return to_local_datetime(event_time[0], timezone_name)
+    except (RuntimeError, TypeError, ValueError):
+        return None

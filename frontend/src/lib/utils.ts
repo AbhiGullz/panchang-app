@@ -20,13 +20,28 @@ export function formatDisplayDate(value: string, language: string) {
   return new Intl.DateTimeFormat(language, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(year, month - 1, day))
 }
 
-export function formatTimeWithTimezone(time: string, timezone: string, date: string) {
-  const abbreviation = timezone === 'Asia/Kolkata'
-    ? 'IST'
-    : new Intl.DateTimeFormat('en-US', { timeZone: timezone, timeZoneName: 'short' })
-      .formatToParts(new Date(`${date}T12:00:00Z`))
-      .find((part) => part.type === 'timeZoneName')?.value ?? timezone
-  return `${time} ${abbreviation}`
+export function formatTimeWithTimezone(time: string, timezone: string, date: string, locale = 'en-IN') {
+  const instant = time.includes('T') ? new Date(time) : new Date(`${date}T12:00:00Z`)
+  const formatter = new Intl.DateTimeFormat(locale, {
+    timeZone: timezone,
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZoneName: 'short',
+    hour12: false,
+  })
+  const parts = formatter.formatToParts(instant)
+  const clock = time.includes('T')
+    ? `${parts.find((part) => part.type === 'hour')?.value ?? ''}:${parts.find((part) => part.type === 'minute')?.value ?? ''}`
+    : time
+  const timezoneParts = new Intl.DateTimeFormat('en-IN', { timeZone: timezone, timeZoneName: 'short' }).formatToParts(instant)
+  const shortName = timezoneParts.find((part) => part.type === 'timeZoneName')?.value
+  const longName = new Intl.DateTimeFormat('en-US', { timeZone: timezone, timeZoneName: 'long' })
+    .formatToParts(instant)
+    .find((part) => part.type === 'timeZoneName')?.value
+  const abbreviation = shortName && !shortName.startsWith('GMT')
+    ? shortName
+    : longName?.split(/\s+/).filter((word) => /^[A-Z]/.test(word)).map((word) => word[0]).join('') ?? timezone
+  return `${clock} ${abbreviation}`
 }
 
 export function addDaysDateInput(value: Date, days: number) {

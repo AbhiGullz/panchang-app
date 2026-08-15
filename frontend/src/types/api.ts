@@ -55,6 +55,12 @@ export interface GeocodeResult {
   tz: string
 }
 
+export interface TransitionElement {
+  start?: string | null
+  end?: string | null
+  next?: { index: number; name: string; at?: string | null } | null
+}
+
 export interface PanchangResponse {
   date: string
   location: {
@@ -66,24 +72,29 @@ export interface PanchangResponse {
   sun: {
     rise: string
     set: string
+    rise_at?: string | null
+    set_at?: string | null
+    moonrise_at?: string | null
+    moonset_at?: string | null
   }
-  tithi: {
+  tithi: TransitionElement & {
     index: number
     name: LocalizedNames
     ends_at?: string | null
   }
-  nakshatra: {
+  nakshatra: TransitionElement & {
     index: number
     name: LocalizedNames
     pada: number
   }
-  yoga: {
+  yoga: TransitionElement & {
     index: number
     name: LocalizedNames
   }
-  karana: {
+  karana: TransitionElement & {
     index?: number | null
     name: LocalizedNames
+    transitions?: Array<{ at: string; index: number; name: string }>
   }
   moon_sign: LocalizedNames
   month_name: LocalizedNames
@@ -103,11 +114,24 @@ export interface PanchangResponse {
   names_version: string
   lang_names?: Record<string, string> | null
   source: string
+  phase?: {
+    state: number
+    elongation_degrees: number
+    illumination: number
+    label: string
+  } | null
+  timing_metadata?: {
+    timezone: string
+    ayanamsa: string
+    calculation: string
+  } | null
 }
 
 export interface TimeRange {
   start: string
   end: string
+  start_at?: string | null
+  end_at?: string | null
 }
 
 export interface MuhurtaWindow extends TimeRange {

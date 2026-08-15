@@ -36,7 +36,7 @@ export function MuhurtaTab({ category, onCategoryChange, data }: Props) {
           <div key={`${window.start}-${index}`} className="rounded-2xl border border-orange-100 p-4">
             <div className="font-medium text-slate-900">{window.label ?? humanizeMuhurta(category, i18n.language)}</div>
             <div className="text-sm font-medium text-orange-700">{formatDisplayDate(window.date, i18n.language)}</div>
-            <div className="text-sm text-slate-600">{formatTimeWithTimezone(window.start, data.location.tz, window.date)} — {formatTimeWithTimezone(window.end, data.location.tz, window.date)}</div>
+            <div className="text-sm text-slate-600">{formatTimeWithTimezone(window.start_at ?? window.start, data.location.tz, window.date, i18n.language)} — {formatTimeWithTimezone(window.end_at ?? window.end, data.location.tz, window.date, i18n.language)}</div>
             {window.reference ? <div className="mt-1 text-xs text-slate-500">{window.reference}</div> : null}
           </div>
         ))}

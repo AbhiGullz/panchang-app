@@ -13,6 +13,10 @@ class LocationModel(BaseModel):
 class SunModel(BaseModel):
     rise: str
     set: str
+    rise_at: str | None = None
+    set_at: str | None = None
+    moonrise_at: str | None = None
+    moonset_at: str | None = None
 
 
 class LocalizedNameModel(BaseModel):
@@ -32,27 +36,42 @@ class TithiModel(BaseModel):
     index: int
     name: LocalizedNameModel
     ends_at: str | None = None
+    start: str | None = None
+    end: str | None = None
+    next: dict[str, Any] | None = None
 
 
 class NakshatraModel(BaseModel):
     index: int
     name: LocalizedNameModel
     pada: int
+    start: str | None = None
+    end: str | None = None
+    next: dict[str, Any] | None = None
 
 
 class YogaModel(BaseModel):
     index: int
     name: LocalizedNameModel
+    start: str | None = None
+    end: str | None = None
+    next: dict[str, Any] | None = None
 
 
 class KaranaModel(BaseModel):
     index: int | None = None
     name: LocalizedNameModel
+    start: str | None = None
+    end: str | None = None
+    next: dict[str, Any] | None = None
+    transitions: list[dict[str, Any]] = []
 
 
 class TimeWindowModel(BaseModel):
     start: str
     end: str
+    start_at: str | None = None
+    end_at: str | None = None
 
 
 class MuhurtaWindowModel(TimeWindowModel):
@@ -87,3 +106,5 @@ class PanchangResponseModel(BaseModel):
     names_version: str
     lang_names: dict[str, Any] | None = None
     source: str = "swiss-ephemeris"
+    phase: dict[str, Any] | None = None
+    timing_metadata: dict[str, Any] | None = None

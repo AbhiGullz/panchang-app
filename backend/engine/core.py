@@ -21,11 +21,12 @@ from .nakshatra import compute_nakshatra
 from .rashi import compute_moon_sign
 from .sunrise import compute_sunrise_sunset
 from .tithi import compute_tithi_and_karana
+from .transitions import compute_transitions
 from .yoga import compute_yoga
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 AYANAMSA = swe.SIDM_LAHIRI
-ENGINE_VERSION = "m4"
+ENGINE_VERSION = "m5"
 
 KARANA_NAME_TO_INDEX = {
     "Bava": 1,
@@ -54,6 +55,14 @@ RASHI_NAME_TO_INDEX = {
     "Kumbha": 11,
     "Meena": 12,
 }
+
+
+def _window_with_iso(window: dict, timezone_name: str, target_date: date) -> dict:
+    timezone_info = ZoneInfo(timezone_name)
+    result = dict(window)
+    for source, target in (("start", "start_at"), ("end", "end_at")):
+        result[target] = datetime.combine(target_date, time.fromisoformat(result[source]), tzinfo=timezone_info).isoformat(timespec="seconds")
+    return result
 
 
 def init_swisseph(data_path: str | Path | None = None) -> None:
@@ -98,6 +107,14 @@ def compute_daily_panchang(
     julian_day_ut = local_midnight_to_julian_day(date_iso, timezone_name)
 
     sun_events = compute_sunrise_sunset(julian_day_ut, latitude, longitude, timezone_name)
+    transitions = compute_transitions(target_date, sun_events["rise_dt"], timezone_name, latitude, longitude)
+    for element, kind in (("tithi", "tithi"), ("nakshatra", "nakshatra"), ("yoga", "yoga")):
+        if transitions[element]["next"]:
+            next_item = transitions[element]["next"]
+            next_item["name"] = get_name_map(kind, next_item["index"])[lang]
+    if transitions["karana"]["next"]:
+        next_item = transitions["karana"]["next"]
+        next_item["name"] = get_name_map("karana", KARANA_NAME_TO_INDEX[next_item["name"]])[lang] if next_item["name"] in KARANA_NAME_TO_INDEX else next_item["name"]
     sunrise_dt = sun_events["rise_dt"]
     sunrise_utc = sunrise_dt.astimezone(timezone.utc)
     sunrise_jd_ut = swe.julday(
@@ -146,37 +163,50 @@ def compute_daily_panchang(
             "lng": longitude,
             "tz": timezone_name,
         },
-        "sun": {"rise": sun_events["rise"], "set": sun_events["set"]},
+        "sun": {
+            "rise": sun_events["rise"],
+            "set": sun_events["set"],
+            "rise_at": sunrise_dt.isoformat(timespec="seconds"),
+            "set_at": sun_events["set_dt"].isoformat(timespec="seconds"),
+            "moonrise_at": sun_events["moonrise_dt"].isoformat(timespec="seconds") if sun_events["moonrise_dt"] else None,
+            "moonset_at": sun_events["moonset_dt"].isoformat(timespec="seconds") if sun_events["moonset_dt"] else None,
+        },
         "tithi": {
             "index": tithi_karana["tithi"]["index"],
             "name": get_name_map("tithi", tithi_karana["tithi"]["index"]),
             "ends_at": None,
+            **transitions["tithi"],
         },
         "nakshatra": {
             **nakshatra,
             "name": get_name_map("nakshatra", nakshatra["index"]),
+            **transitions["nakshatra"],
         },
         "yoga": {
             **yoga,
             "name": get_name_map("yoga", yoga["index"]),
+            **transitions["yoga"],
         },
         "karana": {
             **tithi_karana["karana"],
             "name": get_name_map("karana", KARANA_NAME_TO_INDEX[tithi_karana["karana"]["name"]]),
+            **transitions["karana"],
         },
         "moon_sign": get_name_map("rashi", RASHI_NAME_TO_INDEX[moon_sign]),
         "month_name": get_month_name_map(calendar_school, school_month_index),
         "era_year": school.era_year,
         "paksha": school.paksha,
-        "rahu_kaal": rahu_kaal,
+        "rahu_kaal": _window_with_iso(rahu_kaal, timezone_name, target_date),
         "muhurta": {
-            "abhijit": abhijit,
-            "yamagandam": yamagandam,
-            "gulika": gulika,
-            "amrit_kala": amrit_kala,
+            "abhijit": _window_with_iso(abhijit, timezone_name, target_date),
+            "yamagandam": _window_with_iso(yamagandam, timezone_name, target_date),
+            "gulika": _window_with_iso(gulika, timezone_name, target_date),
+            "amrit_kala": _window_with_iso(amrit_kala, timezone_name, target_date),
             "disha_shool": disha_shool,
         },
         "names_version": NAMES_VERSION,
+        "phase": transitions["phase"],
+        "timing_metadata": transitions["timing_metadata"],
         "source": f"swiss-ephemeris:{ENGINE_VERSION}",
     }
     return PanchangResponseModel.model_validate(payload).model_dump()

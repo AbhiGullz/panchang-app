@@ -1,0 +1,30 @@
+{
+  "source": "swiss-ephemeris",
+  "engine": "deterministic boundary search",
+  "fixtures": [
+    {
+      "city": "Flemington",
+      "date": "2026-08-15",
+      "lat": 40.5123,
+      "lng": -74.859,
+      "tz": "America/New_York",
+      "expected_offset": "-04:00",
+      "tithi": "Shukla Tritiya",
+      "nakshatra": "Uttara Phalguni",
+      "yoga": "Siddha",
+      "karana": "Garaja"
+    },
+    {
+      "city": "Pune",
+      "date": "2026-08-15",
+      "lat": 18.5204,
+      "lng": 73.8567,
+      "tz": "Asia/Kolkata",
+      "expected_offset": "+05:30",
+      "tithi": "Shukla Tritiya",
+      "nakshatra": "Uttara Phalguni",
+      "yoga": "Shiva",
+      "karana": "Garaja"
+    }
+  ]
+}
