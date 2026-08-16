@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Panchang</title>
+  <desc id="desc">A warm orange sun behind a navy calendar inside a cool gray circular badge.</desc>
+  <circle cx="128" cy="128" r="124" fill="#EEF2F7" stroke="#0B2D59" stroke-width="4"/>
+  <g fill="#FF9800">
+    <path d="M124 19h8l6 57h-20z"/>
+    <path d="m87 27 8-3 22 54-12 4z"/>
+    <path d="m54 47 7-6 38 43-10 8z"/>
+    <path d="m31 78 4-8 52 30-6 12z"/>
+    <path d="m18 117 1-9 59 8-1 13z"/>
+    <path d="m169 27-8-3-22 54 12 4z"/>
+    <path d="m202 47-7-6-38 43 10 8z"/>
+    <path d="m225 78-4-8-52 30 6 12z"/>
+    <path d="m238 117-1-9-59 8 1 13z"/>
+  </g>
+  <circle cx="128" cy="113" r="57" fill="#FF9800"/>
+  <g stroke="#fff" stroke-width="5">
+    <rect x="55" y="119" width="146" height="101" rx="19" fill="#0B2D59"/>
+    <rect x="63" y="156" width="130" height="56" rx="12" fill="#fff"/>
+    <rect x="78" y="111" width="22" height="42" rx="11" fill="#0B2D59"/>
+    <rect x="156" y="111" width="22" height="42" rx="11" fill="#0B2D59"/>
+  </g>
+  <g fill="#0B2D59">
+    <rect x="78" y="169" width="15" height="12" rx="2"/><rect x="107" y="169" width="15" height="12" rx="2"/><rect x="136" y="169" width="15" height="12" rx="2"/><rect x="165" y="169" width="15" height="12" rx="2"/>
+    <rect x="78" y="190" width="15" height="12" rx="2"/><rect x="107" y="190" width="15" height="12" rx="2"/><rect x="136" y="190" width="15" height="12" rx="2"/><rect x="165" y="190" width="15" height="12" rx="2"/>
+    <rect x="78" y="207" width="15" height="3" rx="1.5"/><rect x="107" y="207" width="15" height="3" rx="1.5"/><rect x="136" y="207" width="15" height="3" rx="1.5"/><rect x="165" y="207" width="15" height="3" rx="1.5"/>
+  </g>
+</svg>

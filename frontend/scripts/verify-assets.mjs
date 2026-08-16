@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 
 const root = resolve(import.meta.dirname, '..')
-const assets = ['favicon.svg', 'logo-monochrome.svg', 'pwa-192x192.svg', 'pwa-512x512.svg']
+const assets = ['logo.svg', 'favicon.svg', 'logo-monochrome.svg', 'pwa-192x192.svg', 'pwa-512x512.svg']
 for (const asset of assets) {
   const path = resolve(root, 'public', asset)
   if (!existsSync(path) || !readFileSync(path, 'utf8').includes('<svg')) {

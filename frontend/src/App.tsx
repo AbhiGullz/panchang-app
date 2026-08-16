@@ -6,7 +6,7 @@ import './locales/i18n'
 import { BottomNav } from './components/BottomNav'
 import { AdvertisementSlot } from './components/AdvertisementSlot'
 import { FestivalsTab } from './components/FestivalsTab'
-import { MoonPhaseLogo } from './components/MoonPhaseLogo'
+import { PanchangLogo } from './components/PanchangLogo'
 import { MuhurtaTab } from './components/MuhurtaTab'
 import { OnboardingCard } from './components/OnboardingCard'
 import { SettingsTab } from './components/SettingsTab'
@@ -117,10 +117,10 @@ function AppShell() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col gap-4 px-4 py-5 text-[#12233A]">
-      <header className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
+      <header aria-label={t('appName')} className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <MoonPhaseLogo elongationDegrees={panchangData?.phase?.elongation_degrees} label={panchangData?.tithi.name[i18n.language as keyof typeof panchangData.tithi.name] ?? t('tithi')} />
+            <PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" />
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">{t('appName')}</div>
               <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>

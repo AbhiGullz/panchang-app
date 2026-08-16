@@ -1,6 +1,6 @@
 import { Sunrise, Sunset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { MoonPhaseLogo } from './MoonPhaseLogo'
+import { PanchangLogo } from './PanchangLogo'
 import type { PanchangResponse } from '../types/api'
 import { formatDisplayDate, formatTimeWithTimezone } from '../lib/utils'
 
@@ -33,7 +33,7 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-4 backdrop-blur-sm">
             <div className="mb-2 flex items-center gap-2 text-sm uppercase tracking-wide text-[#B7DDF4]">
-              <MoonPhaseLogo elongationDegrees={data.phase?.elongation_degrees} label={localized(data.tithi.name, i18n.language)} className="h-6 w-6" /> {t('tithi')}
+              <PanchangLogo className="h-6 w-6" /> {t('tithi')}
             </div>
             <div className="text-2xl font-semibold">{localized(data.tithi.name, i18n.language)}</div>
             <div className="mt-1 text-sm text-[#DDF3FC]">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
