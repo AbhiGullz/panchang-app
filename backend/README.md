@@ -22,6 +22,12 @@ This backend milestone contains the Swiss Ephemeris-based calculation engine for
 
 All `tz` inputs are explicitly validated as IANA time zone names before cache or calculation use. The API derives time zones from coordinates for geocoding; callers that supply coordinates and a timezone directly are responsible for choosing the correct local zone at a border.
 
+## Licence and private phone testing
+
+This repository follows the **AGPL-3.0-or-later** route for Swiss Ephemeris. Keeping the Git repository public is necessary but not sufficient: every deployed web version must provide the complete corresponding source, preserve required notices, and publish any modifications under the AGPL. Review the project-level AGPL notice and source-offer process before sharing outside the private tailnet.
+
+To test privately on a phone that is in the same Tailscale tailnet, build the frontend, start the API with `PANCHANG_FRONTEND_DIST` pointing to `frontend/dist`, then run `tailscale serve --bg --https=443 http://127.0.0.1:8000`. The resulting `https://<node>.<tailnet>.ts.net` URL is private to the tailnet; do not use Tailscale Funnel for this test.
+
 ## Module map
 
 - `engine/core.py` — Swiss Ephemeris init, Julian day helpers, daily panchang orchestrator

@@ -13,7 +13,7 @@ This document is the required release evidence for the Panchang web app. Passing
 
 ## Required before public beta
 
-1. **Swiss Ephemeris commercial licence:** record licence number, purchaser, covered products (web/PWA/native), version, data-file source, SHA-256 hashes, and required notices. The approved release path is the Professional License; do not activate public service under an unresolved licence choice.
+1. **Swiss Ephemeris AGPL compliance:** the selected route is AGPL-3.0-or-later. Keep the complete corresponding source for the deployed web/PWA/native version publicly available, preserve required notices, publish modifications under AGPL, document the source URL in the product, and retain data-file provenance and hashes. Obtain legal review before any distribution that is not clearly AGPL-compliant.
 2. **Deployment evidence on H Kamgar:** record a successful `git fetch`, clean install, backend/frontend test output, deployed health check, HTTPS check, independent-node API smoke test, service restart, rollback, and backup restore.
 3. **Edge configuration:** configure HTTPS, secret storage, request-size limits, trusted-proxy handling, and per-IP rate limits for `/api/v1/geocode` and `/api/v1/reverse-geocode`.
 4. **Ephemeris data inventory:** deploy the documented `.se1` files, verify their hashes before release, and retain their provenance and licence notices outside Git (the binaries are intentionally ignored).

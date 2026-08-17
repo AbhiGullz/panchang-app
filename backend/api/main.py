@@ -6,11 +6,14 @@ import logging
 import os
 import time
 from datetime import date, timedelta
+from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import httpx
 from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from timezonefinder import TimezoneFinder
 from redis.asyncio import Redis
@@ -51,6 +54,7 @@ _geocode_lock = asyncio.Lock()
 _timezone_finder = TimezoneFinder()
 _redis_client: Redis | None = None
 _warned_redis_unavailable = False
+_frontend_dist = Path(os.environ["PANCHANG_FRONTEND_DIST"]).resolve() if os.environ.get("PANCHANG_FRONTEND_DIST") else None
 
 
 class GeocodeResultModel(BaseModel):
@@ -408,3 +412,9 @@ async def get_festivals(
         lang=lang,
         festivals=compute_festivals_for_year(year, calendar=calendar, lang=lang),
     )
+
+
+# The production web server may serve the PWA itself. This optional mount lets
+# a private Tailscale preview expose one HTTPS origin for both UI and API.
+if _frontend_dist and _frontend_dist.is_dir():
+    app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="panchang-web")
