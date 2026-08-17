@@ -1,45 +1,59 @@
 import { useTranslation } from 'react-i18next'
-import type { MuhurtaCategory, MuhurtaResponse } from '../types/api'
-import { MUHURTA_CATEGORIES } from '../types/api'
-import { formatDisplayDate, formatTimeWithTimezone, humanizeMuhurta } from '../lib/utils'
+import type { PanchangResponse, TimeRange } from '../types/api'
+import { formatTimeWithTimezone } from '../lib/utils'
 
 interface Props {
-  category: MuhurtaCategory
-  onCategoryChange: (category: MuhurtaCategory) => void
-  data?: MuhurtaResponse
+  data?: PanchangResponse
 }
 
-export function MuhurtaTab({ category, onCategoryChange, data }: Props) {
+function timingLabel(t: (key: string) => string, key: string) {
+  const labels: Record<string, string> = {
+    abhijit: t('abhijitMuhurta'),
+    amrit_kala: t('amritKala'),
+    rahu_kaal: t('rahuKaal'),
+    yamagandam: t('yamagandam'),
+    gulika: t('gulikaKaal'),
+  }
+  return labels[key] ?? key
+}
+
+function DailyTiming({ label, value, timezone, date, language }: { label: string; value: TimeRange; timezone: string; date: string; language: string }) {
+  return (
+    <div className="rounded-2xl border border-sky-100 bg-white px-4 py-3">
+      <div className="text-sm font-semibold text-slate-900">{label}</div>
+      <div className="mt-1 text-sm text-[#163B63]">
+        {formatTimeWithTimezone(value.start_at ?? value.start, timezone, date, language)} — {formatTimeWithTimezone(value.end_at ?? value.end, timezone, date, language)}
+      </div>
+    </div>
+  )
+}
+
+export function MuhurtaTab({ data }: Props) {
   const { t, i18n } = useTranslation()
+
+  if (!data) {
+    return <section className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-sky-100"><p className="text-sm text-slate-500">{t('loading')}</p></section>
+  }
+
+  const timings: Array<[string, TimeRange]> = [
+    ['abhijit', data.muhurta.abhijit],
+    ['amrit_kala', data.muhurta.amrit_kala],
+    ['rahu_kaal', data.rahu_kaal],
+    ['yamagandam', data.muhurta.yamagandam],
+    ['gulika', data.muhurta.gulika],
+  ]
 
   return (
     <section className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-sky-100">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-lg font-semibold text-slate-900">{t('muhurta')}</h2>
-        <select
-          aria-label={t('muhurta')}
-          className="rounded-2xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm"
-          value={category}
-          onChange={(event) => onCategoryChange(event.target.value as MuhurtaCategory)}
-        >
-          {MUHURTA_CATEGORIES.map((item) => (
-            <option key={item} value={item}>{humanizeMuhurta(item, i18n.language)}</option>
-          ))}
-        </select>
+      <div>
+        <h2 className="text-lg font-semibold text-slate-900">{t('dailyTimings')}</h2>
+        <p className="mt-1 text-sm text-slate-600">{t('calculatedReference')}</p>
       </div>
-
-      <p className="rounded-2xl bg-sky-50 p-3 text-sm text-slate-600">{i18n.language === 'mr' ? t('calculatedReference') : (data?.guidance ?? t('calculatedReference'))}</p>
-
-      <div className="space-y-3">
-        {data && (data.windows.length === 0 || data.horizon_exhausted) ? <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-600">{t('muhurtaHorizonEnd')}</div> : null}
-        {data?.windows?.map((window, index) => (
-          <div key={`${window.start}-${index}`} className="rounded-2xl border border-sky-100 p-4">
-            <div className="font-medium text-slate-900">{window.label ?? humanizeMuhurta(category, i18n.language)}</div>
-            <div className="text-sm font-medium text-sky-700">{formatDisplayDate(window.date, i18n.language)}</div>
-            <div className="text-sm text-slate-600">{formatTimeWithTimezone(window.start_at ?? window.start, data.location.tz, window.date, i18n.language)} — {formatTimeWithTimezone(window.end_at ?? window.end, data.location.tz, window.date, i18n.language)}</div>
-            {window.reference ? <div className="mt-1 text-xs text-slate-500">{window.reference}</div> : null}
-          </div>
-        ))}
+      <div className="grid gap-3 sm:grid-cols-2">
+        {timings.map(([key, value]) => <DailyTiming key={key} label={timingLabel(t, key)} value={value} timezone={data.location.tz} date={data.date} language={i18n.language} />)}
+      </div>
+      <div className="rounded-2xl bg-sky-50 px-4 py-3 text-sm text-slate-700">
+        <span className="font-semibold">{t('dishaShool')}:</span> {data.muhurta.disha_shool}
       </div>
     </section>
   )

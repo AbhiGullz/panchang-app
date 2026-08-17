@@ -4,21 +4,23 @@ This backend milestone contains the Swiss Ephemeris-based calculation engine for
 
 ## Setup
 
-1. Install uv if needed: `curl -fsSL https://astral.sh/uv/install.sh | sh`
-2. Create the virtual environment:
-   `uv venv backend/.venv`
-3. Install dependencies:
-   `uv pip install --python backend/.venv/bin/python -r backend/requirements.txt`
-4. Place Swiss Ephemeris data files in `backend/data/`:
+1. Use Python 3.12.
+2. Create the virtual environment: `python3.12 -m venv backend/.venv`
+3. Install the reviewed development lock: `backend/.venv/bin/python -m pip install -r backend/requirements.lock`
+4. Place the licensed Swiss Ephemeris data files in `backend/data/`:
    - `seas_18.se1`
    - `semo_18.se1`
    - `sepl_18.se1`
-5. Run the smoke test:
-   `backend/.venv/bin/python -m pytest backend/tests/test_engine.py -s -q`
+5. Run the full backend tests:
+   `PYTHONPATH=backend backend/.venv/bin/python -m pytest backend/tests -q`
+6. Run the HTTP smoke test:
+   `bash backend/tests/e2e_smoke.sh`
 
 ## Location search
 
-`GET /api/v1/geocode` proxies debounced, limited searches to OpenStreetMap Nominatim. The backend sends the descriptive `PanchangApp/0.1` User-Agent, keeps a short cache and one-request-per-second process-level throttle, and returns only validated results with an IANA timezone resolved offline by `timezonefinder` and Python `zoneinfo`. `GET /api/v1/reverse-geocode` uses the same provider and timezone validation for browser geolocation. Do not bulk preload or autocomplete against Nominatim; respect its usage policy and attribution requirements: https://operations.osmfoundation.org/policies/nominatim/.
+`GET /api/v1/geocode` and `GET /api/v1/reverse-geocode` proxy debounced, limited searches to OpenStreetMap Nominatim. The backend sends the descriptive `PanchangApp/0.1` User-Agent, keeps a bounded five-minute cache (including reverse lookups), applies a one-request-per-second process-level upstream throttle, and applies a 30-requests-per-minute in-process per-client guard. The reverse proxy must enforce the production rate limit too, because in-process limits do not span workers. Do not bulk preload or autocomplete against Nominatim; respect its usage policy and attribution requirements: https://operations.osmfoundation.org/policies/nominatim/.
+
+All `tz` inputs are explicitly validated as IANA time zone names before cache or calculation use. The API derives time zones from coordinates for geocoding; callers that supply coordinates and a timezone directly are responsible for choosing the correct local zone at a border.
 
 ## Module map
 

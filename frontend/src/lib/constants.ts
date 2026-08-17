@@ -14,6 +14,8 @@ export const DEFAULT_AYANAMSA = 'Lahiri'
 export const PREFERENCES_KEY = 'panchang-pwa-preferences'
 export const PUSH_SUBSCRIPTION_KEY = 'panchang-pwa-push-subscription'
 export const OFFLINE_CACHE_KEY = 'panchang-pwa-offline-days'
+// Bump whenever calculation, names, or client cache serialization changes.
+export const OFFLINE_CACHE_VERSION = 'm5-names-1'
 
 export const DEFAULT_PREFERENCES: AppPreferences = {
   location: DEFAULT_LOCATION,

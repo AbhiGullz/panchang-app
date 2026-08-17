@@ -1,7 +1,7 @@
-fastapi
-httpx
-pydantic
-pyswisseph
-redis
-timezonefinder
-uvicorn
+fastapi==0.141.1
+httpx==0.28.1
+pydantic==2.13.4
+pyswisseph==2.10.3.2
+redis==8.1.0
+timezonefinder==8.2.5
+uvicorn==0.52.3

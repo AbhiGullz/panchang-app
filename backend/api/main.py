@@ -10,7 +10,7 @@ from typing import Any
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 import httpx
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, Request
 from pydantic import BaseModel, Field
 from timezonefinder import TimezoneFinder
 from redis.asyncio import Redis
@@ -38,11 +38,14 @@ VALID_CALENDARS = {
 _CACHE_TTL_SECONDS = 60 * 60 * 24
 _GEOCODE_CACHE_TTL_SECONDS = 60 * 5
 _GEOCODE_MIN_INTERVAL_SECONDS = 1.0
+_GEOCODE_RATE_LIMIT_WINDOW_SECONDS = 60.0
+_GEOCODE_RATE_LIMIT_REQUESTS = 30
 _GEOCODE_USER_AGENT = os.environ.get(
     "PANCHANG_GEOCODER_USER_AGENT",
     "PanchangApp/0.1 (https://github.com/AbhiGullz/panchang-app)",
 )
-_geocode_cache: dict[tuple[str, int], tuple[float, list[dict[str, Any]]]] = {}
+_geocode_cache: dict[tuple[str, ...], tuple[float, Any]] = {}
+_geocode_requests: dict[str, list[float]] = {}
 _last_geocode_request = 0.0
 _geocode_lock = asyncio.Lock()
 _timezone_finder = TimezoneFinder()
@@ -80,13 +83,53 @@ def _timezone_for_coordinates(lat: float, lng: float) -> str | None:
     return timezone_name
 
 
-async def _search_nominatim(query: str, limit: int) -> list[dict[str, Any]]:
-    global _last_geocode_request
-    cache_key = (query.casefold(), limit)
+def _nominatim_language(lang: str) -> str:
+    """Return a safe, supported language tag for Nominatim display names."""
+    return lang if lang in LANGUAGES else "en"
+
+
+def _validate_timezone(timezone_name: str) -> str:
+    """Validate an IANA timezone before it can reach cache or calculation code."""
+    try:
+        ZoneInfo(timezone_name)
+    except ZoneInfoNotFoundError as exc:
+        raise HTTPException(status_code=422, detail="tz must be a valid IANA timezone name.") from exc
+    return timezone_name
+
+
+def _check_geocode_rate_limit(request: Request) -> None:
+    """Apply an in-process per-client guard; the reverse proxy remains the primary limit."""
+    client_key = request.client.host if request.client else "unknown"
     now = time.monotonic()
+    requests = [entry for entry in _geocode_requests.get(client_key, []) if now - entry < _GEOCODE_RATE_LIMIT_WINDOW_SECONDS]
+    if len(requests) >= _GEOCODE_RATE_LIMIT_REQUESTS:
+        raise HTTPException(status_code=429, detail="Too many location searches. Please try again shortly.")
+    requests.append(now)
+    _geocode_requests[client_key] = requests
+
+
+def _geocode_cache_get(cache_key: tuple[str, ...]) -> Any | None:
     cached = _geocode_cache.get(cache_key)
-    if cached and now - cached[0] < _GEOCODE_CACHE_TTL_SECONDS:
+    if cached and time.monotonic() - cached[0] < _GEOCODE_CACHE_TTL_SECONDS:
         return cached[1]
+    _geocode_cache.pop(cache_key, None)
+    return None
+
+
+def _geocode_cache_set(cache_key: tuple[str, ...], value: Any) -> None:
+    # Keep the local cache bounded even when the provider is unavailable.
+    if len(_geocode_cache) >= 256:
+        oldest_key = min(_geocode_cache, key=lambda key: _geocode_cache[key][0])
+        _geocode_cache.pop(oldest_key, None)
+    _geocode_cache[cache_key] = (time.monotonic(), value)
+
+
+async def _search_nominatim(query: str, limit: int, lang: str = "en") -> list[dict[str, Any]]:
+    global _last_geocode_request
+    cache_key = ("search", _nominatim_language(lang), query.casefold(), str(limit))
+    cached = _geocode_cache_get(cache_key)
+    if cached is not None:
+        return cached
     async with _geocode_lock:
         wait = _GEOCODE_MIN_INTERVAL_SECONDS - (time.monotonic() - _last_geocode_request)
         if wait > 0:
@@ -94,7 +137,13 @@ async def _search_nominatim(query: str, limit: int) -> list[dict[str, Any]]:
         async with httpx.AsyncClient(timeout=8.0) as client:
             response = await client.get(
                 "https://nominatim.openstreetmap.org/search",
-                params={"q": query, "format": "jsonv2", "limit": limit, "addressdetails": 1},
+                params={
+                    "q": query,
+                    "format": "jsonv2",
+                    "limit": limit,
+                    "addressdetails": 1,
+                    "accept-language": _nominatim_language(lang),
+                },
                 headers={"User-Agent": _GEOCODE_USER_AGENT, "Accept": "application/json"},
             )
         _last_geocode_request = time.monotonic()
@@ -102,12 +151,16 @@ async def _search_nominatim(query: str, limit: int) -> list[dict[str, Any]]:
         result = response.json()
         if not isinstance(result, list):
             raise ValueError("Unexpected geocoder response")
-        _geocode_cache[cache_key] = (time.monotonic(), result)
+        _geocode_cache_set(cache_key, result)
         return result
 
 
-async def _reverse_nominatim(lat: float, lng: float) -> dict[str, Any]:
+async def _reverse_nominatim(lat: float, lng: float, lang: str = "en") -> dict[str, Any]:
     global _last_geocode_request
+    cache_key = ("reverse", _nominatim_language(lang), f"{lat:.4f}", f"{lng:.4f}")
+    cached = _geocode_cache_get(cache_key)
+    if cached is not None:
+        return cached
     async with _geocode_lock:
         wait = _GEOCODE_MIN_INTERVAL_SECONDS - (time.monotonic() - _last_geocode_request)
         if wait > 0:
@@ -115,7 +168,13 @@ async def _reverse_nominatim(lat: float, lng: float) -> dict[str, Any]:
         async with httpx.AsyncClient(timeout=8.0) as client:
             response = await client.get(
                 "https://nominatim.openstreetmap.org/reverse",
-                params={"lat": lat, "lon": lng, "format": "jsonv2", "addressdetails": 1},
+                params={
+                    "lat": lat,
+                    "lon": lng,
+                    "format": "jsonv2",
+                    "addressdetails": 1,
+                    "accept-language": _nominatim_language(lang),
+                },
                 headers={"User-Agent": _GEOCODE_USER_AGENT, "Accept": "application/json"},
             )
         _last_geocode_request = time.monotonic()
@@ -123,16 +182,22 @@ async def _reverse_nominatim(lat: float, lng: float) -> dict[str, Any]:
         result = response.json()
         if not isinstance(result, dict):
             raise ValueError("Unexpected reverse geocoder response")
+        _geocode_cache_set(cache_key, result)
         return result
 
 
 @app.get("/api/v1/reverse-geocode", response_model=GeocodeResultModel)
 async def reverse_geocode(
+    request: Request,
     lat: float = Query(..., ge=-90, le=90),
     lng: float = Query(..., ge=-180, le=180),
+    lang: str = Query("en"),
 ) -> GeocodeResultModel:
+    if lang not in LANGUAGES:
+        raise HTTPException(status_code=400, detail=f"Unsupported language: {lang}")
+    _check_geocode_rate_limit(request)
     try:
-        result = GeocodeResultModel.from_nominatim(await _reverse_nominatim(lat, lng))
+        result = GeocodeResultModel.from_nominatim(await _reverse_nominatim(lat, lng, lang))
     except Exception as exc:
         logger.warning("Reverse geocoder request failed: %s", exc)
         raise HTTPException(status_code=502, detail="Location lookup is temporarily unavailable.") from exc
@@ -143,14 +208,19 @@ async def reverse_geocode(
 
 @app.get("/api/v1/geocode", response_model=list[GeocodeResultModel])
 async def geocode(
+    request: Request,
     q: str = Query(..., min_length=2, max_length=120),
     limit: int = Query(8, ge=1, le=8),
+    lang: str = Query("en"),
 ) -> list[GeocodeResultModel]:
+    if lang not in LANGUAGES:
+        raise HTTPException(status_code=400, detail=f"Unsupported language: {lang}")
     query = q.strip()
     if len(query) < 2:
         raise HTTPException(status_code=422, detail="Search query must contain at least 2 characters.")
+    _check_geocode_rate_limit(request)
     try:
-        raw_results = await _search_nominatim(query, limit)
+        raw_results = await _search_nominatim(query, limit, lang)
     except Exception as exc:
         logger.warning("Geocoder request failed: %s", exc)
         raise HTTPException(status_code=502, detail="Location search is temporarily unavailable.") from exc
@@ -254,6 +324,7 @@ async def get_panchang(
         raise HTTPException(status_code=400, detail=f"Unsupported calendar: {calendar}")
     if lang not in LANGUAGES:
         raise HTTPException(status_code=400, detail=f"Unsupported language: {lang}")
+    _validate_timezone(tz)
     cache_key = _cache_key(date_value, lat, lng, tz, calendar, lang)
     cached = await get_cached_panchang(cache_key)
     if cached is not None:
@@ -290,6 +361,7 @@ async def get_muhurta(
         raise HTTPException(status_code=400, detail=f"Unsupported calendar: {calendar}")
     if category not in CATEGORY_RULES:
         raise HTTPException(status_code=400, detail=f"Unsupported category: {category}")
+    _validate_timezone(tz)
     try:
         windows: list[dict[str, str]] = []
         current_date = date_value

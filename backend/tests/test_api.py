@@ -14,7 +14,7 @@ def test_geocode_rejects_empty_and_overlong_queries():
 
 
 def test_geocode_returns_validated_results(monkeypatch):
-    async def fake_provider(query: str, limit: int):
+    async def fake_provider(query: str, limit: int, lang: str = "en"):
         return [{"display_name": "Delhi, India", "lat": 28.6139, "lon": 77.209}]
 
     monkeypatch.setattr("api.main._search_nominatim", fake_provider)
@@ -26,7 +26,7 @@ def test_geocode_returns_validated_results(monkeypatch):
 
 
 def test_geocode_provider_failure_is_not_leaked(monkeypatch):
-    async def failing_provider(query: str, limit: int):
+    async def failing_provider(query: str, limit: int, lang: str = "en"):
         raise RuntimeError("provider unavailable")
 
     monkeypatch.setattr("api.main._search_nominatim", failing_provider)
@@ -107,6 +107,23 @@ def test_invalid_coordinates_return_422():
     response = client.get(
         "/api/v1/panchang",
         params={"date": "2026-08-03", "lat": 91, "lng": 77, "tz": "Asia/Kolkata"},
+    )
+    assert response.status_code == 422
+
+
+def test_invalid_timezone_is_rejected_before_calculation():
+    response = client.get(
+        "/api/v1/panchang",
+        params={"date": "2026-08-03", "lat": 28.6139, "lng": 77.209, "tz": "Not/AZone"},
+    )
+    assert response.status_code == 422
+    assert response.json()["detail"] == "tz must be a valid IANA timezone name."
+
+
+def test_muhurta_rejects_invalid_timezone_before_calculation():
+    response = client.get(
+        "/api/v1/muhurta",
+        params={"date": "2026-08-03", "lat": 28.6139, "lng": 77.209, "tz": "Not/AZone"},
     )
     assert response.status_code == 422
 

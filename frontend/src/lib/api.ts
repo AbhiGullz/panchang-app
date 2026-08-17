@@ -10,13 +10,13 @@ async function request<T>(path: string) {
   return (await response.json()) as T
 }
 
-export function fetchGeocode(query: string, limit = 8) {
-  const search = new URLSearchParams({ q: query, limit: String(limit) })
+export function fetchGeocode(query: string, lang: LanguageCode, limit = 8) {
+  const search = new URLSearchParams({ q: query, lang, limit: String(limit) })
   return request<GeocodeResult[]>(`/geocode?${search.toString()}`)
 }
 
-export function fetchReverseGeocode(lat: number, lng: number) {
-  const search = new URLSearchParams({ lat: String(lat), lng: String(lng) })
+export function fetchReverseGeocode(lat: number, lng: number, lang: LanguageCode) {
+  const search = new URLSearchParams({ lat: String(lat), lng: String(lng), lang })
   return request<GeocodeResult>(`/reverse-geocode?${search.toString()}`)
 }
 

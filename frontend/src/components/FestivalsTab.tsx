@@ -17,7 +17,7 @@ export function FestivalsTab({ data }: Props) {
           <div key={`${festival.date}-${festival.name}`} className="rounded-2xl border border-sky-100 p-4">
             <div className="font-medium text-slate-900">{festival.localized_name ?? festival.name}</div>
             <div className="text-sm text-slate-600">{formatDisplayDate(festival.date, i18n.language)}</div>
-            {festival.notes ? <div className="mt-1 text-xs text-slate-500">{festival.notes}</div> : null}
+            {festival.localized_notes ?? (i18n.language === 'en' ? festival.notes : undefined) ? <div className="mt-1 text-xs text-slate-500">{festival.localized_notes ?? festival.notes}</div> : null}
           </div>
         )) ?? <div className="text-sm text-slate-500">{t('loading')}</div>}
       </div>

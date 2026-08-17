@@ -80,3 +80,15 @@ def test_moon_events_are_explicit_when_supported():
     assert "moonset_at" in result["sun"]
     if result["sun"]["moonrise_at"]:
         assert datetime.fromisoformat(result["sun"]["moonrise_at"]).utcoffset() is not None
+
+
+def test_illumination_is_a_fraction_not_phase_progress():
+    result = compute_daily_panchang(
+        date_iso="2026-08-15",
+        latitude=18.5204,
+        longitude=73.8567,
+        timezone_name="Asia/Kolkata",
+        location_name="Pune",
+    )
+
+    assert 0 <= result["phase"]["illumination"] <= 1

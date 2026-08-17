@@ -35,7 +35,7 @@ export function OnboardingCard(props: Props) {
     const timer = window.setTimeout(() => {
       const currentRequest = ++requestId.current
       setStatus('loading')
-      void fetchGeocode(trimmed).then((nextResults) => {
+      void fetchGeocode(trimmed, props.language).then((nextResults) => {
         if (currentRequest !== requestId.current) return
         setResults(nextResults)
         setActiveIndex(-1)
@@ -48,7 +48,7 @@ export function OnboardingCard(props: Props) {
       })
     }, 400)
     return () => window.clearTimeout(timer)
-  }, [props.location.city, query])
+  }, [props.language, props.location.city, query])
 
   const selectResult = (result: GeocodeResult) => {
     setQuery(result.display_name)

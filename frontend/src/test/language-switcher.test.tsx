@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, afterEach } from 'vitest'
+import { describe, expect, it, vi, afterEach, beforeEach } from 'vitest'
 import { cleanup, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from '../App'
@@ -7,11 +7,16 @@ import i18n from '../locales/i18n'
 import { SUPPORTED_LANGUAGES } from '../types/api'
 
 afterEach(() => cleanup())
+beforeEach(() => i18n.changeLanguage('en'))
 
 describe('language switcher', () => {
-  it('keeps the Settings field label in English for every supported locale', () => {
+  it('uses a translated Settings field label where it is available', () => {
+    expect(i18n.t('language', { lng: 'en' })).toBe('Language')
+    expect(i18n.t('language', { lng: 'hi' })).toBe('भाषा')
+    expect(i18n.t('language', { lng: 'mr' })).toBe('भाषा')
+
     for (const language of SUPPORTED_LANGUAGES) {
-      expect(i18n.t('language', { lng: language })).toBe('Language')
+      expect(i18n.t('language', { lng: language })).not.toBe('language')
     }
   })
   it('changes visible strings', async () => {
@@ -42,17 +47,18 @@ describe('language switcher', () => {
     expect(changeLanguage).toHaveBeenCalledWith('mr')
   })
 
-  it('updates the header language subtitle and metadata immediately', async () => {
+  it('changes the interface without adding a language subtitle below the location', async () => {
     const user = userEvent.setup()
     renderWithProviders(<App />)
-    const selector = screen.getAllByRole('combobox', { name: 'Language' })[0]!
+    const selector = screen.getByRole('combobox', { name: /Language|भाषा/ })
     await user.selectOptions(selector, 'mr')
-    expect(await screen.findByRole('banner')).toHaveTextContent('मराठी')
-    await user.selectOptions(selector, 'kn')
-    expect(await screen.findByRole('banner')).toHaveTextContent('ಕನ್ನಡ')
+    expect(await screen.findByRole('button', { name: 'पुढे जा' })).toBeInTheDocument()
     expect(screen.getByRole('banner')).not.toHaveTextContent('मराठी')
-    await user.selectOptions(selector, 'pa')
-    expect(await screen.findByRole('banner')).toHaveTextContent('ਪੰਜਾਬੀ')
+    await user.selectOptions(selector, 'kn')
+    expect(await screen.findByRole('button', { name: 'ಮುಂದುವರಿಸಿ' })).toBeInTheDocument()
     expect(screen.getByRole('banner')).not.toHaveTextContent('ಕನ್ನಡ')
+    await user.selectOptions(selector, 'pa')
+    expect(await screen.findByRole('button', { name: 'ਜਾਰੀ ਰੱਖੋ' })).toBeInTheDocument()
+    expect(screen.getByRole('banner')).not.toHaveTextContent('ਪੰਜਾਬੀ')
   })
 })

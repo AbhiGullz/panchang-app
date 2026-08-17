@@ -12,14 +12,10 @@ import { OnboardingCard } from './components/OnboardingCard'
 import { SettingsTab } from './components/SettingsTab'
 import { TodayView } from './components/TodayView'
 import { useFestivals } from './hooks/use-festivals'
-import { useMuhurta } from './hooks/use-muhurta'
 import { usePanchang } from './hooks/use-panchang'
 import { reverseGeocode } from './lib/location'
-import { subscribeForPush } from './lib/push'
-import { loadPushSubscription, savePushSubscription } from './lib/storage'
-import { humanizeCalendar, humanizeLanguage } from './lib/utils'
+import { humanizeCalendar } from './lib/utils'
 import { useAppStore } from './store/app-store'
-import type { MuhurtaCategory } from './types/api'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,8 +41,6 @@ function AppShell() {
     updateAyanamsa,
     completeOnboarding,
   } = useAppStore()
-  const [category, setCategory] = useState<MuhurtaCategory>('travel')
-  const [pushReady, setPushReady] = useState(Boolean(loadPushSubscription()))
   const [notice, setNotice] = useState('')
 
   useRegisterSW()
@@ -64,15 +58,6 @@ function AppShell() {
     preferences.language,
   )
 
-  const { data: muhurtaData } = useMuhurta(
-    selectedDate,
-    preferences.location.lat,
-    preferences.location.lng,
-    preferences.location.tz,
-    preferences.calendar,
-    category,
-  )
-
   const festivalYear = useMemo(() => Number(selectedDate.slice(0, 4)), [selectedDate])
   const { data: festivalsData } = useFestivals(festivalYear, preferences.calendar, preferences.language)
 
@@ -86,7 +71,7 @@ function AppShell() {
       const location = await new Promise<GeolocationPosition>((resolve, reject) =>
         navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: false, timeout: 8000 }),
       )
-      const next = await reverseGeocode(location.coords.latitude, location.coords.longitude)
+      const next = await reverseGeocode(location.coords.latitude, location.coords.longitude, preferences.language)
       updateLocation(next)
       setNotice('')
     } catch {
@@ -94,25 +79,12 @@ function AppShell() {
     }
   }
 
-  const subscribePush = async () => {
-    try {
-      const key = import.meta.env.VITE_VAPID_PUBLIC_KEY
-      if (!key) {
-        setNotice('Set VITE_VAPID_PUBLIC_KEY in .env for real push subscriptions.')
-        return
-      }
-      const subscription = await subscribeForPush(key)
-      savePushSubscription(subscription)
-      setPushReady(true)
-      setNotice('Push subscription saved locally. Backend VAPID registration endpoint still needed.')
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : 'Push subscription failed.')
-    }
-  }
-
   const changeLanguage = (language: typeof preferences.language) => {
     updateLanguage(language)
     void i18n.changeLanguage(language)
+    void reverseGeocode(preferences.location.lat, preferences.location.lng, language)
+      .then(updateLocation)
+      .catch(() => undefined)
   }
 
   return (
@@ -124,7 +96,6 @@ function AppShell() {
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">{t('appName')}</div>
               <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
-              <p className="text-sm text-[#64748B]">{humanizeLanguage(preferences.language)}</p>
             </div>
           </div>
           <input
@@ -156,7 +127,7 @@ function AppShell() {
       <AdvertisementSlot />
 
       {activeTab === 'today' ? <TodayView data={panchangData} city={preferences.location.city} calendar={humanizeCalendar(preferences.calendar, preferences.language)} ayanamsa={preferences.ayanamsa} /> : null}
-      {activeTab === 'muhurta' ? <MuhurtaTab category={category} onCategoryChange={setCategory} data={muhurtaData} /> : null}
+      {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
       {activeTab === 'settings' ? (
         <SettingsTab
@@ -166,8 +137,6 @@ function AppShell() {
           onNotificationTimeChange={updateNotificationTime}
           onAyanamsaChange={updateAyanamsa}
           onLocationChange={updateLocation}
-          onSubscribePush={subscribePush}
-          pushReady={pushReady}
         />
       ) : null}
 

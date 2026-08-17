@@ -12,8 +12,6 @@ interface Props {
   onNotificationTimeChange: (time: string) => void
   onAyanamsaChange: (value: string) => void
   onLocationChange: (location: AppPreferences['location']) => void
-  onSubscribePush: () => Promise<void>
-  pushReady: boolean
 }
 
 export function SettingsTab(props: Props) {
@@ -28,7 +26,7 @@ export function SettingsTab(props: Props) {
           <div className="min-w-0"><p className="text-sm font-medium text-slate-700">{t('location')}</p><p className="break-words font-semibold text-slate-900">{props.preferences.location.city}</p><details className="mt-1 text-xs text-slate-500"><summary className="cursor-pointer">{t('details')}</summary><span>{t('coordinates')}: {props.preferences.location.lat}, {props.preferences.location.lng} · {t('timezone')}: {props.preferences.location.tz}</span></details></div>
           {!editingLocation && <button className="rounded-xl border border-sky-300 px-3 py-2 text-sm font-semibold text-sky-700" onClick={() => setEditingLocation(true)} type="button">{t('changeLocation')}</button>}
         </div>
-        {editingLocation && <div className="mt-3"><p className="mb-2 text-sm font-medium text-slate-700">{t('changeLocationTitle')}</p><LocationPicker location={props.preferences.location} onLocationChange={(location) => { props.onLocationChange(location); setEditingLocation(false) }} onCancel={() => setEditingLocation(false)} showCancel /></div>}
+        {editingLocation && <div className="mt-3"><p className="mb-2 text-sm font-medium text-slate-700">{t('changeLocationTitle')}</p><LocationPicker language={props.preferences.language} location={props.preferences.location} onLocationChange={(location) => { props.onLocationChange(location); setEditingLocation(false) }} onCancel={() => setEditingLocation(false)} showCancel /></div>}
       </div>
       <label className="block text-sm font-medium text-slate-700">
         {t('language')}
@@ -74,14 +72,6 @@ export function SettingsTab(props: Props) {
           {AYANAMSA_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
         </select>
       </label>
-
-      <button
-        className="w-full rounded-2xl border border-sky-200 px-4 py-3 text-sm font-semibold text-sky-700"
-        onClick={() => void props.onSubscribePush()}
-        type="button"
-      >
-        {props.pushReady ? t('subscribedPush') : t('subscribePush')}
-      </button>
 
       <a className="block text-sm font-medium text-sky-700 underline" href="/README.md" target="_blank" rel="noreferrer">
         {t('howCalculated')}

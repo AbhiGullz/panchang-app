@@ -2,10 +2,11 @@ import { useQuery } from '@tanstack/react-query'
 import { fetchPanchang } from '../lib/api'
 import { loadOfflineDay, saveOfflineDay } from '../lib/offline-cache'
 import { loadOfflineCacheIndex, saveOfflineCacheIndex } from '../lib/storage'
+import { OFFLINE_CACHE_VERSION } from '../lib/constants'
 import type { CalendarSchool, LanguageCode } from '../types/api'
 
 export function cacheKey(date: string, lat: number, lng: number, tz: string, calendar: CalendarSchool, lang: LanguageCode) {
-  return `${date}:${lat}:${lng}:${tz}:${calendar}:${lang}`
+  return `${OFFLINE_CACHE_VERSION}:${date}:${lat}:${lng}:${tz}:${calendar}:${lang}`
 }
 
 export function usePanchang(date: string, lat: number, lng: number, tz: string, calendar: CalendarSchool, lang: LanguageCode) {

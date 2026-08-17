@@ -15,7 +15,7 @@ describe('settings location change', () => {
   it('opens picker, selects a worldwide result, and returns the complete location', async () => {
     const user = userEvent.setup(); const onLocationChange = vi.fn()
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify([{ display_name: 'London, England, United Kingdom', lat: 51.5, lng: -0.12, tz: 'Europe/London' }]), { status: 200 }))
-    renderWithProviders(<SettingsTab preferences={preferences} onLocationChange={onLocationChange} onLanguageChange={vi.fn()} onCalendarChange={vi.fn()} onNotificationTimeChange={vi.fn()} onAyanamsaChange={vi.fn()} onSubscribePush={vi.fn(async () => undefined)} pushReady={false} />)
+    renderWithProviders(<SettingsTab preferences={preferences} onLocationChange={onLocationChange} onLanguageChange={vi.fn()} onCalendarChange={vi.fn()} onNotificationTimeChange={vi.fn()} onAyanamsaChange={vi.fn()} />)
     expect(screen.getByText('Delhi')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Change location' }))
     const input = screen.getByRole('combobox', { name: /Search worldwide locations/ })
@@ -27,13 +27,13 @@ describe('settings location change', () => {
 
   it('cancels without changing the saved location', async () => {
     const user = userEvent.setup(); const onLocationChange = vi.fn()
-    renderWithProviders(<SettingsTab preferences={preferences} onLocationChange={onLocationChange} onLanguageChange={vi.fn()} onCalendarChange={vi.fn()} onNotificationTimeChange={vi.fn()} onAyanamsaChange={vi.fn()} onSubscribePush={vi.fn(async () => undefined)} pushReady={false} />)
+    renderWithProviders(<SettingsTab preferences={preferences} onLocationChange={onLocationChange} onLanguageChange={vi.fn()} onCalendarChange={vi.fn()} onNotificationTimeChange={vi.fn()} onAyanamsaChange={vi.fn()} />)
     await user.click(screen.getByRole('button', { name: 'Change location' }))
     await user.click(screen.getByRole('button', { name: 'Cancel' }))
     expect(onLocationChange).not.toHaveBeenCalled(); expect(screen.getByText('Delhi')).toBeInTheDocument()
   })
   it('keeps exact location data in technical details while showing the friendly city', () => {
-    renderWithProviders(<SettingsTab preferences={preferences} onLocationChange={vi.fn()} onLanguageChange={vi.fn()} onCalendarChange={vi.fn()} onNotificationTimeChange={vi.fn()} onAyanamsaChange={vi.fn()} onSubscribePush={vi.fn(async () => undefined)} pushReady={false} />)
+    renderWithProviders(<SettingsTab preferences={preferences} onLocationChange={vi.fn()} onLanguageChange={vi.fn()} onCalendarChange={vi.fn()} onNotificationTimeChange={vi.fn()} onAyanamsaChange={vi.fn()} />)
     expect(screen.getByText('Delhi')).toBeInTheDocument()
     const details = document.querySelector('details')
     expect(details?.textContent).toContain('28.6')

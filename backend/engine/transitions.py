@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date, datetime, time, timedelta, timezone
+from math import cos, pi
 from typing import Callable
 from zoneinfo import ZoneInfo
 
@@ -117,7 +118,10 @@ def compute_transitions(target_date: date, sunrise_dt: datetime, timezone_name: 
     next_karana_at = min((item for item in karana_changes if item > sunrise_dt), default=None)
     next_slot = _karana_bucket(_phase(_jd(next_karana_at))) if next_karana_at else (karana_slot + 1) % 60
 
-    illumination = phase / 360
+    # Fraction of the lunar disc illuminated: 0 at conjunction, 0.5 at a
+    # quarter, and 1 at opposition. Phase progress is retained separately as
+    # elongation_degrees.
+    illumination = (1 - cos(phase * pi / 180)) / 2
     phase_state = int(round(phase / 12)) % 30
     return {
         "tithi": {"start": tithi["start"], "end": tithi["end"], "next": {"index": (tithi_index + 1) % 30 + 1, "name": TITHI_NAMES[(tithi_index + 1) % 30], "at": tithi["next"]["at"] if tithi["next"] else None}},

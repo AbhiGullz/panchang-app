@@ -4,7 +4,11 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-source .venv/bin/activate
+PYTHON_BIN="${PYTHON_BIN:-.venv/bin/python}"
+if [[ ! -x "$PYTHON_BIN" ]]; then
+  echo "Python environment not found: $PYTHON_BIN" >&2
+  exit 1
+fi
 
 PORT=8899
 BASE="http://127.0.0.1:${PORT}"
@@ -20,7 +24,7 @@ cleanup() {
 trap cleanup EXIT
 
 if ! curl -fsS "$BASE/api/v1/health" >/dev/null 2>&1; then
-  uvicorn api.main:app --host 127.0.0.1 --port "$PORT" >/tmp/panchang-e2e-uvicorn.log 2>&1 &
+  PYTHONPATH="$ROOT_DIR" "$PYTHON_BIN" -m uvicorn api.main:app --host 127.0.0.1 --port "$PORT" >/tmp/panchang-e2e-uvicorn.log 2>&1 &
   UVICORN_PID=$!
   STARTED_BY_SCRIPT=1
   for _ in {1..30}; do

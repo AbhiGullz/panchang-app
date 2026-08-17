@@ -7,10 +7,11 @@ import { PanchangLogo } from '../components/PanchangLogo'
 const publicDir = resolve(process.cwd(), 'public')
 
 describe('static Panchang branding', () => {
-  it('renders the approved logo as an accessible image without phase state', () => {
+  it('renders the approved logo inline so it works at every deployment path', () => {
     render(<PanchangLogo />)
 
-    expect(screen.getByRole('img', { name: 'Panchang logo' })).toHaveAttribute('src', '/logo.svg')
+    expect(screen.queryByRole('img', { name: 'Panchang logo' })).not.toBeInTheDocument()
+    expect(document.querySelector('svg')).toBeInTheDocument()
   })
 
   it.each(['logo.svg', 'favicon.svg', 'pwa-192x192.svg', 'pwa-512x512.svg', 'logo-monochrome.svg'])(

@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { fetchGeocode } from '../lib/api'
-import type { GeocodeResult, LocationPreference } from '../types/api'
+import type { GeocodeResult, LanguageCode, LocationPreference } from '../types/api'
 
 interface Props {
   location: LocationPreference
   onLocationChange: (location: LocationPreference) => void
   onCancel?: () => void
   showCancel?: boolean
+  language: LanguageCode
 }
 
-export function LocationPicker({ location, onLocationChange, onCancel, showCancel = false }: Props) {
+export function LocationPicker({ location, onLocationChange, onCancel, showCancel = false, language }: Props) {
   const { t } = useTranslation()
   const [query, setQuery] = useState(location.city)
   const [results, setResults] = useState<GeocodeResult[]>([])
@@ -27,7 +28,7 @@ export function LocationPicker({ location, onLocationChange, onCancel, showCance
     const timer = window.setTimeout(() => {
       const currentRequest = ++requestId.current
       setStatus('loading')
-      void fetchGeocode(trimmed).then((next) => {
+      void fetchGeocode(trimmed, language).then((next) => {
         if (currentRequest !== requestId.current) return
         setResults(next); setActiveIndex(-1); setStatus(next.length ? 'idle' : 'empty')
       }).catch(() => {
@@ -35,7 +36,7 @@ export function LocationPicker({ location, onLocationChange, onCancel, showCance
       })
     }, 400)
     return () => window.clearTimeout(timer)
-  }, [location.city, query, retryToken])
+  }, [language, location.city, query, retryToken])
 
   const selectResult = (result: GeocodeResult) => {
     onLocationChange({ city: result.display_name, lat: result.lat, lng: result.lng, tz: result.tz })
