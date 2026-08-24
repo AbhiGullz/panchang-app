@@ -61,6 +61,12 @@ export interface TransitionElement {
   next?: { index: number; name: string; at?: string | null } | null
 }
 
+export interface LocalizedTransition {
+  start?: string | null
+  end?: string | null
+  next?: { index: number; name: LocalizedNames; at?: string | null } | null
+}
+
 export interface PanchangResponse {
   date: string
   location: {
@@ -96,7 +102,7 @@ export interface PanchangResponse {
     name: LocalizedNames
     transitions?: Array<{ at: string; index: number; name: string }>
   }
-  moon_sign: LocalizedNames
+  moon_sign: LocalizedNames & LocalizedTransition
   month_name: LocalizedNames
   era_year: number
   paksha: string | null

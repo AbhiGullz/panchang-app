@@ -89,6 +89,12 @@ class MuhurtaModel(BaseModel):
     disha_shool: str
 
 
+class MoonSignModel(LocalizedNameModel):
+    start: str | None = None
+    end: str | None = None
+    next: dict[str, Any] | None = None
+
+
 class PanchangResponseModel(BaseModel):
     date: str
     location: LocationModel
@@ -97,7 +103,7 @@ class PanchangResponseModel(BaseModel):
     nakshatra: NakshatraModel
     yoga: YogaModel
     karana: KaranaModel
-    moon_sign: LocalizedNameModel
+    moon_sign: MoonSignModel
     month_name: LocalizedNameModel
     era_year: int
     paksha: str | None

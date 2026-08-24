@@ -192,7 +192,16 @@ def compute_daily_panchang(
             "name": get_name_map("karana", KARANA_NAME_TO_INDEX[tithi_karana["karana"]["name"]]),
             **transitions["karana"],
         },
-        "moon_sign": get_name_map("rashi", RASHI_NAME_TO_INDEX[moon_sign]),
+        "moon_sign": {
+            **get_name_map("rashi", RASHI_NAME_TO_INDEX[moon_sign]),
+            "start": transitions["moon_sign"]["start"],
+            "end": transitions["moon_sign"]["end"],
+            "next": {
+                "index": transitions["moon_sign"]["next"]["index"],
+                "name": get_name_map("rashi", transitions["moon_sign"]["next"]["index"]),
+                "at": transitions["moon_sign"]["next"]["at"],
+            } if transitions["moon_sign"]["next"] else None,
+        },
         "month_name": get_month_name_map(calendar_school, school_month_index),
         "era_year": school.era_year,
         "paksha": school.paksha,
