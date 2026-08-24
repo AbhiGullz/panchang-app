@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AYANAMSA_OPTIONS, SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } from '../types/api'
-import { humanizeAyanamsa, humanizeCalendar } from '../lib/utils'
+import { humanizeAyanamsa, humanizeCalendar, humanizeTimezone } from '../lib/utils'
 import { LocationPicker } from './LocationPicker'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
 
@@ -12,6 +12,7 @@ interface Props {
   onNotificationTimeChange: (time: string) => void
   onAyanamsaChange: (value: string) => void
   onLocationChange: (location: AppPreferences['location']) => void
+  onFeedback?: () => void
 }
 
 export function SettingsTab(props: Props) {
@@ -23,7 +24,7 @@ export function SettingsTab(props: Props) {
       <h2 className="text-lg font-semibold text-slate-900">{t('settings')}</h2>
       <div className="rounded-2xl bg-sky-50 p-4">
         <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0"><p className="text-sm font-medium text-slate-700">{t('location')}</p><p className="break-words font-semibold text-slate-900">{props.preferences.location.city}</p><details className="mt-1 text-xs text-slate-500"><summary className="cursor-pointer">{t('details')}</summary><span>{t('coordinates')}: {props.preferences.location.lat}, {props.preferences.location.lng} · {t('timezone')}: {props.preferences.location.tz}</span></details></div>
+          <div className="min-w-0"><p className="text-sm font-medium text-slate-700">{t('location')}</p><p className="break-words font-semibold text-slate-900">{props.preferences.location.city}</p><details className="mt-1 text-xs text-slate-500"><summary className="cursor-pointer">{t('details')}</summary><span>{t('coordinates')}: {props.preferences.location.lat}, {props.preferences.location.lng} · {t('timezone')}: {humanizeTimezone(props.preferences.location.tz, props.preferences.language)} ({props.preferences.location.tz})</span></details></div>
           {!editingLocation && <button className="rounded-xl border border-sky-300 px-3 py-2 text-sm font-semibold text-sky-700" onClick={() => setEditingLocation(true)} type="button">{t('changeLocation')}</button>}
         </div>
         {editingLocation && <div className="mt-3"><p className="mb-2 text-sm font-medium text-slate-700">{t('changeLocationTitle')}</p><LocationPicker language={props.preferences.language} location={props.preferences.location} onLocationChange={(location) => { props.onLocationChange(location); setEditingLocation(false) }} onCancel={() => setEditingLocation(false)} showCancel /></div>}
@@ -73,9 +74,7 @@ export function SettingsTab(props: Props) {
         </select>
       </label>
 
-      <a className="block text-sm font-medium text-sky-700 underline" href="/README.md" target="_blank" rel="noreferrer">
-        {t('howCalculated')}
-      </a>
+      <button className="block text-sm font-medium text-sky-700 underline" onClick={() => props.onFeedback?.()} type="button">{t('feedback')}</button>
     </section>
   )
 }

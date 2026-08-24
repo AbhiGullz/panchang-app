@@ -6,6 +6,7 @@ import './locales/i18n'
 import { BottomNav } from './components/BottomNav'
 import { AdvertisementSlot } from './components/AdvertisementSlot'
 import { FestivalsTab } from './components/FestivalsTab'
+import { FeedbackScreen } from './components/FeedbackScreen'
 import { PanchangLogo } from './components/PanchangLogo'
 import { MuhurtaTab } from './components/MuhurtaTab'
 import { OnboardingCard } from './components/OnboardingCard'
@@ -137,8 +138,10 @@ function AppShell() {
           onNotificationTimeChange={updateNotificationTime}
           onAyanamsaChange={updateAyanamsa}
           onLocationChange={updateLocation}
+          onFeedback={() => setActiveTab('feedback')}
         />
       ) : null}
+      {activeTab === 'feedback' ? <FeedbackScreen onBack={() => setActiveTab('settings')} /> : null}
 
       <AdvertisementSlot />
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />

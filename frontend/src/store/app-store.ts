@@ -7,7 +7,7 @@ import type { AppPreferences, CalendarSchool, LanguageCode, LocationPreference }
 
 interface AppState {
   preferences: AppPreferences
-  activeTab: 'today' | 'muhurta' | 'festivals' | 'settings'
+  activeTab: 'today' | 'muhurta' | 'festivals' | 'settings' | 'feedback'
   selectedDate: string
   setActiveTab: (tab: AppState['activeTab']) => void
   setSelectedDate: (date: string) => void
@@ -20,6 +20,8 @@ interface AppState {
 }
 
 const initialPreferences = typeof window === 'undefined' ? DEFAULT_PREFERENCES : loadPreferences()
+const initialDate = typeof window === 'undefined' ? formatDateInput(new Date()) : window.localStorage.getItem('gajaa-selected-date') ?? formatDateInput(new Date())
+const initialTab = typeof window === 'undefined' ? 'today' : (window.localStorage.getItem('gajaa-active-tab') as AppState['activeTab'] | null) ?? 'today'
 
 const persist = (preferences: AppPreferences) => {
   savePreferences(preferences)
@@ -28,10 +30,10 @@ const persist = (preferences: AppPreferences) => {
 
 export const useAppStore = create<AppState>((set) => ({
   preferences: initialPreferences,
-  activeTab: 'today',
-  selectedDate: formatDateInput(new Date()),
-  setActiveTab: (activeTab) => set({ activeTab }),
-  setSelectedDate: (selectedDate) => set({ selectedDate }),
+  activeTab: initialTab,
+  selectedDate: initialDate,
+  setActiveTab: (activeTab) => { if (typeof window !== 'undefined') window.localStorage.setItem('gajaa-active-tab', activeTab); set({ activeTab }) },
+  setSelectedDate: (selectedDate) => { if (typeof window !== 'undefined') window.localStorage.setItem('gajaa-selected-date', selectedDate); set({ selectedDate }) },
   updateLocation: (location) =>
     set((state) => ({
       preferences: persist({ ...state.preferences, location }),

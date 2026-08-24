@@ -2,7 +2,7 @@ import { CalendarDays, Home, Settings, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 interface Props {
-  activeTab: 'today' | 'muhurta' | 'festivals' | 'settings'
+  activeTab: 'today' | 'muhurta' | 'festivals' | 'settings' | 'feedback'
   onTabChange: (tab: Props['activeTab']) => void
 }
 

@@ -26,6 +26,8 @@ export function usePanchang(date: string, lat: number, lng: number, tz: string, 
         throw error
       }
     },
-    staleTime: 1000 * 60 * 10,
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   })
 }

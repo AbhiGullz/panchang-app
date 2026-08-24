@@ -29,6 +29,15 @@ export function humanizeAyanamsa(value: string, language: string) {
   return labels?.[language as LanguageCode] ?? labels?.en ?? value
 }
 
+export function humanizeTimezone(timezone: string, language: string) {
+  try {
+    const parts = new Intl.DateTimeFormat(language, { timeZone: timezone, timeZoneName: 'long' }).formatToParts(new Date())
+    return parts.find((part) => part.type === 'timeZoneName')?.value ?? timezone
+  } catch {
+    return timezone
+  }
+}
+
 export function formatTimeWithTimezone(time: string, timezone: string, date: string, locale = 'en-IN') {
   const instant = time.includes('T') ? new Date(time) : new Date(`${date}T12:00:00Z`)
   const formatter = new Intl.DateTimeFormat(locale, {

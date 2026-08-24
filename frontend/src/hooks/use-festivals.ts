@@ -6,6 +6,8 @@ export function useFestivals(year: number, calendar: CalendarSchool, lang: Langu
   return useQuery({
     queryKey: ['festivals', year, calendar, lang],
     queryFn: () => fetchFestivals({ year, calendar, lang }),
-    staleTime: 1000 * 60 * 60,
+    staleTime: Infinity,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
   })
 }
