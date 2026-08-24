@@ -11,8 +11,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['logo.svg', 'favicon.svg', 'logo-monochrome.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],
       manifest: {
-        name: 'Panchang PWA',
-        short_name: 'Panchang',
+        name: 'Jyoti Panchang',
+        short_name: 'Jyoti Panchang',
         description: 'Daily panchang with tradition-aware calculations and offline support.',
         theme_color: '#0F2747',
         background_color: '#F5FAFD',
