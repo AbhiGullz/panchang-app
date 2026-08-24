@@ -17,7 +17,16 @@ export function formatDateInput(value: Date) {
 export function formatDisplayDate(value: string, language: string) {
   const [year, month, day] = value.split('-').map(Number)
   if (!year || !month || !day) return value
-  return new Intl.DateTimeFormat(language, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(year, month - 1, day))
+  return new Intl.DateTimeFormat(language, { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(year, month - 1, day))
+}
+
+const AYANAMSA_LABELS: Record<string, LocalizedNames> = {
+  lahiri: { en: 'Lahiri', hi: 'लाहिरी', mr: 'लाहिरी', ta: 'லஹிரி', te: 'లహిరి', kn: 'ಲಹಿರಿ', ml: 'ലഹിരി', gu: 'લાહિરી', bn: 'লাহিড়ী', pa: 'ਲਹਿਰੀ' },
+}
+
+export function humanizeAyanamsa(value: string, language: string) {
+  const labels = AYANAMSA_LABELS[value.toLowerCase()]
+  return labels?.[language as LanguageCode] ?? labels?.en ?? value
 }
 
 export function formatTimeWithTimezone(time: string, timezone: string, date: string, locale = 'en-IN') {

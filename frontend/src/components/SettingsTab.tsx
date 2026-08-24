@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AYANAMSA_OPTIONS, SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } from '../types/api'
-import { humanizeCalendar } from '../lib/utils'
+import { humanizeAyanamsa, humanizeCalendar } from '../lib/utils'
 import { LocationPicker } from './LocationPicker'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
 
@@ -69,7 +69,7 @@ export function SettingsTab(props: Props) {
           value={props.preferences.ayanamsa}
           onChange={(event) => props.onAyanamsaChange(event.target.value)}
         >
-          {AYANAMSA_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+          {AYANAMSA_OPTIONS.map((option) => <option key={option.value} value={option.value}>{humanizeAyanamsa(option.value, props.preferences.language)}</option>)}
         </select>
       </label>
 
