@@ -9,7 +9,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.svg', 'favicon.svg', 'logo-monochrome.svg', 'pwa-192x192.svg', 'pwa-512x512.svg'],
+      includeAssets: ['logo.svg', 'favicon.svg', 'logo-monochrome.svg', 'pwa-192x192.svg', 'pwa-512x512.svg', 'logo-reference.jpg'],
       manifest: {
         name: 'Gajaa Panchang',
         short_name: 'Gajaa Panchang',
@@ -21,15 +21,15 @@ export default defineConfig({
         start_url: '/',
         icons: [
           {
-            src: 'pwa-192x192.svg',
+            src: 'logo-reference.jpg',
             sizes: '192x192',
-            type: 'image/svg+xml',
+            type: 'image/jpeg',
             purpose: 'any maskable'
           },
           {
-            src: 'pwa-512x512.svg',
+            src: 'logo-reference.jpg',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/jpeg',
             purpose: 'any maskable'
           }
         ]

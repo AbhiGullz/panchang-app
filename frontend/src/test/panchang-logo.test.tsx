@@ -12,7 +12,7 @@ describe('static Panchang branding', () => {
 
     const logo = document.querySelector('img')
     expect(logo).toBeInTheDocument()
-    expect(logo).toHaveAttribute('src', expect.stringContaining('logo.svg'))
+    expect(logo).toHaveAttribute('src', expect.stringContaining('logo-reference.jpg'))
     expect(logo).toHaveAttribute('alt', '')
   })
 
