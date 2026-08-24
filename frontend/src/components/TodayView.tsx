@@ -2,7 +2,7 @@ import { Sunrise, Sunset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PanchangLogo } from './PanchangLogo'
 import type { PanchangResponse } from '../types/api'
-import { formatDisplayDate, formatTimeWithTimezone } from '../lib/utils'
+import { formatTimeWithTimezone } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
@@ -25,7 +25,7 @@ function transitionText(
   t: (key: string) => string,
 ) {
   const endText = end ? `${t('endsAt')}: ${formatTimeWithTimezone(end, timezone, date, language)}` : t('endTimeUnavailable')
-  const nextText = next?.name ? ` · ${t('next')}: ${next.name}${next.at ? ` (${formatTimeWithTimezone(next.at, timezone, date, language)})` : ''}` : ''
+  const nextText = next?.name ? ` · ${t('next')}: ${next.name}` : ''
   return `${endText}${nextText}`
 }
 
@@ -39,10 +39,6 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
   return (
     <section className="space-y-4">
       <div className="rounded-3xl bg-[#163B63] p-6 text-white shadow-lg">
-        <div className="flex items-center justify-between text-sm opacity-90">
-          <span>{formatDisplayDate(data.date, i18n.language)}</span>
-          <span>{city || data.location.name}</span>
-        </div>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-4 backdrop-blur-sm">
             <div className="mb-2 flex items-center gap-2 text-sm uppercase tracking-wide text-[#B7DDF4]">

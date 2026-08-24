@@ -15,12 +15,12 @@ def test_geocode_rejects_empty_and_overlong_queries():
 
 def test_geocode_returns_validated_results(monkeypatch):
     async def fake_provider(query: str, limit: int, lang: str = "en"):
-        return [{"display_name": "Delhi, India", "lat": 28.6139, "lon": 77.209}]
+        return [{"display_name": "209, West 9th Street, Austin, Travis County, Texas, 78701, United States", "address": {"city": "Austin", "state": "Texas", "country": "United States"}, "lat": 28.6139, "lon": 77.209}]
 
     monkeypatch.setattr("api.main._search_nominatim", fake_provider)
     response = client.get("/api/v1/geocode", params={"q": "Delhi"})
     assert response.status_code == 200
-    assert response.json()[0]["display_name"] == "Delhi, India"
+    assert response.json()[0]["display_name"] == "Austin, Texas, United States"
     assert response.json()[0]["lat"] == 28.6139
     assert response.json()[0]["tz"] == "Asia/Kolkata"
 

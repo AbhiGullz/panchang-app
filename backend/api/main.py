@@ -71,7 +71,13 @@ class GeocodeResultModel(BaseModel):
             timezone_name = _timezone_for_coordinates(lat, lng)
             if timezone_name is None:
                 return None
-            return cls(display_name=str(item["display_name"]).strip(), lat=lat, lng=lng, tz=timezone_name)
+            address = item.get("address") if isinstance(item.get("address"), dict) else {}
+            city = next((str(address[key]).strip() for key in ("city", "town", "municipality", "village", "county") if address.get(key)), "")
+            state = str(address.get("state") or address.get("state_district") or "").strip()
+            country = str(address.get("country") or "").strip()
+            location_parts = [part for part in (city, state, country) if part]
+            display_name = ", ".join(dict.fromkeys(location_parts)) or str(item["display_name"]).strip()
+            return cls(display_name=display_name, lat=lat, lng=lng, tz=timezone_name)
         except (KeyError, TypeError, ValueError):
             return None
 

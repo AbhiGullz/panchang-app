@@ -28,6 +28,7 @@ describe('TodayView', () => {
     renderWithProviders(<TodayView data={sample} calendar="Purnimanta" ayanamsa="Lahiri" />)
     expect(screen.getByText('Krishna Panchami')).toBeInTheDocument()
     expect(screen.getAllByText(/Rohini/).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/Next:.*\(/)).not.toBeInTheDocument()
   })
 
   it('shows the same timezone style for sunrise, sunset, and rahu kaal', () => {
