@@ -16,7 +16,7 @@ export function BottomNav({ activeTab, onTabChange }: Props) {
   ] as const
 
   return (
-    <nav className="relative z-10 mx-auto flex w-full max-w-xl rounded-3xl bg-white/95 p-2 shadow-lg ring-1 ring-[#D7E7F0] backdrop-blur">
+    <nav className="sticky bottom-3 z-20 mx-auto flex w-full max-w-3xl rounded-3xl bg-white/95 p-2 shadow-lg ring-1 ring-[#D7E7F0] backdrop-blur">
       {tabs.map((tab) => {
         const Icon = tab.icon
         const selected = activeTab === tab.key

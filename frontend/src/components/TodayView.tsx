@@ -45,9 +45,10 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
   }
 
   return (
-    <section className="space-y-4">
-      <div className="rounded-3xl bg-[#163B63] p-6 text-white shadow-lg">
-        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+    <section className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.72fr)] lg:items-start lg:gap-4 lg:space-y-0">
+      <div className="space-y-4">
+      <div className="rounded-3xl bg-[#163B63] p-5 text-white shadow-lg">
+        <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-4 backdrop-blur-sm">
             <div className="mb-2 flex items-center gap-2 text-sm uppercase tracking-wide text-[#B7DDF4]">
               <PanchangLogo className="h-6 w-6" /> {t('tithi')}
@@ -97,10 +98,11 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
           </dl>
         </div>
       </div>
+      </div>
 
-      <section className="rounded-3xl bg-white p-5 shadow-sm border border-[#D7E7F0]">
+      <section className="rounded-3xl bg-white p-5 shadow-sm border border-[#D7E7F0] lg:sticky lg:top-4">
         <h2 className="font-semibold text-slate-900">{t('panchangDetails')}</h2>
-        <div className="mt-4 space-y-4 text-sm text-slate-600">
+        <div className="mt-4 grid gap-3 text-sm text-slate-600">
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
             <div className="font-semibold text-slate-900">{t('tithi')}: {localized(data.tithi.name, i18n.language)}</div>
             <div className="mt-1">{t('paksha')}: {data.paksha ? staticName(data.paksha, i18n.language) : '—'} · {t('month')}: {localized(data.month_name, i18n.language)}</div>

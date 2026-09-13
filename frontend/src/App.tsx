@@ -89,8 +89,8 @@ function AppShell() {
   }
 
   return (
-    <div className="mx-auto flex min-h-screen w-full max-w-xl flex-col gap-4 px-4 py-5 text-[#12233A]">
-      <header aria-label={t('appName')} className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
+    <div className="mx-auto flex min-h-screen w-full max-w-[1440px] flex-col gap-4 px-4 py-5 text-[#12233A] sm:px-6 lg:px-8">
+      <header aria-label={t('appName')} className="rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0] xl:ml-[200px]">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" />
@@ -110,6 +110,9 @@ function AppShell() {
 
       </header>
 
+      <div className="xl:grid xl:grid-cols-[180px_minmax(0,1fr)] xl:items-start xl:gap-5">
+        <AdvertisementSlot className="sticky top-5 hidden min-h-[520px] xl:block" format="vertical" />
+        <main className="min-w-0 space-y-4">
       {!preferences.onboardingComplete ? (
         <OnboardingCard
           location={preferences.location}
@@ -125,7 +128,7 @@ function AppShell() {
 
       {notice ? <div className="rounded-2xl bg-[#DDF3FC] px-4 py-3 text-sm text-[#163B63]">{notice}</div> : null}
 
-      <AdvertisementSlot />
+      <AdvertisementSlot className="xl:hidden" />
 
       {activeTab === 'today' ? <TodayView data={panchangData} city={preferences.location.city} calendar={humanizeCalendar(preferences.calendar, preferences.language)} ayanamsa={preferences.ayanamsa} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
@@ -143,7 +146,8 @@ function AppShell() {
       ) : null}
       {activeTab === 'feedback' ? <FeedbackScreen onBack={() => setActiveTab('settings')} /> : null}
 
-      <AdvertisementSlot />
+        </main>
+      </div>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )
