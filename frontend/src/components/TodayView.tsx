@@ -99,6 +99,10 @@ export function TodayView({ data }: Props) {
             <div className="mt-1 whitespace-pre-line">{transitionText(data.tithi.end ?? data.tithi.ends_at, data.tithi.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
+            <div className="font-semibold text-slate-900">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
+            <div className="mt-1 whitespace-pre-line">{transitionText(data.moon_sign.end, data.moon_sign.next, data.location.tz, data.date, i18n.language, t)}</div>
+          </div>
+          <div className="rounded-2xl bg-[#F5FAFD] p-4">
             <div className="font-semibold text-slate-900">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
             <div className="mt-1 whitespace-pre-line">{transitionText(data.nakshatra.end, data.nakshatra.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
@@ -109,10 +113,6 @@ export function TodayView({ data }: Props) {
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
             <div className="font-semibold text-slate-900">{t('karana')}: {localized(data.karana.name, i18n.language)}</div>
             <div className="mt-1 whitespace-pre-line">{transitionText(data.karana.end, data.karana.next, data.location.tz, data.date, i18n.language, t)}</div>
-          </div>
-          <div className="rounded-2xl bg-[#F5FAFD] p-4">
-            <div className="font-semibold text-slate-900">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
-            <div className="mt-1 whitespace-pre-line">{transitionText(data.moon_sign.end, data.moon_sign.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           {data.timing_metadata ? <div className="border-t border-slate-100 pt-3 text-xs text-slate-500 lg:col-span-2">{t('timezone')}: {humanizeTimezone(data.timing_metadata.timezone, i18n.language)} · {t('ayanamsa')}: {humanizeAyanamsa(data.timing_metadata.ayanamsa, i18n.language)}</div> : null}
         </div>
