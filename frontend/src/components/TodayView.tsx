@@ -57,10 +57,8 @@ export function TodayView({ data }: Props) {
       <div className="rounded-3xl bg-[#163B63] p-5 sm:p-6 text-white shadow-lg">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-5 backdrop-blur-sm">
-            <div className="mb-3 flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]">
-              <PanchangLogo className="h-8 w-8" /> {t('tithi')}
-            </div>
-            <div className="mb-2 flex justify-end">
+            <div className="mb-3 flex items-center justify-between gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]">
+              <span className="flex items-center gap-2"><PanchangLogo className="h-8 w-8" /> {t('tithi')}</span>
               <MoonPhase illumination={data.phase?.illumination} elongationDegrees={data.phase?.elongation_degrees} />
             </div>
             <div>
