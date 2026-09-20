@@ -105,7 +105,7 @@ function AppShell() {
 
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[1480px] flex-col gap-4 px-4 py-5 text-[#12233A] sm:px-6 lg:px-8">
-      <header aria-label={t('appName')} className="mx-auto w-full max-w-[1024px] rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
+      <header aria-label={t('appName')} className="mx-auto w-full max-w-3xl rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" />
@@ -129,8 +129,8 @@ function AppShell() {
 
       </header>
 
-      <div className="xl:grid xl:grid-cols-[180px_minmax(0,1024px)_180px] xl:justify-center xl:items-start xl:gap-5">
-        <AdvertisementSlot className="sticky top-5 hidden min-h-[520px] xl:block" format="vertical" />
+      <div className="xl:grid xl:grid-cols-[240px_minmax(0,768px)_240px] xl:justify-center xl:items-stretch xl:gap-5">
+        <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" />
         <main className="min-w-0 space-y-4">
       {!preferences.onboardingComplete ? (
         <OnboardingCard
@@ -166,7 +166,7 @@ function AppShell() {
       {activeTab === 'feedback' ? <FeedbackScreen onBack={() => setActiveTab('settings')} /> : null}
 
         </main>
-        <AdvertisementSlot className="sticky top-5 hidden min-h-[520px] xl:block" format="vertical" />
+        <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" />
       </div>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
