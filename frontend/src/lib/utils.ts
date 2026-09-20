@@ -15,9 +15,15 @@ export function formatDateInput(value: Date) {
 }
 
 export function formatDisplayDate(value: string, language: string) {
-  const [year, month, day] = value.split('-').map(Number)
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number)
   if (!year || !month || !day) return value
   return new Intl.DateTimeFormat(language, { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(year, month - 1, day))
+}
+
+export function formatWeekday(value: string, language: string) {
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number)
+  if (!year || !month || !day) return value
+  return new Intl.DateTimeFormat(language, { weekday: 'long' }).format(new Date(year, month - 1, day))
 }
 
 const AYANAMSA_LABELS: Record<string, LocalizedNames> = {

@@ -21,7 +21,7 @@ from .nakshatra import compute_nakshatra
 from .rashi import compute_moon_sign
 from .sunrise import compute_sunrise_sunset
 from .tithi import compute_tithi_and_karana
-from .transitions import compute_transitions
+from .transitions import compute_transitions, next_phase_boundary
 from .yoga import compute_yoga
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
@@ -154,6 +154,17 @@ def compute_daily_panchang(
         for index in range(1, 13)
         if get_month_name_map(calendar_school, index)["en"] == school.month_name
     )
+    month_transition = None
+    if calendar_school == "purnimanta":
+        month_end = next_phase_boundary(sunrise_dt, 180.0)
+        next_month_index = school_month_index % 12 + 1
+        month_transition = {
+            "end": month_end.isoformat(timespec="seconds"),
+            "next": {
+                "name": get_month_name_map(calendar_school, next_month_index),
+                "at": month_end.isoformat(timespec="seconds"),
+            },
+        }
 
     payload = {
         "date": date_iso,
@@ -203,6 +214,7 @@ def compute_daily_panchang(
             } if transitions["moon_sign"]["next"] else None,
         },
         "month_name": get_month_name_map(calendar_school, school_month_index),
+        "month_transition": month_transition,
         "era_year": school.era_year,
         "paksha": school.paksha,
         "rahu_kaal": _window_with_iso(rahu_kaal, timezone_name, target_date),

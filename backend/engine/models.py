@@ -95,6 +95,11 @@ class MoonSignModel(LocalizedNameModel):
     next: dict[str, Any] | None = None
 
 
+class MonthTransitionModel(BaseModel):
+    end: str | None = None
+    next: dict[str, Any] | None = None
+
+
 class PanchangResponseModel(BaseModel):
     date: str
     location: LocationModel
@@ -105,6 +110,7 @@ class PanchangResponseModel(BaseModel):
     karana: KaranaModel
     moon_sign: MoonSignModel
     month_name: LocalizedNameModel
+    month_transition: MonthTransitionModel | None = None
     era_year: int
     paksha: str | None
     rahu_kaal: TimeWindowModel

@@ -1,8 +1,9 @@
-import { Sunrise, Sunset } from 'lucide-react'
+import { CalendarDays, Sunrise, Sunset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { MoonPhase } from './MoonPhase'
 import { PanchangLogo } from './PanchangLogo'
 import type { PanchangResponse } from '../types/api'
-import { formatDisplayDate, formatTimeWithTimezone, humanizeAyanamsa } from '../lib/utils'
+import { formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyanamsa } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
@@ -30,7 +31,8 @@ function transitionText(
   language: string,
   t: (key: string) => string,
 ) {
-  const endText = end ? `${t('endsAt')}: ${formatDisplayDate(date, language)}, ${formatTimeWithTimezone(end, timezone, date, language)}` : t('endTimeUnavailable')
+  const endDate = end?.includes('T') ? end : date
+  const endText = end ? `${t('endsAt')}: ${formatDisplayDate(endDate, language)}, ${formatTimeWithTimezone(end, timezone, date, language)}` : t('endTimeUnavailable')
   const nextText = next?.name ? `\n${t('next')}: ${localized(next.name, language)}` : ''
   return `${endText}${nextText}`
 }
@@ -50,10 +52,16 @@ export function TodayView({ data }: Props) {
             <div className="mb-2 flex items-center gap-2 text-sm uppercase tracking-wide text-[#B7DDF4]">
               <PanchangLogo className="h-6 w-6" /> {t('tithi')}
             </div>
-            <div className="text-2xl font-semibold">{localized(data.tithi.name, i18n.language)}</div>
-            <div className="mt-1 text-sm text-[#DDF3FC]">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
-            <div className="mt-1 text-sm text-[#DDF3FC]">{t('month')}: {localized(data.month_name, i18n.language)}</div>
-            <div className="mt-1 text-sm text-[#DDF3FC]">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
+            <div className="flex items-end justify-between gap-3">
+              <div>
+                <div className="text-2xl font-semibold">{localized(data.tithi.name, i18n.language)}</div>
+                <div className="mt-1 flex items-center gap-1.5 text-sm text-[#DDF3FC]"><CalendarDays className="h-3.5 w-3.5" />{formatWeekday(data.date, i18n.language)}</div>
+                <div className="mt-2 text-sm text-[#DDF3FC]">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
+                <div className="mt-1 text-sm text-[#DDF3FC]">{t('month')}: {localized(data.month_name, i18n.language)}</div>
+                <div className="mt-1 text-sm text-[#DDF3FC]">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
+              </div>
+              <MoonPhase illumination={data.phase?.illumination} elongationDegrees={data.phase?.elongation_degrees} />
+            </div>
           </div>
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-4 backdrop-blur-sm">
             <div className="space-y-3">
@@ -78,6 +86,7 @@ export function TodayView({ data }: Props) {
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
             <div className="font-semibold text-slate-900">{t('month')}: {localized(data.month_name, i18n.language)}</div>
             <div className="mt-1">{t('paksha')}: {data.paksha ? pakshaName(data.paksha, i18n.language) : '—'}</div>
+            {data.month_transition ? <div className="mt-1 whitespace-pre-line">{transitionText(data.month_transition.end, data.month_transition.next, data.location.tz, data.date, i18n.language, t)}</div> : null}
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
             <div className="font-semibold text-slate-900">{t('tithi')}: {localized(data.tithi.name, i18n.language)}</div>

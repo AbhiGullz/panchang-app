@@ -92,3 +92,20 @@ def test_illumination_is_a_fraction_not_phase_progress():
     )
 
     assert 0 <= result["phase"]["illumination"] <= 1
+
+
+def test_purnimanta_month_transition_has_an_aware_future_timestamp():
+    result = compute_daily_panchang(
+        date_iso="2026-09-19",
+        latitude=40.5123,
+        longitude=-74.8590,
+        timezone_name="America/New_York",
+        location_name="Flemington",
+        calendar_school="purnimanta",
+    )
+
+    transition = result["month_transition"]
+    assert transition is not None
+    assert datetime.fromisoformat(transition["end"]).utcoffset() is not None
+    assert transition["end"] > "2026-09-19T00:00:00"
+    assert transition["next"]["name"]["en"] != result["month_name"]["en"]

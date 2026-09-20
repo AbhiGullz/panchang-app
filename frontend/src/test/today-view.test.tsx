@@ -6,12 +6,13 @@ const sample = {
   date: '2026-08-04',
   location: { name: 'Delhi', lat: 28.61, lng: 77.21, tz: 'Asia/Kolkata' },
   sun: { rise: '05:47', set: '19:09' },
-  tithi: { index: 20, name: { en: 'Krishna Panchami', hi: 'कृष्ण पंचमी', pa: 'ਕ੍ਰਿਸ਼ਨ ਪੰਚਮੀ', ta: 'கிருஷ்ண பஞ்சமி', te: 'కృష్ణ పంచమి', kn: 'ಕೃಷ್ಣ ಪಂಚಮಿ', ml: 'കൃഷ്ണ പഞ്ചമി', mr: 'कृष्ण पंचमी', gu: 'કૃષ્ણ પંચમી', bn: 'কৃষ্ণ পঞ্চমী' }, ends_at: '06:32' },
+  tithi: { index: 20, name: { en: 'Krishna Panchami', hi: 'कृष्ण पंचमी', pa: 'ਕ੍ਰਿਸ਼ਨ ਪੰਚਮੀ', ta: 'கிருஷ்ண பஞ்சமி', te: 'కృష్ణ పంచమి', kn: 'ಕೃಷ್ಣ ಪಂಚಮಿ', ml: 'കൃഷ്ണ പഞ്ചമി', mr: 'कृष्ण पंचमी', gu: 'કૃષ્ણ પંચમી', bn: 'কৃষ্ণ পঞ্চমী' }, ends_at: '2026-08-05T06:32:00+05:30' },
   nakshatra: { index: 5, name: { en: 'Rohini', hi: 'रोहिणी', pa: 'ਰੋਹਿਣੀ', ta: 'ரோகிணி', te: 'రోహిణి', kn: 'ರೋಹಿಣಿ', ml: 'രോഹിണി', mr: 'रोहिणी', gu: 'રોહિણી', bn: 'রোহিণী' }, pada: 2 },
   yoga: { index: 8, name: { en: 'Siddha', hi: 'सिद्ध', pa: 'ਸਿੱਧ', ta: 'சித்த', te: 'సిద్ధ', kn: 'ಸಿದ್ಧ', ml: 'സിദ്ധ', mr: 'सिद्ध', gu: 'સિદ્ધ', bn: 'সিদ্ধ' } },
   karana: { index: 1, name: { en: 'Bava', hi: 'बव', pa: 'ਬਵ', ta: 'பவ', te: 'బవ', kn: 'ಬವ', ml: 'ബവ', mr: 'बव', gu: 'બવ', bn: 'বব' } },
   moon_sign: { en: 'Vrishabha', hi: 'वृषभ', pa: 'ਵ੍ਰਿਸ਼ਭ', ta: 'ரிஷபம்', te: 'వృషభం', kn: 'ವೃಷಭ', ml: 'വൃശഭം', mr: 'वृषभ', gu: 'વૃષભ', bn: 'বৃষভ' },
   month_name: { en: 'Shravana', hi: 'श्रावण', pa: 'ਸਾਵਣ', ta: 'ஆவணி', te: 'శ్రావణం', kn: 'ಶ್ರಾವಣ', ml: 'ചിങ്ങം', mr: 'श्रावण', gu: 'શ્રાવણ', bn: 'শ্রাবণ' },
+  month_transition: { end: '2026-08-16T20:00:00+05:30', next: { name: { en: 'Bhadrapada', hi: 'भाद्रपद', pa: 'ਭਾਦੋਂ', ta: 'புரட்டாசி', te: 'భాద్రపదం', kn: 'ಭಾದ್ರಪದ', ml: 'ചിങ്ങം', mr: 'भाद्रपद', gu: 'ભાદરવો', bn: 'ভাদ্র' }, at: '2026-08-16T20:00:00+05:30' } },
   era_year: 2083,
   paksha: 'krishna',
   rahu_kaal: { start: '12:15', end: '13:50' },
@@ -37,8 +38,9 @@ describe('TodayView', () => {
     expect(screen.getByText('19:09 IST')).toBeInTheDocument()
     expect(screen.getAllByText(/Month: Shravana/).length).toBeGreaterThan(0)
     expect(screen.getAllByText(/Moon sign: Vrishabha/).length).toBeGreaterThan(0)
-    const transition = screen.getByText(/Ends: August 4, 2026, 06:32 IST/)
+    const transition = screen.getByText(/Ends: August 5, 2026, 06:32 IST/)
     expect(transition).toHaveClass('whitespace-pre-line')
+    expect(screen.getByText(/Ends: August 16, 2026, 20:00 IST/)).toBeInTheDocument()
     expect(screen.queryByText('Tradition')).not.toBeInTheDocument()
     expect(screen.queryByText('Daily timings')).not.toBeInTheDocument()
   })

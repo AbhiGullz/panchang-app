@@ -104,6 +104,10 @@ export interface PanchangResponse {
   }
   moon_sign: LocalizedNames & LocalizedTransition
   month_name: LocalizedNames
+  month_transition?: {
+    end?: string | null
+    next?: { name: LocalizedNames; at?: string | null } | null
+  } | null
   era_year: number
   paksha: string | null
   rahu_kaal: {

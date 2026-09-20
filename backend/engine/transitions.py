@@ -38,6 +38,29 @@ def _phase(jd: float) -> float:
     return (_tropical_longitude(jd, swe.MOON) - _tropical_longitude(jd, swe.SUN)) % 360
 
 
+def next_phase_boundary(center: datetime, target_degrees: float) -> datetime:
+    """Return the next local instant at which lunar elongation reaches a target."""
+    start_phase = _phase(_jd(center))
+    advance = (target_degrees - start_phase) % 360
+    if advance < 0.001:
+        advance = 360.0
+
+    def progressed(at: datetime) -> float:
+        return (_phase(_jd(at)) - start_phase) % 360
+
+    left = center
+    right = center + timedelta(days=(advance / 10.5) + 2)
+    while progressed(right) < advance:
+        right += timedelta(days=1)
+    for _ in range(36):
+        middle = left + (right - left) / 2
+        if progressed(middle) < advance:
+            left = middle
+        else:
+            right = middle
+    return right
+
+
 def _bucket(value: float, span: float, count: int) -> int:
     return min(count - 1, int((value % 360) // span))
 
