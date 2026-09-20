@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import { CalendarDays } from 'lucide-react'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import './locales/i18n'
 import { BottomNav } from './components/BottomNav'
@@ -15,6 +16,7 @@ import { TodayView } from './components/TodayView'
 import { useFestivals } from './hooks/use-festivals'
 import { usePanchang } from './hooks/use-panchang'
 import { reverseGeocode } from './lib/location'
+import { formatCompactDate } from './lib/utils'
 import { useAppStore } from './store/app-store'
 
 const queryClient = new QueryClient({
@@ -42,12 +44,29 @@ function AppShell() {
     completeOnboarding,
   } = useAppStore()
   const [notice, setNotice] = useState('')
+  const locationRefreshId = useRef(0)
 
   useRegisterSW()
 
   useEffect(() => {
     void i18n.changeLanguage(preferences.language)
   }, [i18n, preferences.language])
+
+  useEffect(() => {
+    // Saved locations created before a language change retain their old label.
+    // Refresh that label once per coordinate/language pair, without touching
+    // the selected date or Panchang calculation.
+    const labelKey = `gajaa-location-label:${preferences.location.lat.toFixed(4)}:${preferences.location.lng.toFixed(4)}`
+    if (localStorage.getItem(labelKey) === `v4:${preferences.language}`) return
+    const requestId = ++locationRefreshId.current
+    void reverseGeocode(preferences.location.lat, preferences.location.lng, preferences.language)
+      .then((location) => {
+        if (requestId !== locationRefreshId.current) return
+        updateLocation(location)
+        localStorage.setItem(labelKey, `v4:${preferences.language}`)
+      })
+      .catch(() => undefined)
+  }, [preferences.language, preferences.location.lat, preferences.location.lng, updateLocation])
 
   const { data: panchangData } = usePanchang(
     selectedDate,
@@ -82,9 +101,6 @@ function AppShell() {
   const changeLanguage = (language: typeof preferences.language) => {
     updateLanguage(language)
     void i18n.changeLanguage(language)
-    void reverseGeocode(preferences.location.lat, preferences.location.lng, language)
-      .then(updateLocation)
-      .catch(() => undefined)
   }
 
   return (
@@ -98,13 +114,17 @@ function AppShell() {
               <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
             </div>
           </div>
-          <input
-            aria-label={t('selectDate')}
-            className="rounded-2xl border border-[#D7E7F0] bg-[#F5FAFD] px-3 py-2 text-sm text-[#12233A]"
-            type="date"
-            value={selectedDate}
-            onChange={(event) => setSelectedDate(event.target.value)}
-          />
+          <label className="relative flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-2xl border border-[#D7E7F0] bg-[#F5FAFD] px-3 py-2 text-sm text-[#12233A]">
+            <span aria-hidden="true">{formatCompactDate(selectedDate, i18n.language)}</span>
+            <CalendarDays aria-hidden="true" className="h-4 w-4" />
+            <input
+              aria-label={t('selectDate')}
+              className="absolute inset-0 cursor-pointer opacity-0"
+              type="date"
+              value={selectedDate}
+              onChange={(event) => setSelectedDate(event.target.value)}
+            />
+          </label>
         </div>
 
       </header>

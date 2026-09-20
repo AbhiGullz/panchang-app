@@ -17,6 +17,13 @@ function timingLabel(t: (key: string) => string, key: string) {
   return labels[key] ?? key
 }
 
+function directionLabel(t: (key: string) => string, direction: string | undefined) {
+  const directions: Record<string, string> = {
+    north: t('directionNorth'), south: t('directionSouth'), east: t('directionEast'), west: t('directionWest'),
+  }
+  return directions[direction?.toLowerCase() ?? ''] ?? direction ?? '—'
+}
+
 function DailyTiming({ label, value, timezone, date, language }: { label: string; value: TimeRange; timezone: string; date: string; language: string }) {
   return (
     <div className="rounded-2xl border border-sky-100 bg-white px-4 py-3">
@@ -53,7 +60,7 @@ export function MuhurtaTab({ data }: Props) {
         {timings.map(([key, value]) => <DailyTiming key={key} label={timingLabel(t, key)} value={value} timezone={data.location.tz} date={data.date} language={i18n.language} />)}
       </div>
       <div className="rounded-2xl bg-sky-50 px-4 py-3 text-sm text-slate-700">
-        <span className="font-semibold">{t('dishaShool')}:</span> {data.muhurta.disha_shool}
+        <span className="font-semibold">{t('dishaShool')}:</span> {directionLabel(t, data.muhurta.disha_shool)}
       </div>
     </section>
   )

@@ -1,7 +1,7 @@
 # Gajaa Panchang — Next Actions and Go-Live Working Plan
 
 **Status:** working document  
-**Updated:** September 12, 2026  
+**Updated:** September 20, 2026
 **Owners:** Abhishek (product/approvals/accounts) and Codex (repository review, implementation, verification)  
 **Target:** public installable web app hosted on the Home Lab Worker node
 
@@ -12,6 +12,27 @@
 - The pre-redesign UI is preserved on branch `ux-baseline-before-desktop-dashboard-2026-09-12` for rollback.
 - Mobile remains a focused single-column interface. Desktop uses available width for an ad rail, a daily summary column, and a Panchang-details column.
 - Advertising stays disabled until the publisher account, public domain, privacy disclosures, certified consent flow, and brand-safety controls are complete.
+
+## Recommended public identity and domain
+
+- Primary domain: `gajaapanchang.com` — exact match for the “Gajaa Panchang” product name and the clearest spelling for users.
+- Defensive redirect: `gajapanchang.com` — buy it as well if the annual cost is acceptable, then redirect it permanently to the primary domain.
+- A registry lookup on September 19, 2026 returned no registration record for either `.com`; availability is not guaranteed until checkout completes.
+- Register through Cloudflare Registrar or another reputable ICANN-accredited registrar with WHOIS privacy, auto-renewal, MFA, and registry lock where available.
+- Do not use a Tailscale address as the public URL. Keep Tailscale for administration and private testing.
+
+## Concrete launch sequence
+
+1. Abhishek buys the primary domain (and optional defensive domain), enables MFA/auto-renewal, and adds it to Cloudflare DNS.
+2. Codex produces the frontend production build and runs FastAPI as a supervised service on H Kamgar/Worker; Vite port `5173` is not used in production.
+3. Publish `gajaapanchang.com` through a named Cloudflare Tunnel to the local FastAPI service. This provides public HTTPS without router port-forwarding or exposing the Worker IP.
+4. Add and verify Privacy, Cookies/Advertising, Terms, Contact/Feedback, and AGPL/source-code pages before requesting AdSense review.
+5. Confirm that the homepage and policy pages are public to Google crawlers, have no login wall, and work on mobile and desktop.
+6. Add the root domain to AdSense, place the AdSense verification meta tag, publish `ads.txt`, and request site review. Approval can take days and sometimes several weeks.
+7. Configure Google’s certified CMP or another Google-certified TCF CMP. The current local consent flag is a development gate and must be replaced before ads go live.
+8. In AdSense Brand safety, block Reference to sex, Sexual and reproductive health, Dating, Gambling, Social casino, Alcohol, Sensationalism, Significant skin exposure (where available), and other categories Abhishek considers incompatible.
+9. Create one responsive content unit and one vertical desktop unit. Provide Codex the public publisher ID and slot IDs; Codex configures `VITE_ADSENSE_CLIENT`, `VITE_ADSENSE_CONTENT_SLOT`, and `VITE_ADSENSE_VERTICAL_SLOT` in the production build.
+10. Codex verifies consent rejection/acceptance/withdrawal, no-ad and ad-blocker behavior, layout stability, HTTPS, Worker reboot recovery, monitoring, and rollback before Abhishek approves public launch.
 
 ## UX design implemented in this iteration
 
@@ -81,6 +102,20 @@ Category filtering reduces risk but is not a guarantee; Google explicitly states
 - Codex adds a kill switch and monitors cumulative layout shift and page performance.
 
 ## Home Lab Worker go-live plan
+
+### Deployment decision
+
+H Worker (`hermes-worker`, Tailscale `100.123.216.69`) is the intended primary 24x7 host. M5 Pro remains the development/release-authority machine. The Worker deployment will be pulled from the canonical GitHub repository; this M5 checkout and the private Tailscale URL remain development/test environments.
+
+Deployment will be promoted in phases:
+
+1. **Prepare:** verify Worker disk, backups, Python/Node runtimes, service account, and a clean Git checkout.
+2. **Stage:** build and test a specific commit on Worker; run FastAPI and the production frontend behind localhost-only listeners.
+3. **Private acceptance:** test the Worker over Tailscale from phone and laptop, including language changes, location search, PWA install, and restart recovery.
+4. **Public cutover:** after the domain is purchased, create a named Cloudflare Tunnel from the Worker to the production reverse proxy. Do not expose ports 5173 or 8000 directly.
+5. **Operate:** enable supervised services, health checks, backups, log rotation, rollback instructions, and a documented maintenance procedure.
+
+The first production deployment should be a manual, evidence-recorded release. Once stable, it can be converted to a pull-and-deploy script or CI workflow; no deployment automation should receive Home Lab credentials or secrets from the public repository.
 
 ### Abhishek responsibilities
 

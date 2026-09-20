@@ -3,7 +3,7 @@ from datetime import date
 from fastapi.testclient import TestClient
 
 pytest.importorskip("api.main")
-from api.main import app, _cache_key
+from api.main import GeocodeResultModel, app, _cache_key
 
 client = TestClient(app)
 
@@ -23,6 +23,36 @@ def test_geocode_returns_validated_results(monkeypatch):
     assert response.json()[0]["display_name"] == "Austin, Texas, United States"
     assert response.json()[0]["lat"] == 28.6139
     assert response.json()[0]["tz"] == "Asia/Kolkata"
+
+
+def test_geocode_transliterates_latin_city_for_marathi_when_provider_has_no_native_name():
+    result = GeocodeResultModel.from_nominatim(
+        {
+            "display_name": "Flemington, New Jersey, United States",
+            "address": {"town": "Flemington", "state": "न्यू जर्सी", "country": "अमेरिकेची संयुक्त संस्थाने"},
+            "lat": 40.5123,
+            "lon": -74.8593,
+            "namedetails": None,
+        },
+        "mr",
+    )
+    assert result is not None
+    assert result.display_name.startswith("फ्लेमिंग्टन, न्यू जर्सी")
+
+
+def test_geocode_localizes_flemington_and_new_jersey_for_kannada():
+    result = GeocodeResultModel.from_nominatim(
+        {
+            "display_name": "Flemington, New Jersey, United States",
+            "address": {"town": "Flemington", "state": "New Jersey", "country": "ಅಮೆರಿಕ ಸಂಯುಕ್ತ ಸಂಸ್ಥಾನ"},
+            "lat": 40.5123,
+            "lon": -74.8593,
+            "namedetails": None,
+        },
+        "kn",
+    )
+    assert result is not None
+    assert result.display_name == "ಫ್ಲೆಮಿಂಗ್ಟನ್, ನ್ಯೂ ಜೆರ್ಸಿ, ಅಮೆರಿಕ ಸಂಯುಕ್ತ ಸಂಸ್ಥಾನ"
 
 
 def test_geocode_provider_failure_is_not_leaked(monkeypatch):

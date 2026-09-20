@@ -2,10 +2,11 @@ import { cleanup, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { TodayView } from '../components/TodayView'
 import { renderWithProviders } from './render'
+import i18n from '../locales/i18n'
 const sample = {
   date: '2026-08-04',
   location: { name: 'Delhi', lat: 28.61, lng: 77.21, tz: 'Asia/Kolkata' },
-  sun: { rise: '05:47', set: '19:09' },
+  sun: { rise: '05:47', set: '19:09', moonrise_at: '2026-08-04T15:22:00+05:30', moonset_at: '2026-08-05T00:11:00+05:30' },
   tithi: { index: 20, name: { en: 'Krishna Panchami', hi: 'कृष्ण पंचमी', pa: 'ਕ੍ਰਿਸ਼ਨ ਪੰਚਮੀ', ta: 'கிருஷ்ண பஞ்சமி', te: 'కృష్ణ పంచమి', kn: 'ಕೃಷ್ಣ ಪಂಚಮಿ', ml: 'കൃഷ്ണ പഞ്ചമി', mr: 'कृष्ण पंचमी', gu: 'કૃષ્ણ પંચમી', bn: 'কৃষ্ণ পঞ্চমী' }, ends_at: '2026-08-05T06:32:00+05:30' },
   nakshatra: { index: 5, name: { en: 'Rohini', hi: 'रोहिणी', pa: 'ਰੋਹਿਣੀ', ta: 'ரோகிணி', te: 'రోహిణి', kn: 'ರೋಹಿಣಿ', ml: 'രോഹിണി', mr: 'रोहिणी', gu: 'રોહિણી', bn: 'রোহিণী' }, pada: 2 },
   yoga: { index: 8, name: { en: 'Siddha', hi: 'सिद्ध', pa: 'ਸਿੱਧ', ta: 'சித்த', te: 'సిద్ధ', kn: 'ಸಿದ್ಧ', ml: 'സിദ്ധ', mr: 'सिद्ध', gu: 'સિદ્ધ', bn: 'সিদ্ধ' } },
@@ -43,5 +44,17 @@ describe('TodayView', () => {
     expect(screen.getByText(/Ends: August 16, 2026, 20:00 IST/)).toBeInTheDocument()
     expect(screen.queryByText('Tradition')).not.toBeInTheDocument()
     expect(screen.queryByText('Daily timings')).not.toBeInTheDocument()
+  })
+
+  it('renders Kannada labels and native digits without English fallbacks', async () => {
+    await i18n.changeLanguage('kn')
+    renderWithProviders(<TodayView data={sample} />)
+    expect(screen.getByText('ಚಂದ್ರೋದಯ')).toBeInTheDocument()
+    expect(screen.getByText('ಚಂದ್ರಾಸ್ತ')).toBeInTheDocument()
+    expect(screen.getByText('ಪಂಚಾಂಗ ವಿವರಗಳು')).toBeInTheDocument()
+    expect(screen.getAllByText(/ಅಂತ್ಯ:/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/ಮುಂದಿನ:/).length).toBeGreaterThan(0)
+    expect(screen.getByText(/೦೬:೩೨ IST/)).toBeInTheDocument()
+    await i18n.changeLanguage('en')
   })
 })

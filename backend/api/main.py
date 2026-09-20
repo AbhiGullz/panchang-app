@@ -64,7 +64,7 @@ class GeocodeResultModel(BaseModel):
     tz: str = Field(min_length=1)
 
     @classmethod
-    def from_nominatim(cls, item: dict[str, Any]) -> "GeocodeResultModel | None":
+    def from_nominatim(cls, item: dict[str, Any], lang: str = "en") -> "GeocodeResultModel | None":
         try:
             lat = float(item["lat"])
             lng = float(item["lon"])
@@ -73,13 +73,104 @@ class GeocodeResultModel(BaseModel):
                 return None
             address = item.get("address") if isinstance(item.get("address"), dict) else {}
             city = next((str(address[key]).strip() for key in ("city", "town", "municipality", "village", "county") if address.get(key)), "")
-            state = str(address.get("state") or address.get("state_district") or "").strip()
+            city = _localized_place_name(city, item.get("namedetails"), lang)
+            state = _localized_place_name(str(address.get("state") or address.get("state_district") or "").strip(), None, lang)
             country = str(address.get("country") or "").strip()
             location_parts = [part for part in (city, state, country) if part]
             display_name = ", ".join(dict.fromkeys(location_parts)) or str(item["display_name"]).strip()
             return cls(display_name=display_name, lat=lat, lng=lng, tz=timezone_name)
         except (KeyError, TypeError, ValueError):
             return None
+
+
+_PLACE_NAME_OVERRIDES = {
+    "flemington": {
+        "hi": "फ्लेमिंग्टन", "mr": "फ्लेमिंग्टन", "ta": "ஃப்ளெமிங்டன்", "te": "ఫ్లెమింగ్టన్",
+        "kn": "ಫ್ಲೆಮಿಂಗ್ಟನ್", "ml": "ഫ്ലെമിങ്ടൺ", "gu": "ફ્લેમિંગ્ટન", "bn": "ফ্লেমিংটন", "pa": "ਫਲੇਮਿੰਗਟਨ",
+    },
+    "new jersey": {
+        "hi": "न्यू जर्सी", "mr": "न्यू जर्सी", "ta": "நியூ ஜெர்சி", "te": "న్యూ జెర్సీ",
+        "kn": "ನ್ಯೂ ಜೆರ್ಸಿ", "ml": "ന്യൂ ജേഴ്സി", "gu": "ન્યૂ જર્સી", "bn": "নিউ জার্সি", "pa": "ਨਿਊ ਜਰਸੀ",
+    },
+}
+
+
+def _localized_place_name(city: str, namedetails: Any, lang: str) -> str:
+    """Prefer an OSM native city name; transliterate Latin names for Devanagari UI.
+
+    Nominatim localizes regions and countries but most US city records have no
+    Hindi/Marathi name.  A readable phonetic fallback is less jarring than
+    mixing Latin city text into an otherwise Devanagari location label.
+    """
+    if not city:
+        return city
+    override = _PLACE_NAME_OVERRIDES.get(city.casefold(), {}).get(lang)
+    if override:
+        return override
+    if isinstance(namedetails, dict):
+        localized = namedetails.get(f"name:{lang}") or namedetails.get(f"official_name:{lang}")
+        if isinstance(localized, str) and localized.strip():
+            return localized.strip()
+    if lang in {"hi", "mr"} and city.isascii() and any(character.isalpha() for character in city):
+        return _latin_to_devanagari(city)
+    return city
+
+
+def _latin_to_devanagari(value: str) -> str:
+    """Small phonetic fallback for Latin place names in Hindi and Marathi.
+
+    This deliberately leaves punctuation and digits intact and is only used
+    when OpenStreetMap has no native-language place name.
+    """
+    consonants = {
+        "ch": "च", "sh": "श", "th": "थ", "dh": "ध", "ph": "फ", "bh": "भ", "kh": "ख", "gh": "घ",
+        "j": "ज", "k": "क", "q": "क", "c": "क", "g": "ग", "t": "ट", "d": "ड", "n": "न",
+        "p": "प", "b": "ब", "m": "म", "y": "य", "r": "र", "l": "ल", "v": "व", "w": "व",
+        "f": "फ", "s": "स", "h": "ह", "z": "ज़", "x": "क्स",
+    }
+    vowels = {"a": "ा", "e": "े", "i": "ि", "o": "ो", "u": "ु"}
+    independent_vowels = {"a": "अ", "e": "ए", "i": "इ", "o": "ओ", "u": "उ"}
+    result: list[str] = []
+    previous_was_consonant = False
+    index = 0
+    lowered = value.lower()
+    while index < len(value):
+        char = lowered[index]
+        if not char.isalpha():
+            result.append(value[index])
+            previous_was_consonant = False
+            index += 1
+            continue
+        if lowered[index:index + 2] == "ng":
+            if previous_was_consonant:
+                result.append("्")
+            result.append("ंग")
+            previous_was_consonant = True
+            index += 2
+            continue
+        pair = lowered[index:index + 2]
+        consonant = consonants.get(pair) if pair in consonants else consonants.get(char)
+        if consonant:
+            if previous_was_consonant:
+                result.append("्")
+            result.append(consonant)
+            previous_was_consonant = True
+            index += len(pair) if pair in consonants else 1
+            continue
+        if char in vowels:
+            result.append(vowels[char] if previous_was_consonant else independent_vowels[char])
+            previous_was_consonant = False
+            index += 1
+            continue
+        result.append(value[index])
+        previous_was_consonant = False
+        index += 1
+    transliterated = "".join(result)
+    # In the common English place-name ending "-ton", the written "o" is
+    # normally not pronounced as a full vowel (Flemington → फ्लेमिंग्टन).
+    if lowered.endswith("ton") and transliterated.endswith("टोन"):
+        return f"{transliterated[:-3]}टन"
+    return transliterated
 
 
 def _timezone_for_coordinates(lat: float, lng: float) -> str | None:
@@ -152,6 +243,7 @@ async def _search_nominatim(query: str, limit: int, lang: str = "en") -> list[di
                     "format": "jsonv2",
                     "limit": limit,
                     "addressdetails": 1,
+                    "namedetails": 1,
                     "accept-language": _nominatim_language(lang),
                 },
                 headers={"User-Agent": _GEOCODE_USER_AGENT, "Accept": "application/json"},
@@ -183,6 +275,7 @@ async def _reverse_nominatim(lat: float, lng: float, lang: str = "en") -> dict[s
                     "lon": lng,
                     "format": "jsonv2",
                     "addressdetails": 1,
+                    "namedetails": 1,
                     "accept-language": _nominatim_language(lang),
                 },
                 headers={"User-Agent": _GEOCODE_USER_AGENT, "Accept": "application/json"},
@@ -207,7 +300,7 @@ async def reverse_geocode(
         raise HTTPException(status_code=400, detail=f"Unsupported language: {lang}")
     _check_geocode_rate_limit(request)
     try:
-        result = GeocodeResultModel.from_nominatim(await _reverse_nominatim(lat, lng, lang))
+        result = GeocodeResultModel.from_nominatim(await _reverse_nominatim(lat, lng, lang), lang)
     except Exception as exc:
         logger.warning("Reverse geocoder request failed: %s", exc)
         raise HTTPException(status_code=502, detail="Location lookup is temporarily unavailable.") from exc
@@ -234,7 +327,7 @@ async def geocode(
     except Exception as exc:
         logger.warning("Geocoder request failed: %s", exc)
         raise HTTPException(status_code=502, detail="Location search is temporarily unavailable.") from exc
-    return [result for item in raw_results if (result := GeocodeResultModel.from_nominatim(item)) is not None]
+    return [result for item in raw_results if (result := GeocodeResultModel.from_nominatim(item, lang)) is not None]
 
 
 class MuhurtaResponseModel(BaseModel):

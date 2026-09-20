@@ -14,16 +14,40 @@ export function formatDateInput(value: Date) {
   return `${year}-${month}-${day}`
 }
 
+const NATIVE_NUMBERING_SYSTEMS: Partial<Record<LanguageCode, string>> = {
+  hi: 'deva', mr: 'deva', ta: 'tamldec', te: 'telu', kn: 'knda', ml: 'mlym', gu: 'gujr', bn: 'beng', pa: 'guru',
+}
+
+export function localeWithNativeDigits(language: string) {
+  const base = language.split('-')[0] as LanguageCode
+  const numberingSystem = NATIVE_NUMBERING_SYSTEMS[base]
+  return numberingSystem ? `${base}-u-nu-${numberingSystem}` : base
+}
+
 export function formatDisplayDate(value: string, language: string) {
   const [year, month, day] = value.slice(0, 10).split('-').map(Number)
   if (!year || !month || !day) return value
-  return new Intl.DateTimeFormat(language, { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(year, month - 1, day))
+  return new Intl.DateTimeFormat(localeWithNativeDigits(language), { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(year, month - 1, day))
+}
+
+export function formatCompactDate(value: string, language: string) {
+  const [year, month, day] = value.slice(0, 10).split('-').map(Number)
+  if (!year || !month || !day) return value
+  return new Intl.DateTimeFormat(localeWithNativeDigits(language), { day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date(year, month - 1, day))
+}
+
+export function formatLocalTime(value: string, language: string) {
+  const [hour, minute] = value.split(':').map(Number)
+  if (!Number.isFinite(hour) || !Number.isFinite(minute)) return value
+  return new Intl.DateTimeFormat(localeWithNativeDigits(language), {
+    hour: 'numeric', minute: '2-digit', hour12: true,
+  }).format(new Date(1970, 0, 1, hour, minute))
 }
 
 export function formatWeekday(value: string, language: string) {
   const [year, month, day] = value.slice(0, 10).split('-').map(Number)
   if (!year || !month || !day) return value
-  return new Intl.DateTimeFormat(language, { weekday: 'long' }).format(new Date(year, month - 1, day))
+  return new Intl.DateTimeFormat(localeWithNativeDigits(language), { weekday: 'long' }).format(new Date(year, month - 1, day))
 }
 
 const AYANAMSA_LABELS: Record<string, LocalizedNames> = {
@@ -46,7 +70,7 @@ export function humanizeTimezone(timezone: string, language: string) {
 
 export function formatTimeWithTimezone(time: string, timezone: string, date: string, locale = 'en-IN') {
   const instant = time.includes('T') ? new Date(time) : new Date(`${date}T12:00:00Z`)
-  const formatter = new Intl.DateTimeFormat(locale, {
+  const formatter = new Intl.DateTimeFormat(localeWithNativeDigits(locale), {
     timeZone: timezone,
     hour: '2-digit',
     minute: '2-digit',

@@ -2,7 +2,7 @@ import i18n from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
 
-const resources = {
+export const resources = {
   en: {
     translation: {
       appName: 'Gajaa Panchang',
@@ -111,7 +111,7 @@ const resources = {
   mr: {
     translation: {
       appName: 'गजा पंचांग', onboardingTitle: 'दैनंदिन डीफॉल्ट निवडा', onboardingBody: 'तुमचे शहर, पंचांग परंपरा आणि भाषा निवडा. नंतर सेटिंग्जमध्ये बदल करू शकता.', useCurrentLocation: 'सध्याचे स्थान वापरा', continue: 'पुढे जा', today: 'आज', home: 'मुख्यपृष्ठ', muhurta: 'मुहूर्त', festivals: 'सण', settings: 'सेटिंग्ज',
-      dateLabel: 'तारीख', selectDate: 'दिनांक निवडा', language: 'भाषा', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचनेची वेळ', ayanamsa: 'अयनांश', howCalculated: 'याची गणना कशी झाली', traditionMeta: 'परंपरा', timezone: 'वेळ क्षेत्र', location: 'स्थान', version: 'आवृत्ती', calculatedReference: 'गणना केलेल्या वेळेचा फक्त संदर्भ.', muhurtaHorizonEnd: 'समर्थित कालावधीत आणखी कोणत्याही मुहूर्त विंडो सापडल्या नाहीत.', retry: 'पुन्हा प्रयत्न करा', details: 'तांत्रिक तपशील', coordinates: 'अक्षांश-रेखांश', advertisement: 'जाहिरात', advertisementEmpty: 'संमती-आधारित अनुपालक प्रदात्यासाठी राखीव.', festivalsForYear: 'सणांचे कॅलेंडर', save: 'जतन करा', geolocationDenied: 'स्थान परवानगी नाकारली. दिल्ली डीफॉल्ट वापरले जात आहे.', city: 'शहर', changeLocation: 'स्थान बदला', changeLocationTitle: 'नवीन स्थान शोधा', cancel: 'रद्द करा', schoolSelectorHint: 'नावे बॅकएंडमधून येतात; UI शब्द लगेच बदलतात.', pushNotifications: 'पुश सूचना', subscribe: 'सदस्यता घ्या', subscribed: 'सदस्यता घेतली', subscribePush: 'पुश सूचनांची सदस्यता घ्या', subscribedPush: 'पुश सूचनांची सदस्यता घेतली', tithi: 'तिथी', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहुकाळ', moonSign: 'चंद्रराशी', yoga: 'योग', karana: 'करण', dailyTimings: 'दिवसाचे मुहूर्त', abhijitMuhurta: 'अभिजित मुहूर्त', amritKala: 'अमृत काळ', yamagandam: 'यमगंड', gulikaKaal: 'गुलिक काळ', dishaShool: 'दिशाशूल', endsAt: 'समाप्ती', endTimeUnavailable: 'समाप्ती वेळ उपलब्ध नाही', next: 'पुढील', paksha: 'पक्ष', month: 'महिना', panchangDetails: 'पंचांग तपशील', loading: 'लोड होत आहे…', noData: 'अद्याप ऑफलाइन डेटा उपलब्ध नाही.',
+      dateLabel: 'तारीख', selectDate: 'दिनांक निवडा', language: 'भाषा', calendarSchool: 'पंचांग परंपरा', notificationTime: 'सूचनेची वेळ', ayanamsa: 'अयनांश', howCalculated: 'याची गणना कशी झाली', traditionMeta: 'परंपरा', timezone: 'वेळ क्षेत्र', location: 'स्थान', version: 'आवृत्ती', calculatedReference: 'गणना केलेल्या वेळेचा फक्त संदर्भ.', muhurtaHorizonEnd: 'समर्थित कालावधीत आणखी कोणत्याही मुहूर्त विंडो सापडल्या नाहीत.', retry: 'पुन्हा प्रयत्न करा', details: 'तांत्रिक तपशील', coordinates: 'अक्षांश-रेखांश', advertisement: 'जाहिरात', advertisementEmpty: 'संमती-आधारित अनुपालक प्रदात्यासाठी राखीव.', festivalsForYear: 'सणांचे कॅलेंडर', save: 'जतन करा', geolocationDenied: 'स्थान परवानगी नाकारली. दिल्ली डीफॉल्ट वापरले जात आहे.', city: 'शहर', changeLocation: 'स्थान बदला', changeLocationTitle: 'नवीन स्थान शोधा', cancel: 'रद्द करा', schoolSelectorHint: 'नावे बॅकएंडमधून येतात; UI शब्द लगेच बदलतात.', pushNotifications: 'पुश सूचना', subscribe: 'सदस्यता घ्या', subscribed: 'सदस्यता घेतली', subscribePush: 'पुश सूचनांची सदस्यता घ्या', subscribedPush: 'पुश सूचनांची सदस्यता घेतली', tithi: 'तिथी', nakshatra: 'नक्षत्र', sunrise: 'सूर्योदय', sunset: 'सूर्यास्त', rahuKaal: 'राहुकाळ', moonSign: 'चंद्रराशी', yoga: 'योग', karana: 'करण', moonrise: 'चंद्रोदय', moonset: 'चंद्रास्त', dailyTimings: 'दिवसाचे मुहूर्त', abhijitMuhurta: 'अभिजित मुहूर्त', amritKala: 'अमृत काळ', yamagandam: 'यमगंड', gulikaKaal: 'गुलिक काळ', dishaShool: 'दिशाशूल', endsAt: 'समाप्ती', endTimeUnavailable: 'समाप्ती वेळ उपलब्ध नाही', next: 'पुढील', paksha: 'पक्ष', month: 'महिना', panchangDetails: 'पंचांग तपशील', loading: 'लोड होत आहे…', noData: 'अद्याप ऑफलाइन डेटा उपलब्ध नाही.',
     },
   },
   gu: {
@@ -129,6 +129,57 @@ const resources = {
       appName: 'ਗਜਾ ਪੰਚਾਂਗ', onboardingTitle: 'ਰੋਜ਼ਾਨਾ ਡਿਫ਼ਾਲਟ ਸੈੱਟ ਕਰੋ', onboardingBody: 'ਆਪਣਾ ਸ਼ਹਿਰ, ਪੰਚਾਂਗ ਪਰੰਪਰਾ ਅਤੇ ਭਾਸ਼ਾ ਚੁਣੋ। ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬਦਲ ਸਕਦੇ ਹੋ।', useCurrentLocation: 'ਮੌਜੂਦਾ ਟਿਕਾਣਾ ਵਰਤੋ', continue: 'ਜਾਰੀ ਰੱਖੋ', today: 'ਅੱਜ', home: 'ਮੁੱਖ ਪੰਨਾ', muhurta: 'ਮੁਹੂਰਤ', festivals: 'ਤਿਉਹਾਰ', settings: 'ਸੈਟਿੰਗਾਂ', dateLabel: 'ਤਾਰੀਖ', language: 'Language', calendarSchool: 'ਪੰਚਾਂਗ ਪਰੰਪਰਾ', notificationTime: 'ਸੂਚਨਾ ਦਾ ਸਮਾਂ', ayanamsa: 'ਅਯਨਾਂਸ਼', howCalculated: 'ਇਹ ਕਿਵੇਂ ਗਿਣਿਆ ਗਿਆ', traditionMeta: 'ਪਰੰਪਰਾ', timezone: 'ਸਮਾਂ ਖੇਤਰ', location: 'ਟਿਕਾਣਾ', version: 'ਵਰਜਨ', calculatedReference: 'ਗਿਣੇ ਹੋਏ ਸਮੇਂ ਲਈ ਸਿਰਫ਼ ਹਵਾਲਾ।', festivalsForYear: 'ਤਿਉਹਾਰ ਕੈਲੰਡਰ', save: 'ਸੰਭਾਲੋ', geolocationDenied: 'ਟਿਕਾਣੇ ਦੀ ਇਜਾਜ਼ਤ ਰੱਦ ਹੋ ਗਈ। ਦਿੱਲੀ ਡਿਫ਼ਾਲਟ ਵਰਤੀ ਜਾ ਰਹੀ ਹੈ।', city: 'ਸ਼ਹਿਰ', changeLocation: 'ਟਿਕਾਣਾ ਬਦਲੋ', changeLocationTitle: 'ਨਵਾਂ ਟਿਕਾਣਾ ਖੋਜੋ', cancel: 'ਰੱਦ ਕਰੋ', schoolSelectorHint: 'ਨਾਮ ਬੈਕਐਂਡ ਤੋਂ ਆਉਂਦੇ ਹਨ; UI ਦੇ ਸ਼ਬਦ ਤੁਰੰਤ ਬਦਲਦੇ ਹਨ।', pushNotifications: 'ਪੁਸ਼ ਸੂਚਨਾਵਾਂ', subscribe: 'ਸਬਸਕ੍ਰਾਈਬ ਕਰੋ', subscribed: 'ਸਬਸਕ੍ਰਾਈਬ ਕੀਤਾ', subscribePush: 'ਪੁਸ਼ ਸੂਚਨਾਵਾਂ ਲਈ ਸਬਸਕ੍ਰਾਈਬ ਕਰੋ', subscribedPush: 'ਪੁਸ਼ ਸੂਚਨਾਵਾਂ ਲਈ ਸਬਸਕ੍ਰਾਈਬ ਕੀਤਾ', tithi: 'ਤਿਥੀ', nakshatra: 'ਨਕਸ਼ਤਰ', sunrise: 'ਸੂਰਜ ਚੜ੍ਹਨਾ', sunset: 'ਸੂਰਜ ਡੁੱਬਣਾ', rahuKaal: 'ਰਾਹੂ ਕਾਲ', moonSign: 'ਚੰਦਰ ਰਾਸ਼ੀ', yoga: 'ਯੋਗ', karana: 'ਕਰਣ', loading: 'ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…', noData: 'ਹਾਲੇ ਆਫ਼ਲਾਈਨ ਡਾਟਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।',
     },
   },
+}
+
+const completePanchangTranslations = {
+  en: { selectDate: 'Select date', language: 'Language', moonrise: 'Moonrise', moonset: 'Moonset', panchangDetails: 'Panchang details', endsAt: 'Ends', endTimeUnavailable: 'End time unavailable', next: 'Next', paksha: 'Paksha', month: 'Month' },
+  hi: { selectDate: 'तारीख चुनें', language: 'भाषा', moonrise: 'चंद्रोदय', moonset: 'चंद्रास्त', panchangDetails: 'पंचांग विवरण', endsAt: 'समाप्ति', endTimeUnavailable: 'समाप्ति समय उपलब्ध नहीं है', next: 'अगला', paksha: 'पक्ष', month: 'मास', advertisement: 'विज्ञापन', advertisementEmpty: 'अनुपालक विज्ञापन प्रदाता के लिए आरक्षित।' },
+  mr: { selectDate: 'दिनांक निवडा', language: 'भाषा', moonrise: 'चंद्रोदय', moonset: 'चंद्रास्त', panchangDetails: 'पंचांग तपशील', endsAt: 'समाप्ती', endTimeUnavailable: 'समाप्ती वेळ उपलब्ध नाही', next: 'पुढील', paksha: 'पक्ष', month: 'महिना', advertisement: 'जाहिरात', advertisementEmpty: 'अनुपालक जाहिरात प्रदात्यासाठी राखीव.' },
+  ta: { selectDate: 'தேதியைத் தேர்ந்தெடுக்கவும்', language: 'மொழி', moonrise: 'சந்திர உதயம்', moonset: 'சந்திர அஸ்தமனம்', panchangDetails: 'பஞ்சாங்க விவரங்கள்', endsAt: 'முடிவு', endTimeUnavailable: 'முடிவு நேரம் கிடைக்கவில்லை', next: 'அடுத்து', paksha: 'பக்ஷம்', month: 'மாதம்', advertisement: 'விளம்பரம்', advertisementEmpty: 'இணக்கமான விளம்பர வழங்குநருக்காக ஒதுக்கப்பட்டுள்ளது.' },
+  te: { selectDate: 'తేదీని ఎంచుకోండి', language: 'భాష', moonrise: 'చంద్రోదయం', moonset: 'చంద్రాస్తమయం', panchangDetails: 'పంచాంగ వివరాలు', endsAt: 'ముగింపు', endTimeUnavailable: 'ముగింపు సమయం అందుబాటులో లేదు', next: 'తదుపరి', paksha: 'పక్షం', month: 'మాసం', advertisement: 'ప్రకటన', advertisementEmpty: 'నిబంధనలకు అనుగుణమైన ప్రకటన ప్రదాత కోసం కేటాయించబడింది.' },
+  kn: { selectDate: 'ದಿನಾಂಕವನ್ನು ಆಯ್ಕೆಮಾಡಿ', language: 'ಭಾಷೆ', moonrise: 'ಚಂದ್ರೋದಯ', moonset: 'ಚಂದ್ರಾಸ್ತ', panchangDetails: 'ಪಂಚಾಂಗ ವಿವರಗಳು', endsAt: 'ಅಂತ್ಯ', endTimeUnavailable: 'ಅಂತ್ಯ ಸಮಯ ಲಭ್ಯವಿಲ್ಲ', next: 'ಮುಂದಿನ', paksha: 'ಪಕ್ಷ', month: 'ತಿಂಗಳು', advertisement: 'ಜಾಹೀರಾತು', advertisementEmpty: 'ನಿಯಮಾನುಸಾರ ಜಾಹೀರಾತು ಒದಗಿಸುವವರಿಗೆ ಮೀಸಲಾಗಿದೆ.' },
+  ml: { selectDate: 'തീയതി തിരഞ്ഞെടുക്കുക', language: 'ഭാഷ', moonrise: 'ചന്ദ്രോദയം', moonset: 'ചന്ദ്രാസ്തമയം', panchangDetails: 'പഞ്ചാംഗ വിശദാംശങ്ങൾ', endsAt: 'അവസാനം', endTimeUnavailable: 'അവസാന സമയം ലഭ്യമല്ല', next: 'അടുത്തത്', paksha: 'പക്ഷം', month: 'മാസം', advertisement: 'പരസ്യം', advertisementEmpty: 'നിയമാനുസൃത പരസ്യ ദാതാവിനായി മാറ്റിവെച്ചിരിക്കുന്നു.' },
+  gu: { selectDate: 'તારીખ પસંદ કરો', language: 'ભાષા', moonrise: 'ચંદ્રોદય', moonset: 'ચંદ્રાસ્ત', panchangDetails: 'પંચાંગ વિગતો', endsAt: 'સમાપ્તિ', endTimeUnavailable: 'સમાપ્તિ સમય ઉપલબ્ધ નથી', next: 'આગળ', paksha: 'પક્ષ', month: 'માસ', advertisement: 'જાહેરાત', advertisementEmpty: 'નિયમોનું પાલન કરતા જાહેરાત પ્રદાતા માટે અનામત.' },
+  bn: { selectDate: 'তারিখ নির্বাচন করুন', language: 'ভাষা', moonrise: 'চন্দ্রোদয়', moonset: 'চন্দ্রাস্ত', panchangDetails: 'পঞ্জিকা বিবরণ', endsAt: 'সমাপ্তি', endTimeUnavailable: 'সমাপ্তির সময় পাওয়া যায়নি', next: 'পরবর্তী', paksha: 'পক্ষ', month: 'মাস', advertisement: 'বিজ্ঞাপন', advertisementEmpty: 'নীতিসম্মত বিজ্ঞাপন প্রদানকারীর জন্য সংরক্ষিত।' },
+  pa: { selectDate: 'ਤਾਰੀਖ ਚੁਣੋ', language: 'ਭਾਸ਼ਾ', moonrise: 'ਚੰਦਰ ਚੜ੍ਹਨਾ', moonset: 'ਚੰਦਰ ਡੁੱਬਣਾ', panchangDetails: 'ਪੰਚਾਂਗ ਵੇਰਵੇ', endsAt: 'ਸਮਾਪਤੀ', endTimeUnavailable: 'ਸਮਾਪਤੀ ਸਮਾਂ ਉਪਲਬਧ ਨਹੀਂ', next: 'ਅਗਲਾ', paksha: 'ਪੱਖ', month: 'ਮਹੀਨਾ', advertisement: 'ਇਸ਼ਤਿਹਾਰ', advertisementEmpty: 'ਨਿਯਮਾਂ ਅਨੁਸਾਰ ਇਸ਼ਤਿਹਾਰ ਪ੍ਰਦਾਤਾ ਲਈ ਰਾਖਵਾਂ.' },
+} as const
+
+for (const language of Object.keys(completePanchangTranslations) as Array<keyof typeof completePanchangTranslations>) {
+  Object.assign(resources[language].translation, completePanchangTranslations[language])
+}
+
+const completeMuhurtaTranslations = {
+  en: { dailyTimings: 'Daily timings', abhijitMuhurta: 'Abhijit Muhurta', amritKala: 'Amrit Kala', yamagandam: 'Yamagandam', gulikaKaal: 'Gulika Kaal', dishaShool: 'Disha Shool', directionNorth: 'North', directionSouth: 'South', directionEast: 'East', directionWest: 'West' },
+  hi: { dailyTimings: 'दैनिक समय', abhijitMuhurta: 'अभिजीत मुहूर्त', amritKala: 'अमृत काल', yamagandam: 'यमगंड', gulikaKaal: 'गुलिक काल', dishaShool: 'दिशा शूल', directionNorth: 'उत्तर', directionSouth: 'दक्षिण', directionEast: 'पूर्व', directionWest: 'पश्चिम' },
+  mr: { dailyTimings: 'दिवसाचे मुहूर्त', abhijitMuhurta: 'अभिजित मुहूर्त', amritKala: 'अमृत काळ', yamagandam: 'यमगंड', gulikaKaal: 'गुलिक काळ', dishaShool: 'दिशाशूल', directionNorth: 'उत्तर', directionSouth: 'दक्षिण', directionEast: 'पूर्व', directionWest: 'पश्चिम' },
+  ta: { dailyTimings: 'தினசரி நேரங்கள்', abhijitMuhurta: 'அபிஜித் முகூர்த்தம்', amritKala: 'அமிர்த காலம்', yamagandam: 'யமகண்டம்', gulikaKaal: 'குளிகை காலம்', dishaShool: 'திசை சூலம்', directionNorth: 'வடக்கு', directionSouth: 'தெற்கு', directionEast: 'கிழக்கு', directionWest: 'மேற்கு' },
+  te: { dailyTimings: 'రోజువారీ సమయాలు', abhijitMuhurta: 'అభిజిత్ ముహూర్తం', amritKala: 'అమృత కాలం', yamagandam: 'యమగండం', gulikaKaal: 'గుళిక కాలం', dishaShool: 'దిశా శూలం', directionNorth: 'ఉత్తరం', directionSouth: 'దక్షిణం', directionEast: 'తూర్పు', directionWest: 'పడమర' },
+  kn: { dailyTimings: 'ದಿನದ ಸಮಯಗಳು', abhijitMuhurta: 'ಅಭಿಜಿತ್ ಮುಹೂರ್ತ', amritKala: 'ಅಮೃತ ಕಾಲ', yamagandam: 'ಯಮಗಂಡ', gulikaKaal: 'ಗುಳಿಕ ಕಾಲ', dishaShool: 'ದಿಶಾ ಶೂಲ', directionNorth: 'ಉತ್ತರ', directionSouth: 'ದಕ್ಷಿಣ', directionEast: 'ಪೂರ್ವ', directionWest: 'ಪಶ್ಚಿಮ' },
+  ml: { dailyTimings: 'ദൈനംദിന സമയങ്ങൾ', abhijitMuhurta: 'അഭിജിത് മുഹൂർത്തം', amritKala: 'അമൃത കാലം', yamagandam: 'യമഗണ്ഡം', gulikaKaal: 'ഗുളിക കാലം', dishaShool: 'ദിശാ ശൂലം', directionNorth: 'വടക്ക്', directionSouth: 'തെക്ക്', directionEast: 'കിഴക്ക്', directionWest: 'പടിഞ്ഞാറ്' },
+  gu: { dailyTimings: 'દૈનિક સમય', abhijitMuhurta: 'અભિજિત મુહૂર્ત', amritKala: 'અમૃત કાળ', yamagandam: 'યમગંડ', gulikaKaal: 'ગુલિક કાળ', dishaShool: 'દિશા શૂલ', directionNorth: 'ઉત્તર', directionSouth: 'દક્ષિણ', directionEast: 'પૂર્વ', directionWest: 'પશ્ચિમ' },
+  bn: { dailyTimings: 'দৈনিক সময়', abhijitMuhurta: 'অভিজিৎ মুহূর্ত', amritKala: 'অমৃত কাল', yamagandam: 'যমগণ্ড', gulikaKaal: 'গুলিক কাল', dishaShool: 'দিশা শূল', directionNorth: 'উত্তর', directionSouth: 'দক্ষিণ', directionEast: 'পূর্ব', directionWest: 'পশ্চিম' },
+  pa: { dailyTimings: 'ਰੋਜ਼ਾਨਾ ਸਮੇਂ', abhijitMuhurta: 'ਅਭਿਜੀਤ ਮੁਹੂਰਤ', amritKala: 'ਅੰਮ੍ਰਿਤ ਕਾਲ', yamagandam: 'ਯਮਗੰਡ', gulikaKaal: 'ਗੁਲਿਕ ਕਾਲ', dishaShool: 'ਦਿਸ਼ਾ ਸ਼ੂਲ', directionNorth: 'ਉੱਤਰ', directionSouth: 'ਦੱਖਣ', directionEast: 'ਪੂਰਬ', directionWest: 'ਪੱਛਮ' },
+} as const
+
+for (const language of Object.keys(completeMuhurtaTranslations) as Array<keyof typeof completeMuhurtaTranslations>) {
+  Object.assign(resources[language].translation, completeMuhurtaTranslations[language])
+}
+
+const completeSettingsTranslations = {
+  en: { details: 'Technical details', coordinates: 'Coordinates', timezone: 'Time zone', feedback: 'Send feedback', sendFeedback: 'Open email', changeLocation: 'Change location' },
+  hi: { details: 'तकनीकी विवरण', coordinates: 'निर्देशांक', timezone: 'समय क्षेत्र', feedback: 'प्रतिक्रिया भेजें', sendFeedback: 'ईमेल खोलें', changeLocation: 'स्थान बदलें' },
+  mr: { details: 'तांत्रिक तपशील', coordinates: 'अक्षांश-रेखांश', timezone: 'समय क्षेत्र', feedback: 'अभिप्राय पाठवा', sendFeedback: 'ईमेल उघडा', changeLocation: 'स्थान बदला' },
+  ta: { details: 'தொழில்நுட்ப விவரங்கள்', coordinates: 'ஆயத்தொலைவுகள்', timezone: 'நேர மண்டலம்', feedback: 'கருத்து தெரிவிக்கவும்', sendFeedback: 'மின்னஞ்சலைத் திறக்கவும்', changeLocation: 'இருப்பிடத்தை மாற்றவும்' },
+  te: { details: 'సాంకేతిక వివరాలు', coordinates: 'అక్షాంశ రేఖాంశాలు', timezone: 'సమయ మండలం', feedback: 'అభిప్రాయం పంపండి', sendFeedback: 'ఇమెయిల్ తెరవండి', changeLocation: 'స్థానాన్ని మార్చండి' },
+  kn: { details: 'ತಾಂತ್ರಿಕ ವಿವರಗಳು', coordinates: 'ನಿರ್ದೇಶಾಂಕಗಳು', timezone: 'ಸಮಯ ವಲಯ', feedback: 'ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ', sendFeedback: 'ಇಮೇಲ್ ತೆರೆಯಿರಿ', changeLocation: 'ಸ್ಥಳ ಬದಲಾಯಿಸಿ' },
+  ml: { details: 'സാങ്കേതിക വിവരങ്ങൾ', coordinates: 'കോർഡിനേറ്റുകൾ', timezone: 'സമയ മേഖല', feedback: 'അഭിപ്രായം അയയ്ക്കുക', sendFeedback: 'ഇമെയിൽ തുറക്കുക', changeLocation: 'സ്ഥലം മാറ്റുക' },
+  gu: { details: 'તકનીકી વિગતો', coordinates: 'સંકલન', timezone: 'સમય ક્ષેત્ર', feedback: 'પ્રતિસાદ મોકલો', sendFeedback: 'ઇમેઇલ ખોલો', changeLocation: 'સ્થાન બદલો' },
+  bn: { details: 'প্রযুক্তিগত বিবরণ', coordinates: 'স্থানাঙ্ক', timezone: 'সময় অঞ্চল', feedback: 'মতামত পাঠান', sendFeedback: 'ইমেল খুলুন', changeLocation: 'অবস্থান পরিবর্তন করুন' },
+  pa: { details: 'ਤਕਨੀਕੀ ਵੇਰਵੇ', coordinates: 'ਨਿਰਦੇਸ਼ਾਂਕ', timezone: 'ਸਮਾਂ ਖੇਤਰ', feedback: 'ਫੀਡਬੈਕ ਭੇਜੋ', sendFeedback: 'ਈਮੇਲ ਖੋਲ੍ਹੋ', changeLocation: 'ਟਿਕਾਣਾ ਬਦਲੋ' },
+} as const
+
+for (const language of Object.keys(completeSettingsTranslations) as Array<keyof typeof completeSettingsTranslations>) {
+  Object.assign(resources[language].translation, completeSettingsTranslations[language])
 }
 
 void i18n

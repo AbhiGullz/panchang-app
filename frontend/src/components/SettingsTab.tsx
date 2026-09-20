@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AYANAMSA_OPTIONS, SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } from '../types/api'
-import { humanizeAyanamsa, humanizeCalendar, humanizeTimezone } from '../lib/utils'
+import { formatLocalTime, humanizeAyanamsa, humanizeCalendar, humanizeTimezone } from '../lib/utils'
 import { LocationPicker } from './LocationPicker'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
 
@@ -54,12 +54,16 @@ export function SettingsTab(props: Props) {
 
       <label className="block text-sm font-medium text-slate-700">
         {t('notificationTime')}
-        <input
-          className="mt-1 w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3"
-          type="time"
-          value={props.preferences.notificationTime}
-          onChange={(event) => props.onNotificationTimeChange(event.target.value)}
-        />
+        <div className="relative mt-1">
+          <span aria-hidden="true" className="block w-full rounded-2xl border border-sky-200 bg-sky-50 px-4 py-3">{formatLocalTime(props.preferences.notificationTime, props.preferences.language)}</span>
+          <input
+            aria-label={t('notificationTime')}
+            className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
+            type="time"
+            value={props.preferences.notificationTime}
+            onChange={(event) => props.onNotificationTimeChange(event.target.value)}
+          />
+        </div>
       </label>
 
       <label className="block text-sm font-medium text-slate-700">
