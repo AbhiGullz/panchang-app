@@ -31,12 +31,15 @@ describe('TodayView', () => {
     expect(screen.queryByText(/Next:.*\(/)).not.toBeInTheDocument()
   })
 
-  it('shows daily timings and complete end dates on the home screen', () => {
+  it('shows month, moon sign, and complete end dates on the home screen', () => {
     renderWithProviders(<TodayView data={sample} />)
     expect(screen.getByText('05:47 IST')).toBeInTheDocument()
     expect(screen.getByText('19:09 IST')).toBeInTheDocument()
-    expect(screen.getByText('12:15 IST — 13:50 IST')).toBeInTheDocument()
-    expect(screen.getByText('Ends: August 4, 2026, 06:32 IST')).toBeInTheDocument()
+    expect(screen.getAllByText(/Month: Shravana/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/Moon sign: Vrishabha/).length).toBeGreaterThan(0)
+    const transition = screen.getByText(/Ends: August 4, 2026, 06:32 IST/)
+    expect(transition).toHaveClass('whitespace-pre-line')
     expect(screen.queryByText('Tradition')).not.toBeInTheDocument()
+    expect(screen.queryByText('Daily timings')).not.toBeInTheDocument()
   })
 })

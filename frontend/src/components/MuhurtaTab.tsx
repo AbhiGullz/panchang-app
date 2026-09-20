@@ -28,7 +28,7 @@ function DailyTiming({ label, value, timezone, date, language }: { label: string
   )
 }
 
-export function DailyMuhurtas({ data }: Props) {
+export function MuhurtaTab({ data }: Props) {
   const { t, i18n } = useTranslation()
 
   if (!data) {
