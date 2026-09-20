@@ -60,15 +60,14 @@ export function TodayView({ data }: Props) {
             <div className="mb-3 flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]">
               <PanchangLogo className="h-8 w-8" /> {t('tithi')}
             </div>
-            <div className="flex items-end justify-between gap-3">
-              <div>
-                <div className="text-3xl sm:text-4xl font-semibold">{localized(data.tithi.name, i18n.language)}</div>
-                <div className="mt-2 flex items-center gap-1.5 text-base sm:text-lg text-[#DDF3FC]"><CalendarDays className="h-5 w-5" />{formatWeekday(data.date, i18n.language)}</div>
-                <div className="mt-3 text-base sm:text-lg text-[#DDF3FC]">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
-                <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{t('month')}: {localized(data.month_name, i18n.language)}</div>
-                <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
-              </div>
+            <div className="mb-2 flex justify-end">
               <MoonPhase illumination={data.phase?.illumination} elongationDegrees={data.phase?.elongation_degrees} />
+            </div>
+            <div>
+              <div className="text-3xl sm:text-4xl font-semibold">{localized(data.tithi.name, i18n.language)}</div>
+              <div className="mt-2 flex items-center gap-1.5 text-base sm:text-lg text-[#DDF3FC]"><CalendarDays className="h-5 w-5" />{formatWeekday(data.date, i18n.language)}</div>
+              <div className="mt-3 text-base sm:text-lg text-[#DDF3FC]">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
+              <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{t('month')}: {localized(data.month_name, i18n.language)}</div>
             </div>
           </div>
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-5 backdrop-blur-sm">
@@ -83,6 +82,7 @@ export function TodayView({ data }: Props) {
               </div>
               {data.sun.moonrise_at ? <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><MoonEventIcon direction="rise" /> {t('moonrise')}</span><span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.moonrise_at, data.location.tz, data.date, i18n.language)}</span></div> : null}
               {data.sun.moonset_at ? <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><MoonEventIcon direction="set" /> {t('moonset')}</span><span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.moonset_at, data.location.tz, data.date, i18n.language)}</span></div> : null}
+              <div className="mt-1 text-base sm:text-lg text-[#DDF3FC]">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
             </div>
           </div>
         </div>
