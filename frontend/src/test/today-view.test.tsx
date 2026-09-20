@@ -25,16 +25,18 @@ afterEach(() => cleanup())
 
 describe('TodayView', () => {
   it('renders tithi details', () => {
-    renderWithProviders(<TodayView data={sample} calendar="Purnimanta" ayanamsa="Lahiri" />)
+    renderWithProviders(<TodayView data={sample} />)
     expect(screen.getByText('Krishna Panchami')).toBeInTheDocument()
     expect(screen.getAllByText(/Rohini/).length).toBeGreaterThan(0)
     expect(screen.queryByText(/Next:.*\(/)).not.toBeInTheDocument()
   })
 
-  it('shows the same timezone style for sunrise, sunset, and rahu kaal', () => {
-    renderWithProviders(<TodayView data={sample} calendar="Purnimanta" ayanamsa="Lahiri" />)
+  it('shows daily timings and complete end dates on the home screen', () => {
+    renderWithProviders(<TodayView data={sample} />)
     expect(screen.getByText('05:47 IST')).toBeInTheDocument()
     expect(screen.getByText('19:09 IST')).toBeInTheDocument()
     expect(screen.getByText('12:15 IST — 13:50 IST')).toBeInTheDocument()
+    expect(screen.getByText('Ends: August 4, 2026, 06:32 IST')).toBeInTheDocument()
+    expect(screen.queryByText('Tradition')).not.toBeInTheDocument()
   })
 })

@@ -7,7 +7,7 @@ import type { AppPreferences, CalendarSchool, LanguageCode, LocationPreference }
 
 interface AppState {
   preferences: AppPreferences
-  activeTab: 'today' | 'muhurta' | 'festivals' | 'settings' | 'feedback'
+  activeTab: 'today' | 'festivals' | 'settings' | 'feedback'
   selectedDate: string
   setActiveTab: (tab: AppState['activeTab']) => void
   setSelectedDate: (date: string) => void
@@ -21,7 +21,8 @@ interface AppState {
 
 const initialPreferences = typeof window === 'undefined' ? DEFAULT_PREFERENCES : loadPreferences()
 const initialDate = typeof window === 'undefined' ? formatDateInput(new Date()) : window.localStorage.getItem('gajaa-selected-date') ?? formatDateInput(new Date())
-const initialTab = typeof window === 'undefined' ? 'today' : (window.localStorage.getItem('gajaa-active-tab') as AppState['activeTab'] | null) ?? 'today'
+const storedTab = typeof window === 'undefined' ? null : window.localStorage.getItem('gajaa-active-tab')
+const initialTab: AppState['activeTab'] = storedTab === 'festivals' || storedTab === 'settings' || storedTab === 'feedback' ? storedTab : 'today'
 
 const persist = (preferences: AppPreferences) => {
   savePreferences(preferences)

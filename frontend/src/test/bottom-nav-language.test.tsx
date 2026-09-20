@@ -27,6 +27,7 @@ describe('bottom navigation localization', () => {
       render(<BottomNav activeTab="today" onTabChange={() => undefined} />)
 
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: i18n.t('muhurta') })).not.toBeInTheDocument()
       cleanup()
     }
   })

@@ -8,14 +8,12 @@ import { AdvertisementSlot } from './components/AdvertisementSlot'
 import { FestivalsTab } from './components/FestivalsTab'
 import { FeedbackScreen } from './components/FeedbackScreen'
 import { PanchangLogo } from './components/PanchangLogo'
-import { MuhurtaTab } from './components/MuhurtaTab'
 import { OnboardingCard } from './components/OnboardingCard'
 import { SettingsTab } from './components/SettingsTab'
 import { TodayView } from './components/TodayView'
 import { useFestivals } from './hooks/use-festivals'
 import { usePanchang } from './hooks/use-panchang'
 import { reverseGeocode } from './lib/location'
-import { humanizeCalendar } from './lib/utils'
 import { useAppStore } from './store/app-store'
 
 const queryClient = new QueryClient({
@@ -130,8 +128,7 @@ function AppShell() {
 
       <AdvertisementSlot className="xl:hidden" />
 
-      {activeTab === 'today' ? <TodayView data={panchangData} city={preferences.location.city} calendar={humanizeCalendar(preferences.calendar, preferences.language)} ayanamsa={preferences.ayanamsa} /> : null}
-      {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
+      {activeTab === 'today' ? <TodayView data={panchangData} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
       {activeTab === 'settings' ? (
         <SettingsTab

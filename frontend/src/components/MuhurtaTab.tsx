@@ -28,7 +28,7 @@ function DailyTiming({ label, value, timezone, date, language }: { label: string
   )
 }
 
-export function MuhurtaTab({ data }: Props) {
+export function DailyMuhurtas({ data }: Props) {
   const { t, i18n } = useTranslation()
 
   if (!data) {
@@ -44,7 +44,7 @@ export function MuhurtaTab({ data }: Props) {
   ]
 
   return (
-    <section className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-sky-100">
+    <section className="space-y-4 rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
       <div>
         <h2 className="text-lg font-semibold text-slate-900">{t('dailyTimings')}</h2>
         <p className="mt-1 text-sm text-slate-600">{t('calculatedReference')}</p>

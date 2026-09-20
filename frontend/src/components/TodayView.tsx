@@ -1,14 +1,12 @@
 import { Sunrise, Sunset } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { PanchangLogo } from './PanchangLogo'
+import { DailyMuhurtas } from './MuhurtaTab'
 import type { PanchangResponse } from '../types/api'
-import { formatTimeWithTimezone } from '../lib/utils'
+import { formatDisplayDate, formatTimeWithTimezone, humanizeAyanamsa } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
-  city?: string
-  calendar: string
-  ayanamsa: string
 }
 
 function localized(value: string | object | undefined, lang: string) {
@@ -16,13 +14,14 @@ function localized(value: string | object | undefined, lang: string) {
   return typeof value === 'string' ? value : (value as Record<string, string>)[lang] ?? (value as Record<string, string>).en ?? '—'
 }
 
-const STATIC_NAMES: Record<string, Record<string, string>> = {
-  Lahiri: { hi: 'लाहिरी', mr: 'लाहिरी', ta: 'லஹிரி', te: 'లహిరి', kn: 'ಲಹಿರಿ', ml: 'ലഹിരി', gu: 'લાહિરી', bn: 'লাহিড়ী', pa: 'ਲਹਿਰੀ' },
-  Shukla: { hi: 'शुक्ल', mr: 'शुक्ल', ta: 'சுக்ல', te: 'శుక్ల', kn: 'ಶುಕ್ಲ', ml: 'ശുക്ല', gu: 'શુક્લ', bn: 'শুক্ল', pa: 'ਸ਼ੁਕਲ' },
-  Krishna: { hi: 'कृष्ण', mr: 'कृष्ण', ta: 'கிருஷ்ண', te: 'కృష్ణ', kn: 'ಕೃಷ್ಣ', ml: 'കൃഷ്ണ', gu: 'કૃષ્ણ', bn: 'কৃষ্ণ', pa: 'ਕ੍ਰਿਸ਼ਨ' },
+const PAKSHA_NAMES: Record<string, Record<string, string>> = {
+  shukla: { hi: 'शुक्ल', mr: 'शुक्ल', ta: 'சுக்ல', te: 'శుక్ల', kn: 'ಶುಕ್ಲ', ml: 'ശുക്ല', gu: 'શુક્લ', bn: 'শুক্ল', pa: 'ਸ਼ੁਕਲ' },
+  krishna: { hi: 'कृष्ण', mr: 'कृष्ण', ta: 'கிருஷ்ண', te: 'కృష్ణ', kn: 'ಕೃಷ್ಣ', ml: 'കൃഷ്ണ', gu: 'કૃષ્ણ', bn: 'কৃষ্ণ', pa: 'ਕ੍ਰਿਸ਼ਨ' },
 }
 
-function staticName(value: string, lang: string) { return STATIC_NAMES[value]?.[lang] ?? value }
+function pakshaName(value: string, lang: string) {
+  return PAKSHA_NAMES[value.toLowerCase()]?.[lang] ?? `${value.charAt(0).toUpperCase()}${value.slice(1)}`
+}
 
 function transitionText(
   end: string | null | undefined,
@@ -32,12 +31,12 @@ function transitionText(
   language: string,
   t: (key: string) => string,
 ) {
-  const endText = end ? `${t('endsAt')}: ${formatTimeWithTimezone(end, timezone, date, language)}` : t('endTimeUnavailable')
+  const endText = end ? `${t('endsAt')}: ${formatDisplayDate(date, language)}, ${formatTimeWithTimezone(end, timezone, date, language)}` : t('endTimeUnavailable')
   const nextText = next?.name ? ` · ${t('next')}: ${localized(next.name, language)}` : ''
   return `${endText}${nextText}`
 }
 
-export function TodayView({ data, city, calendar, ayanamsa }: Props) {
+export function TodayView({ data }: Props) {
   const { i18n, t } = useTranslation()
 
   if (!data) {
@@ -45,8 +44,7 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
   }
 
   return (
-    <section className="space-y-4 lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.72fr)] lg:items-start lg:gap-4 lg:space-y-0">
-      <div className="space-y-4">
+    <section className="max-w-4xl space-y-4">
       <div className="rounded-3xl bg-[#163B63] p-5 text-white shadow-lg">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-4 backdrop-blur-sm">
@@ -55,7 +53,6 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
             </div>
             <div className="text-2xl font-semibold">{localized(data.tithi.name, i18n.language)}</div>
             <div className="mt-1 text-sm text-[#DDF3FC]">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
-            <div className="mt-2 text-sm text-[#B7DDF4]">{transitionText(data.tithi.end ?? data.tithi.ends_at, data.tithi.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-4 backdrop-blur-sm">
             <div className="space-y-3">
@@ -74,38 +71,12 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-3xl bg-white p-5 shadow-sm border border-[#D7E7F0]">
-          <h2 className="text-sm font-semibold text-slate-900">{t('rahuKaal')}</h2>
-          <div className="mt-3 rounded-2xl bg-[#F5FAFD] px-4 py-3 text-sm font-medium text-[#163B63] ring-1 ring-[#D7E7F0]">
-            {formatTimeWithTimezone(data.rahu_kaal.start, data.location.tz, data.date, i18n.language)} — {formatTimeWithTimezone(data.rahu_kaal.end, data.location.tz, data.date, i18n.language)}
-          </div>
-          <div className="mt-4 grid gap-2 text-sm text-slate-600">
-            <div>{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
-            <div className="text-xs">{transitionText(data.moon_sign.end, data.moon_sign.next, data.location.tz, data.date, i18n.language, t)}</div>
-            <div>{t('yoga')}: {localized(data.yoga.name, i18n.language)}</div>
-            <div>{t('karana')}: {localized(data.karana.name, i18n.language)}</div>
-          </div>
-        </div>
-
-        <div className="rounded-3xl bg-white p-5 shadow-sm border border-[#D7E7F0]">
-          <h2 className="text-sm font-semibold text-slate-900">{t('traditionMeta')}</h2>
-          <dl className="mt-3 space-y-2 text-sm text-slate-600">
-            <div className="flex justify-between gap-4"><dt>{t('calendarSchool')}</dt><dd>{calendar}</dd></div>
-            <div className="flex justify-between gap-4"><dt>{t('ayanamsa')}</dt><dd>{staticName(ayanamsa, i18n.language)}</dd></div>
-
-            <div className="flex justify-between gap-4"><dt>{t('location')}</dt><dd>{city || data.location.name}</dd></div>
-          </dl>
-        </div>
-      </div>
-      </div>
-
-      <section className="rounded-3xl bg-white p-5 shadow-sm border border-[#D7E7F0] lg:sticky lg:top-4">
+      <section className="rounded-3xl bg-white p-5 shadow-sm border border-[#D7E7F0]">
         <h2 className="font-semibold text-slate-900">{t('panchangDetails')}</h2>
-        <div className="mt-4 grid gap-3 text-sm text-slate-600">
+        <div className="mt-4 grid gap-3 text-sm text-slate-600 lg:grid-cols-2">
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
             <div className="font-semibold text-slate-900">{t('tithi')}: {localized(data.tithi.name, i18n.language)}</div>
-            <div className="mt-1">{t('paksha')}: {data.paksha ? staticName(data.paksha, i18n.language) : '—'} · {t('month')}: {localized(data.month_name, i18n.language)}</div>
+            <div className="mt-1">{t('paksha')}: {data.paksha ? pakshaName(data.paksha, i18n.language) : '—'} · {t('month')}: {localized(data.month_name, i18n.language)}</div>
             <div className="mt-1">{transitionText(data.tithi.end ?? data.tithi.ends_at, data.tithi.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
@@ -124,9 +95,10 @@ export function TodayView({ data, city, calendar, ayanamsa }: Props) {
             <div className="font-semibold text-slate-900">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
             <div className="mt-1">{transitionText(data.moon_sign.end, data.moon_sign.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
-          {data.timing_metadata ? <div className="border-t border-slate-100 pt-3 text-xs text-slate-500">{t('timezone')}: {data.timing_metadata.timezone} · {t('ayanamsa')}: {staticName(data.timing_metadata.ayanamsa, i18n.language)}</div> : null}
+          {data.timing_metadata ? <div className="border-t border-slate-100 pt-3 text-xs text-slate-500 lg:col-span-2">{t('timezone')}: {data.timing_metadata.timezone} · {t('ayanamsa')}: {humanizeAyanamsa(data.timing_metadata.ayanamsa, i18n.language)}</div> : null}
         </div>
       </section>
+      <DailyMuhurtas data={data} />
     </section>
   )
 }
