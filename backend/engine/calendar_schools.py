@@ -126,7 +126,11 @@ def _solar_month_index(sun_sidereal_longitude: float) -> int:
 
 
 def _purnimanta_month_name(base_index: int, paksha: str) -> str:
-    index = (base_index + 1) % 12 if paksha == "Krishna" else base_index
+    # In a Purnimanta calendar, the Shukla fortnight belongs to the
+    # month that ends at the upcoming Purnima; Krishna begins in the
+    # following month immediately after Purnima. The sidereal solar
+    # anchor is therefore one month behind during Shukla, not Krishna.
+    index = (base_index - 1) % 12 if paksha == "Shukla" else base_index
     return MONTH_TABLES["purnimanta"][index]["name"]
 
 
