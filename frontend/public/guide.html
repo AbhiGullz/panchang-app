@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical guide to the five limbs of Panchang, lunar months, local timings, and how Gajaa Panchang calculates them.">
+  <title>Panchang Guide | Gajaa Panchang</title>
+  <style>
+    :root{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#12233a;background:#f5fafd;line-height:1.65}*{box-sizing:border-box}body{margin:0}.wrap{max-width:850px;margin:32px auto;padding:0 20px 48px}.brand,.card{background:#fff;border:1px solid #d7e7f0;border-radius:22px;box-shadow:0 2px 8px #163b6310}.brand{padding:20px 24px;margin-bottom:18px}.brand a{color:#163b63;font-weight:700;text-decoration:none;letter-spacing:.12em;text-transform:uppercase}.card{padding:28px 30px}h1{font-size:2rem;line-height:1.2;margin:.3rem 0 1rem}h2{font-size:1.25rem;margin:2rem 0 .5rem;color:#163b63}h3{font-size:1rem;margin:1rem 0 .25rem}p,li{color:#465a73}ul{padding-left:1.3rem}.note{background:#f1f8fc;border-radius:14px;padding:14px 16px}.back{display:inline-block;margin-top:20px;color:#126b9c;font-weight:600}@media(max-width:600px){.wrap{margin:14px auto;padding:0 12px 32px}.card{padding:22px 18px}h1{font-size:1.7rem}}
+  </style>
+</head>
+<body><main class="wrap">
+  <header class="brand"><a href="/">Gajaa Panchang</a></header>
+  <article class="card">
+    <h1>A practical guide to Panchang</h1>
+    <p>A Panchang is a traditional Hindu almanac used to understand the day through the relationship of the Sun, Moon, calendar date, and local horizon. The word refers to five core elements, often called the five limbs. Gajaa Panchang presents those elements alongside local sunrise and moon timings so readers can understand what is changing during the day.</p>
+
+    <h2>The five Panchang elements</h2>
+    <h3>Tithi</h3><p>A tithi is a lunar day measured by the angular distance between the Sun and Moon. Each tithi spans 12 degrees of their separation. There are 30 tithis in a lunar cycle: 15 in Shukla Paksha, the waxing fortnight, and 15 in Krishna Paksha, the waning fortnight. A tithi can begin or end at any clock time, so its end time may fall on a different civil date from the selected Panchang day.</p>
+    <h3>Nakshatra</h3><p>Nakshatra describes the Moon’s position among 27 equal divisions of the sidereal zodiac. The Moon moves through these divisions in roughly a day, and a boundary can occur at any local time. The app shows the nakshatra at local sunrise and the next boundary when available.</p>
+    <h3>Yoga</h3><p>Yoga is calculated from the sum of the sidereal longitudes of the Sun and Moon, divided into 27 sections. It is a separate element from the Moon’s nakshatra even though both use 27 divisions.</p>
+    <h3>Karana</h3><p>A karana is half of a tithi, corresponding to a 6-degree interval in the Sun–Moon separation. Seven karanas recur through most of the lunar cycle, while four special karanas occur at particular points near the new and full moons.</p>
+    <h3>Weekday (Vara)</h3><p>Vara is the local civil weekday associated with the selected date. Panchang day observances commonly use sunrise as the boundary for deciding which tithi and other elements govern that day.</p>
+
+    <h2>Lunar months and calendar schools</h2>
+    <p>Hindu calendars use more than one month convention. In an <strong>Amanta</strong> system, a lunar month runs from one new moon to the next. In a <strong>Purnimanta</strong> system, it runs from one full moon to the next. As a result, the same date and lunar fortnight can carry different month labels in different traditions. Regional calendars may also use distinct names, solar boundaries, or year conventions.</p>
+    <p>Gajaa Panchang lets the reader select a calendar school in Settings. The selected school controls the month label; location controls the local sunrise, sunset, and time zone. When comparing two Panchangs, compare their calendar school, location, and sunrise convention as well as the Gregorian date.</p>
+
+    <h2>Why location and sunrise matter</h2>
+    <p>Sunrise, sunset, moonrise, and moonset depend on the observer’s coordinates and local horizon. A tithi may be in progress at midnight but a different tithi may be present at sunrise. Many daily Panchang conventions report the element present at sunrise, while also giving its calculated end time. Times are shown in the selected location’s time zone, including daylight-saving changes where applicable.</p>
+
+    <h2>How Gajaa Panchang calculates the day</h2>
+    <p>The calculation engine uses the Swiss Ephemeris to obtain solar and lunar positions. It derives tithi and karana from the Moon–Sun angular separation; nakshatra and Moon sign from the Moon’s sidereal longitude; and yoga from the sum of the sidereal solar and lunar longitudes. It searches for the next angular boundary and converts that instant to the selected location’s time zone. Solar and lunar rise/set events are calculated for the selected coordinates. The configured sidereal reference is Lahiri ayanamsa.</p>
+    <div class="note"><strong>Use as a reference:</strong> regional practice, local calendars, sunrise definitions, and tradition-specific rules can differ. Gajaa Panchang is a calculation and reference tool; for a religious observance, follow the calendar or guidance of the tradition and community you observe.</div>
+
+    <h2>Reading the daily screen</h2>
+    <ul><li>The blue summary shows the tithi at local sunrise, weekday, nakshatra, lunar month, Moon sign, and daily Sun/Moon events.</li><li>Panchang Details provides the calculated end instant and next element for tithi, nakshatra, yoga, karana, Moon sign, and month when supported.</li><li>Muhurta lists selected daily time windows, including Abhijit, Amrit Kala, Rahu Kaal, Yamagandam, and Gulika Kaal.</li><li>Festivals are presented for the selected calendar year. Observance dates can vary by regional school and local rule.</li></ul>
+    <a class="back" href="/">← Return to Gajaa Panchang</a>
+  </article>
+</main></body></html>

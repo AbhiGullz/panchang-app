@@ -15,8 +15,7 @@ export function AdvertisementSlot({ className = '', format = 'horizontal' }: Pro
   const initialized = useRef(false)
   const client = import.meta.env.VITE_ADSENSE_CLIENT as string | undefined
   const slot = (format === 'vertical' ? import.meta.env.VITE_ADSENSE_VERTICAL_SLOT : import.meta.env.VITE_ADSENSE_CONTENT_SLOT) as string | undefined
-  const consentGranted = typeof window !== 'undefined' && window.localStorage.getItem('gajaa-ad-consent') === 'granted'
-  const enabled = import.meta.env.PROD && Boolean(client && slot && consentGranted)
+  const enabled = import.meta.env.PROD && Boolean(client && slot)
 
   useEffect(() => {
     if (!enabled || initialized.current) return
@@ -39,10 +38,5 @@ export function AdvertisementSlot({ className = '', format = 'horizontal' }: Pro
     </aside>
   }
 
-  return (
-    <aside aria-label={t('advertisement')} className={`rounded-2xl border border-dashed border-[#D7E7F0] bg-white/60 px-4 py-5 text-center text-sm text-[#64748B] ${className}`}>
-      <div className="font-medium text-slate-600">{t('advertisement')}</div>
-      <div className="mt-1 text-xs">{t('advertisementEmpty')}</div>
-    </aside>
-  )
+  return null
 }

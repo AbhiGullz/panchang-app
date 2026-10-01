@@ -79,6 +79,10 @@ function AppShell() {
 
   const festivalYear = useMemo(() => Number(selectedDate.slice(0, 4)), [selectedDate])
   const { data: festivalsData } = useFestivals(festivalYear, preferences.calendar, preferences.language)
+  const hasPublisherContent = activeTab === 'festivals'
+    ? Boolean(festivalsData?.festivals.length)
+    : (activeTab === 'today' || activeTab === 'muhurta') && Boolean(panchangData)
+  const canShowAds = preferences.onboardingComplete && hasPublisherContent
 
   const useCurrentLocation = async () => {
     if (!navigator.geolocation) {
@@ -130,7 +134,7 @@ function AppShell() {
       </header>
 
       <div className="xl:grid xl:grid-cols-[240px_minmax(0,768px)_240px] xl:justify-center xl:items-stretch xl:gap-5">
-        <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" />
+        {canShowAds ? <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" /> : <div className="hidden xl:block" />}
         <main className="min-w-0 space-y-4">
       {!preferences.onboardingComplete ? (
         <OnboardingCard
@@ -146,8 +150,6 @@ function AppShell() {
       ) : null}
 
       {notice ? <div className="rounded-2xl bg-[#DDF3FC] px-4 py-3 text-sm text-[#163B63]">{notice}</div> : null}
-
-      <AdvertisementSlot className="xl:hidden" />
 
       {activeTab === 'today' ? <TodayView data={panchangData} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
@@ -165,9 +167,15 @@ function AppShell() {
       ) : null}
       {activeTab === 'feedback' ? <FeedbackScreen onBack={() => setActiveTab('settings')} /> : null}
 
+      {canShowAds ? <AdvertisementSlot className="xl:hidden" /> : null}
+
         </main>
-        <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" />
+        {canShowAds ? <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" /> : <div className="hidden xl:block" />}
       </div>
+      <footer className="mx-auto flex w-full max-w-3xl justify-center gap-5 pb-24 text-xs text-slate-500">
+        <a className="underline" href="/guide.html">Panchang guide</a>
+        <a className="underline" href="/privacy.html">Privacy</a>
+      </footer>
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   )

@@ -40,25 +40,45 @@ def _phase(jd: float) -> float:
 
 def next_phase_boundary(center: datetime, target_degrees: float) -> datetime:
     """Return the next local instant at which lunar elongation reaches a target."""
-    start_phase = _phase(_jd(center))
-    advance = (target_degrees - start_phase) % 360
-    if advance < 0.001:
-        advance = 360.0
+    target = target_degrees % 360.0
+    output_timezone = center.tzinfo
+    start = center.astimezone(timezone.utc)
+    start_phase = _phase(_jd(start))
+    advance = (target - start_phase) % 360.0
+    if advance < 0.01:
+        # Move off an exact boundary so the next occurrence can be found.
+        start += timedelta(hours=6)
+        start_phase = _phase(_jd(start))
+        advance = (target - start_phase) % 360.0
 
-    def progressed(at: datetime) -> float:
-        return (_phase(_jd(at)) - start_phase) % 360
+    # Walk forward in short intervals and accumulate forward angular motion.
+    # A coarse bracket can jump over a phase target and lose it to modulo wrap.
+    cursor = start
+    previous_phase = start_phase
+    progressed = 0.0
+    step = timedelta(hours=6)
+    while progressed < advance:
+        next_cursor = cursor + step
+        next_phase = _phase(_jd(next_cursor))
+        delta = (next_phase - previous_phase) % 360.0
+        remaining = advance - progressed
+        if delta >= remaining:
+            left = cursor
+            right = next_cursor
+            left_phase = previous_phase
+            for _ in range(36):
+                middle = left + (right - left) / 2
+                middle_progress = (_phase(_jd(middle)) - left_phase) % 360.0
+                if middle_progress < remaining:
+                    left = middle
+                else:
+                    right = middle
+            return right.astimezone(output_timezone)
+        progressed += delta
+        cursor = next_cursor
+        previous_phase = next_phase
 
-    left = center
-    right = center + timedelta(days=(advance / 10.5) + 2)
-    while progressed(right) < advance:
-        right += timedelta(days=1)
-    for _ in range(36):
-        middle = left + (right - left) / 2
-        if progressed(middle) < advance:
-            left = middle
-        else:
-            right = middle
-    return right
+    return cursor
 
 
 def _bucket(value: float, span: float, count: int) -> int:

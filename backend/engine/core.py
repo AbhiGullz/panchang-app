@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime, time, timezone
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -135,12 +135,26 @@ def compute_daily_panchang(
     yoga = compute_yoga(sun_sidereal, moon_sidereal)
     moon_sign = compute_moon_sign(moon_sidereal)
     paksha = "Shukla" if tithi_karana["tithi"]["index"] <= 15 else "Krishna"
+    purnima_end = None
+    school_sun_sidereal = sun_sidereal
+    if calendar_school == "purnimanta":
+        purnima_end = next_phase_boundary(sunrise_dt, 180.0)
+        purnima_utc = purnima_end.astimezone(timezone.utc)
+        purnima_jd_ut = swe.julday(
+            purnima_utc.year,
+            purnima_utc.month,
+            purnima_utc.day,
+            purnima_utc.hour + purnima_utc.minute / 60.0 + purnima_utc.second / 3600.0,
+            swe.GREG_CAL,
+        )
+        school_sun_sidereal = _calc_ecliptic_longitude(purnima_jd_ut, swe.SUN, sidereal=True)
+
     school = resolve_calendar_school(
         target_date=target_date,
         gregorian_year=target_date.year,
         school=calendar_school,
         paksha=paksha,
-        sun_sidereal_longitude=sun_sidereal,
+        sun_sidereal_longitude=school_sun_sidereal,
     )
     rahu_kaal = compute_rahu_kaal(sun_events["rise_dt"], sun_events["set_dt"])
     abhijit = compute_abhijit_muhurta(sun_events["rise_dt"], sun_events["set_dt"])
@@ -156,13 +170,37 @@ def compute_daily_panchang(
     )
     month_transition = None
     if calendar_school == "purnimanta":
-        month_end = next_phase_boundary(sunrise_dt, 180.0)
-        next_month_index = school_month_index % 12 + 1
+        assert purnima_end is not None
+        # Move safely past the boundary. The phase solver works on modulo
+        # angles, so starting only a second after a computed opposition can
+        # still round to exactly 180° and accidentally advance by 360°.
+        next_purnima = next_phase_boundary(purnima_end.astimezone(timezone.utc) + timedelta(hours=12), 180.0)
+        next_purnima_utc = next_purnima.astimezone(timezone.utc)
+        next_purnima_jd_ut = swe.julday(
+            next_purnima_utc.year,
+            next_purnima_utc.month,
+            next_purnima_utc.day,
+            next_purnima_utc.hour + next_purnima_utc.minute / 60.0 + next_purnima_utc.second / 3600.0,
+            swe.GREG_CAL,
+        )
+        next_sun_sidereal = _calc_ecliptic_longitude(next_purnima_jd_ut, swe.SUN, sidereal=True)
+        next_school = resolve_calendar_school(
+            target_date=target_date,
+            gregorian_year=target_date.year,
+            school="purnimanta",
+            paksha="Shukla",
+            sun_sidereal_longitude=next_sun_sidereal,
+        )
+        next_month_index = next(
+            index
+            for index in range(1, 13)
+            if get_month_name_map(calendar_school, index)["en"] == next_school.month_name
+        )
         month_transition = {
-            "end": month_end.isoformat(timespec="seconds"),
+            "end": purnima_end.isoformat(timespec="seconds"),
             "next": {
                 "name": get_month_name_map(calendar_school, next_month_index),
-                "at": month_end.isoformat(timespec="seconds"),
+                "at": purnima_end.isoformat(timespec="seconds"),
             },
         }
 
