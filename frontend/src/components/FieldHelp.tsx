@@ -1,21 +1,22 @@
-import { CircleHelp } from 'lucide-react'
+import type { ReactNode } from 'react'
 
 interface Props {
   label: string
   explanation: string
   inverse?: boolean
+  children: ReactNode
 }
 
-export function FieldHelp({ label, explanation, inverse = false }: Props) {
+export function FieldHelp({ label, explanation, inverse = false, children }: Props) {
   return (
     <span className="group relative inline-flex align-middle">
       <button
         aria-label={`${label}: ${explanation}`}
-        className={`ml-1 inline-flex rounded-full focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-1 ${inverse ? 'text-[#B7DDF4]' : 'text-slate-400'}`}
+        className={`inline cursor-help rounded-sm bg-transparent p-0 text-inherit underline decoration-dotted decoration-1 underline-offset-4 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-1 ${inverse ? 'focus:ring-offset-[#0F2747]' : ''}`}
         title={explanation}
         type="button"
       >
-        <CircleHelp aria-hidden="true" className="h-3.5 w-3.5" />
+        {children}
       </button>
       <span
         role="tooltip"

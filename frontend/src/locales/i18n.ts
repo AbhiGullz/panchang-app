@@ -199,8 +199,21 @@ const fieldHelp = {
   ayanamsa: 'The sidereal correction used to account for precession; this app uses Lahiri.',
 } as const
 
+const sankalpaTranslations = {
+  en: { sankalpa: 'Sankalpa', sankalpaInSelectedLanguage: 'In your selected language' },
+  hi: { sankalpa: 'संकल्प', sankalpaInSelectedLanguage: 'आपकी चुनी हुई भाषा में' },
+  mr: { sankalpa: 'संकल्प', sankalpaInSelectedLanguage: 'तुमच्या निवडलेल्या भाषेत' },
+  ta: { sankalpa: 'சங்கல்பம்', sankalpaInSelectedLanguage: 'நீங்கள் தேர்ந்தெடுத்த மொழியில்' },
+  te: { sankalpa: 'సంకల్పం', sankalpaInSelectedLanguage: 'మీరు ఎంచుకున్న భాషలో' },
+  kn: { sankalpa: 'ಸಂಕಲ್ಪ', sankalpaInSelectedLanguage: 'ನೀವು ಆಯ್ಕೆ ಮಾಡಿದ ಭಾಷೆಯಲ್ಲಿ' },
+  ml: { sankalpa: 'സങ്കൽപം', sankalpaInSelectedLanguage: 'നിങ്ങൾ തിരഞ്ഞെടുത്ത ഭാഷയിൽ' },
+  gu: { sankalpa: 'સંકલ્પ', sankalpaInSelectedLanguage: 'તમારી પસંદ કરેલી ભાષામાં' },
+  bn: { sankalpa: 'সংকল্প', sankalpaInSelectedLanguage: 'আপনার নির্বাচিত ভাষায়' },
+  pa: { sankalpa: 'ਸੰਕਲਪ', sankalpaInSelectedLanguage: 'ਤੁਹਾਡੀ ਚੁਣੀ ਹੋਈ ਭਾਸ਼ਾ ਵਿੱਚ' },
+} as const
+
 for (const language of Object.keys(resources) as Array<keyof typeof resources>) {
-  Object.assign(resources[language].translation, { fieldHelp })
+  Object.assign(resources[language].translation, { fieldHelp }, sankalpaTranslations[language])
 }
 
 void i18n

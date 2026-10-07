@@ -12,6 +12,7 @@ import { PanchangLogo } from './components/PanchangLogo'
 import { MuhurtaTab } from './components/MuhurtaTab'
 import { OnboardingCard } from './components/OnboardingCard'
 import { SettingsTab } from './components/SettingsTab'
+import { SankalpaTab } from './components/SankalpaTab'
 import { TodayView } from './components/TodayView'
 import { useFestivals } from './hooks/use-festivals'
 import { usePanchang } from './hooks/use-panchang'
@@ -155,6 +156,7 @@ function AppShell() {
 
       {activeTab === 'today' ? <TodayView data={panchangData} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
+      {activeTab === 'sankalpa' ? <SankalpaTab data={panchangData} locationName={preferences.location.city} selectedDate={selectedDate} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
       {activeTab === 'settings' ? (
         <SettingsTab
