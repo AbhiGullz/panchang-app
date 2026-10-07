@@ -2,6 +2,7 @@ import { ArrowDown, ArrowUp, CalendarDays, Moon, Sunrise, Sunset } from 'lucide-
 import { useTranslation } from 'react-i18next'
 import { MoonPhase } from './MoonPhase'
 import { PanchangLogo } from './PanchangLogo'
+import { FieldHelp } from './FieldHelp'
 import type { PanchangResponse } from '../types/api'
 import { formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyanamsa, humanizeTimezone } from '../lib/utils'
 
@@ -47,6 +48,8 @@ function MoonEventIcon({ direction }: { direction: 'rise' | 'set' }) {
 
 export function TodayView({ data }: Props) {
   const { i18n, t } = useTranslation()
+  const help = (key: string) => t(`fieldHelp.${key}`)
+  const labelWithHelp = (key: string, label: string, inverse = false) => <>{label}<FieldHelp explanation={help(key)} inverse={inverse} label={label} /></>
 
   if (!data) {
     return <div className="rounded-3xl border border-[#D7E7F0] bg-white p-6 text-sm text-[#64748B]">{t('loading')}</div>
@@ -58,29 +61,29 @@ export function TodayView({ data }: Props) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-5 backdrop-blur-sm">
             <div className="mb-3 flex items-center justify-between gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]">
-              <span className="flex items-center gap-2"><PanchangLogo className="h-8 w-8" /> {t('tithi')}</span>
+              <span className="flex items-center gap-2"><PanchangLogo className="h-8 w-8" /> <span>{labelWithHelp('tithi', t('tithi'), true)}</span></span>
               <MoonPhase illumination={data.phase?.illumination} elongationDegrees={data.phase?.elongation_degrees} />
             </div>
             <div>
               <div className="text-3xl sm:text-4xl font-semibold">{localized(data.tithi.name, i18n.language)}</div>
-              <div className="mt-2 text-base sm:text-lg text-[#DDF3FC]">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
-              <div className="mt-3 text-base sm:text-lg text-[#DDF3FC]">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
-              <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{t('month')}: {localized(data.month_name, i18n.language)}</div>
+              <div className="mt-2 text-base sm:text-lg text-[#DDF3FC]">{labelWithHelp('moonSign', t('moonSign'), true)}: {localized(data.moon_sign, i18n.language)}</div>
+              <div className="mt-3 text-base sm:text-lg text-[#DDF3FC]">{labelWithHelp('nakshatra', t('nakshatra'), true)}: {localized(data.nakshatra.name, i18n.language)}</div>
+              <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{labelWithHelp('month', t('month'), true)}: {localized(data.month_name, i18n.language)}</div>
             </div>
           </div>
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-5 backdrop-blur-sm">
             <div className="space-y-4">
-              <div className="flex items-center gap-1.5 text-base sm:text-lg text-[#DDF3FC]"><CalendarDays className="h-5 w-5" />{formatWeekday(data.date, i18n.language)}</div>
+              <div className="flex items-center gap-1.5 text-base sm:text-lg text-[#DDF3FC]"><CalendarDays className="h-5 w-5" />{formatWeekday(data.date, i18n.language)}<FieldHelp explanation={help('weekday')} inverse label={formatWeekday(data.date, i18n.language)} /></div>
               <div className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><Sunrise className="h-6 w-6" /> {t('sunrise')}</span>
+                <span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><Sunrise className="h-6 w-6" /> <span>{labelWithHelp('sunrise', t('sunrise'), true)}</span></span>
                 <span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.rise_at ?? data.sun.rise, data.location.tz, data.date, i18n.language)}</span>
               </div>
               <div className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><Sunset className="h-6 w-6" /> {t('sunset')}</span>
+                <span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><Sunset className="h-6 w-6" /> <span>{labelWithHelp('sunset', t('sunset'), true)}</span></span>
                 <span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.set_at ?? data.sun.set, data.location.tz, data.date, i18n.language)}</span>
               </div>
-              {data.sun.moonrise_at ? <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><MoonEventIcon direction="rise" /> {t('moonrise')}</span><span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.moonrise_at, data.location.tz, data.date, i18n.language)}</span></div> : null}
-              {data.sun.moonset_at ? <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><MoonEventIcon direction="set" /> {t('moonset')}</span><span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.moonset_at, data.location.tz, data.date, i18n.language)}</span></div> : null}
+              {data.sun.moonrise_at ? <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><MoonEventIcon direction="rise" /> <span>{labelWithHelp('moonrise', t('moonrise'), true)}</span></span><span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.moonrise_at, data.location.tz, data.date, i18n.language)}</span></div> : null}
+              {data.sun.moonset_at ? <div className="flex items-center justify-between gap-3"><span className="flex items-center gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]"><MoonEventIcon direction="set" /> <span>{labelWithHelp('moonset', t('moonset'), true)}</span></span><span className="text-base sm:text-lg font-semibold leading-none">{formatTimeWithTimezone(data.sun.moonset_at, data.location.tz, data.date, i18n.language)}</span></div> : null}
             </div>
           </div>
         </div>
@@ -90,31 +93,31 @@ export function TodayView({ data }: Props) {
         <h2 className="font-semibold text-slate-900">{t('panchangDetails')}</h2>
         <div className="mt-4 grid gap-3 text-sm text-slate-600 lg:grid-cols-2">
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
-            <div className="font-semibold text-slate-900">{t('month')}: {localized(data.month_name, i18n.language)}</div>
-            <div className="mt-1">{t('paksha')}: {data.paksha ? pakshaName(data.paksha, i18n.language) : '—'}</div>
+            <div className="font-semibold text-slate-900">{labelWithHelp('month', t('month'))}: {localized(data.month_name, i18n.language)}</div>
+            <div className="mt-1">{labelWithHelp('paksha', t('paksha'))}: {data.paksha ? pakshaName(data.paksha, i18n.language) : '—'}</div>
             {data.month_transition ? <div className="mt-1 whitespace-pre-line">{transitionText(data.month_transition.end, data.month_transition.next, data.location.tz, data.date, i18n.language, t)}</div> : null}
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
-            <div className="font-semibold text-slate-900">{t('tithi')}: {localized(data.tithi.name, i18n.language)}</div>
+            <div className="font-semibold text-slate-900">{labelWithHelp('tithi', t('tithi'))}: {localized(data.tithi.name, i18n.language)}</div>
             <div className="mt-1 whitespace-pre-line">{transitionText(data.tithi.end ?? data.tithi.ends_at, data.tithi.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
-            <div className="font-semibold text-slate-900">{t('moonSign')}: {localized(data.moon_sign, i18n.language)}</div>
+            <div className="font-semibold text-slate-900">{labelWithHelp('moonSign', t('moonSign'))}: {localized(data.moon_sign, i18n.language)}</div>
             <div className="mt-1 whitespace-pre-line">{transitionText(data.moon_sign.end, data.moon_sign.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
-            <div className="font-semibold text-slate-900">{t('nakshatra')}: {localized(data.nakshatra.name, i18n.language)}</div>
+            <div className="font-semibold text-slate-900">{labelWithHelp('nakshatra', t('nakshatra'))}: {localized(data.nakshatra.name, i18n.language)}</div>
             <div className="mt-1 whitespace-pre-line">{transitionText(data.nakshatra.end, data.nakshatra.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
-            <div className="font-semibold text-slate-900">{t('yoga')}: {localized(data.yoga.name, i18n.language)}</div>
+            <div className="font-semibold text-slate-900">{labelWithHelp('yoga', t('yoga'))}: {localized(data.yoga.name, i18n.language)}</div>
             <div className="mt-1 whitespace-pre-line">{transitionText(data.yoga.end, data.yoga.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
           <div className="rounded-2xl bg-[#F5FAFD] p-4">
-            <div className="font-semibold text-slate-900">{t('karana')}: {localized(data.karana.name, i18n.language)}</div>
+            <div className="font-semibold text-slate-900">{labelWithHelp('karana', t('karana'))}: {localized(data.karana.name, i18n.language)}</div>
             <div className="mt-1 whitespace-pre-line">{transitionText(data.karana.end, data.karana.next, data.location.tz, data.date, i18n.language, t)}</div>
           </div>
-          {data.timing_metadata ? <div className="border-t border-slate-100 pt-3 text-xs text-slate-500 lg:col-span-2">{t('timezone')}: {humanizeTimezone(data.timing_metadata.timezone, i18n.language)} · {t('ayanamsa')}: {humanizeAyanamsa(data.timing_metadata.ayanamsa, i18n.language)}</div> : null}
+          {data.timing_metadata ? <div className="border-t border-slate-100 pt-3 text-xs text-slate-500 lg:col-span-2">{labelWithHelp('timezone', t('timezone'))}: {humanizeTimezone(data.timing_metadata.timezone, i18n.language)} · {labelWithHelp('ayanamsa', t('ayanamsa'))}: {humanizeAyanamsa(data.timing_metadata.ayanamsa, i18n.language)}</div> : null}
         </div>
       </section>
     </section>

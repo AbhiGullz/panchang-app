@@ -133,9 +133,11 @@ function AppShell() {
 
       </header>
 
-      <div className="xl:grid xl:grid-cols-[240px_minmax(0,768px)_240px] xl:justify-center xl:items-stretch xl:gap-5">
-        {canShowAds ? <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" /> : <div className="hidden xl:block" />}
-        <main className="min-w-0 space-y-4">
+      <div className="xl:grid xl:grid-cols-[240px_minmax(0,768px)_240px] xl:items-start xl:justify-center xl:gap-5">
+        <div className="hidden min-w-0 xl:col-start-1 xl:row-start-1 xl:block">
+          {canShowAds ? <AdvertisementSlot className="sticky top-5 min-h-[520px]" format="vertical" /> : null}
+        </div>
+        <main className="min-w-0 space-y-4 xl:col-start-2 xl:row-start-1">
       {!preferences.onboardingComplete ? (
         <OnboardingCard
           location={preferences.location}
@@ -170,7 +172,9 @@ function AppShell() {
       {canShowAds ? <AdvertisementSlot className="xl:hidden" /> : null}
 
         </main>
-        {canShowAds ? <AdvertisementSlot className="sticky top-5 hidden h-full min-h-[520px] xl:block" format="vertical" /> : <div className="hidden xl:block" />}
+        <div className="hidden min-w-0 xl:col-start-3 xl:row-start-1 xl:block">
+          {canShowAds ? <AdvertisementSlot className="sticky top-5 min-h-[520px]" format="vertical" /> : null}
+        </div>
       </div>
       <footer className="mx-auto flex w-full max-w-3xl justify-center gap-5 pb-24 text-xs text-slate-500">
         <a className="underline" href="/guide.html">Panchang guide</a>

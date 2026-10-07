@@ -182,6 +182,27 @@ for (const language of Object.keys(completeSettingsTranslations) as Array<keyof 
   Object.assign(resources[language].translation, completeSettingsTranslations[language])
 }
 
+const fieldHelp = {
+  tithi: 'The lunar day, determined by the angular distance between the Sun and Moon.',
+  paksha: 'The waxing (Shukla) or waning (Krishna) half of the lunar month.',
+  nakshatra: 'The lunar mansion occupied by the Moon at the selected place and time.',
+  yoga: 'One of the 27 combinations calculated from the longitudes of the Sun and Moon.',
+  karana: 'Half of a Tithi; it is used when assessing the character of a time period.',
+  moonSign: 'The sidereal zodiac sign occupied by the Moon.',
+  month: 'The Hindu lunar month according to the calendar school selected in Settings.',
+  weekday: 'The civil weekday for the selected date at this location.',
+  sunrise: 'Local sunrise calculated for the selected coordinates and time zone.',
+  sunset: 'Local sunset calculated for the selected coordinates and time zone.',
+  moonrise: 'Local time when the Moon rises above the horizon.',
+  moonset: 'Local time when the Moon sets below the horizon.',
+  timezone: 'The IANA time zone used to convert astronomical instants to local time.',
+  ayanamsa: 'The sidereal correction used to account for precession; this app uses Lahiri.',
+} as const
+
+for (const language of Object.keys(resources) as Array<keyof typeof resources>) {
+  Object.assign(resources[language].translation, { fieldHelp })
+}
+
 void i18n
   .use(LanguageDetector)
   .use(initReactI18next)
