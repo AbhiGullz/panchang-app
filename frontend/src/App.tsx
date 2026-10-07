@@ -110,15 +110,15 @@ function AppShell() {
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-[1480px] flex-col gap-4 px-4 py-5 text-[#12233A] sm:px-6 lg:px-8">
       <header aria-label={t('appName')} className="mx-auto w-full max-w-3xl rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
             <PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" />
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">{t('appName')}</div>
-              <h1 className="text-2xl font-semibold">{preferences.location.city}</h1>
+              <h1 className="text-xl font-semibold leading-tight sm:text-2xl">{preferences.location.city}</h1>
             </div>
           </div>
-          <label className="relative flex min-h-11 shrink-0 cursor-pointer items-center gap-2 rounded-2xl border border-[#D7E7F0] bg-[#F5FAFD] px-3 py-2 text-sm text-[#12233A]">
+          <label className="relative flex min-h-11 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#D7E7F0] bg-[#F5FAFD] px-3 py-2 text-sm text-[#12233A] sm:w-auto">
             <span aria-hidden="true">{formatCompactDate(selectedDate, i18n.language)}</span>
             <CalendarDays aria-hidden="true" className="h-4 w-4" />
             <input
