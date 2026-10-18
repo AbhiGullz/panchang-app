@@ -3,6 +3,7 @@ import { Download, ShieldCheck } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import type { LanguageCode, PanchangResponse } from '../types/api'
 import { formatDisplayDate, formatWeekday } from '../lib/utils'
+import { FieldHelp } from './FieldHelp'
 
 interface Props {
   data?: PanchangResponse
@@ -88,6 +89,12 @@ const durations = [
 
 const sanskritWeekdays = ['रविवासरे', 'सोमवासरे', 'मङ्गलवासरे', 'बुधवासरे', 'गुरुवासरे', 'शुक्रवासरे', 'शनिवासरे']
 
+const pakshaNames: Record<LanguageCode, { shukla: string; krishna: string }> = {
+  en: { shukla: 'Shukla', krishna: 'Krishna' }, hi: { shukla: 'शुक्ल', krishna: 'कृष्ण' }, mr: { shukla: 'शुक्ल', krishna: 'कृष्ण' },
+  ta: { shukla: 'சுக்ல', krishna: 'கிருஷ்ண' }, te: { shukla: 'శుక్ల', krishna: 'కృష్ణ' }, kn: { shukla: 'ಶುಕ್ಲ', krishna: 'ಕೃಷ್ಣ' },
+  ml: { shukla: 'ശുക്ല', krishna: 'കൃഷ്ണ' }, gu: { shukla: 'શુક્લ', krishna: 'કૃષ્ણ' }, bn: { shukla: 'শুক্ল', krishna: 'কৃষ্ণ' }, pa: { shukla: 'ਸ਼ੁਕਲ', krishna: 'ਕ੍ਰਿਸ਼ਨ' },
+}
+
 function localized(value: string | Record<string, string> | undefined, language: string) {
   if (!value) return '—'
   return typeof value === 'string' ? value : value[language] ?? value.en ?? '—'
@@ -103,6 +110,11 @@ function optionValue(groups: typeof ritualGroups, selected: string, position: 1 
 
 function simpleOptionValue(options: ReadonlyArray<readonly string[]>, selected: string, position: number) {
   return options.find((item) => item[0] === selected)?.[position] ?? selected
+}
+
+function localOption(t: (key: string, options?: Record<string, unknown>) => string, language: LanguageCode, group: string, option: readonly string[]) {
+  const translated = t(`sankalpaOptions.${group}.${option[0]}`, { defaultValue: '' })
+  return translated || (language === 'en' ? option[1] : option[2])
 }
 
 function selectedLanguageText(language: LanguageCode, values: Record<string, string>) {
@@ -146,14 +158,14 @@ export function SankalpaTab({ data, selectedDate, locationName }: Props) {
       date: formatDisplayDate(selectedDate, language), location,
       name: form.name || '________', gotra: form.gotra || '________', ritual: ritualLabel,
       deity: deityLabel, purpose: purposeLabel, weekday: formatWeekday(selectedDate, language),
-      month: localized(data.month_name, language), paksha: data.paksha ?? '—',
+      month: localized(data.month_name, language), paksha: data.paksha ? pakshaNames[language][data.paksha === 'krishna' ? 'krishna' : 'shukla'] : '—',
       tithi: localized(data.tithi.name, language), nakshatra: localized(data.nakshatra.name, language),
     }
-    const family = [form.father && `Father: ${form.father}`, form.mother && `Mother: ${form.mother}`, form.spouse && `Spouse: ${form.spouse}`, form.children && `Children: ${form.children}`].filter(Boolean).join(' · ')
+    const family = [form.father && `${t('sankalpaFather')}: ${form.father}`, form.mother && `${t('sankalpaMother')}: ${form.mother}`, form.spouse && `${t('sankalpaSpouse')}: ${form.spouse}`, form.children && `${t('sankalpaChildren')}: ${form.children}`].filter(Boolean).join(' · ')
     const durationLabel = form.duration === 'custom' ? form.otherDuration : simpleOptionValue(durations, form.duration, 1)
-    const practice = [durationLabel && `Duration: ${durationLabel}`, form.count && `Repetitions: ${form.count}`].filter(Boolean).join(' · ')
+    const practice = [durationLabel && `${t('sankalpaDuration')}: ${durationLabel}`, form.count && `${t('sankalpaRepetitions')}: ${form.count}`].filter(Boolean).join(' · ')
     return { sanskrit, translated: selectedLanguageText(language, values), family, practice, address: form.address }
-  }, [data, form, language, locationName, selectedDate])
+  }, [data, form, language, locationName, selectedDate, t])
 
   const downloadPdf = async () => {
     if (!documentRef.current || !generated) return
@@ -192,42 +204,43 @@ export function SankalpaTab({ data, selectedDate, locationName }: Props) {
   if (!data) return <div className="rounded-3xl border border-[#D7E7F0] bg-white p-6 text-sm text-slate-500">{t('loading')}</div>
 
   const inputClass = 'mt-1 w-full rounded-xl border border-[#D7E7F0] bg-[#F5FAFD] px-3 py-2 text-sm'
+  const helpLabel = (key: string, label: string, inverse = false) => <FieldHelp explanation={t(`sankalpaHelp.${key}`)} inverse={inverse} label={label}>{label}</FieldHelp>
   return (
     <section className="space-y-4">
       <div className="rounded-3xl border border-[#D7E7F0] bg-white p-5 shadow-sm">
         <h2 className="text-xl font-semibold">{t('sankalpa')}</h2>
-        <div className="mt-3 flex gap-2 rounded-2xl bg-emerald-50 p-3 text-sm text-emerald-900"><ShieldCheck className="h-5 w-5 shrink-0" /><p>No personal information is stored or sent to the server. This form clears when you leave this tab or after downloading the PDF. Download your Sankalpa before switching tabs.</p></div>
-        <p className="mt-3 text-xs text-slate-500">This is a general devotional template. Regional, family and sampradāya wording varies; consult your family priest or guru for rites requiring a prescribed paddhati.</p>
+        <div className="mt-3 flex gap-2 rounded-2xl bg-emerald-50 p-3 text-sm text-emerald-900"><ShieldCheck className="h-5 w-5 shrink-0" /><p>{t('sankalpaPrivacy')}</p></div>
+        <p className="mt-3 text-xs text-slate-500">{t('sankalpaGuidance')}</p>
         <div className="mt-5 grid gap-4 sm:grid-cols-2">
-          <label className="text-sm font-medium">Sankalpa type<select className={inputClass} value={form.ritual} onChange={(event) => update('ritual', event.target.value)}>{ritualGroups.map((group) => <optgroup key={group.label} label={group.label}>{group.options.map((option) => <option key={option[0]} value={option[0]}>{option[1]}</option>)}</optgroup>)}</select></label>
-          <label className="text-sm font-medium">Purpose<select className={inputClass} value={form.purpose} onChange={(event) => update('purpose', event.target.value)}>{purposes.map((option) => <option key={option[0]} value={option[0]}>{option[1]}</option>)}</select></label>
-          {form.ritual === 'other' ? <label className="text-sm font-medium">Describe the rite<input className={inputClass} value={form.otherRitual} onChange={(event) => update('otherRitual', event.target.value)} /></label> : null}
-          {form.purpose === 'other' ? <label className="text-sm font-medium">Write your purpose<input className={inputClass} value={form.otherPurpose} onChange={(event) => update('otherPurpose', event.target.value)} /></label> : null}
-          <label className="text-sm font-medium">Deity or focus<select className={inputClass} value={form.deity} onChange={(event) => update('deity', event.target.value)}>{deities.map((option) => <option key={option[0]} value={option[0]}>{option[1]}</option>)}</select></label>
-          <label className="text-sm font-medium">Duration<select className={inputClass} value={form.duration} onChange={(event) => update('duration', event.target.value)}>{durations.map((option) => <option key={option[0]} value={option[0]}>{option[1]}</option>)}</select></label>
-          {form.deity === 'other' ? <label className="text-sm font-medium">Name the deity or focus<input className={inputClass} value={form.otherDeity} onChange={(event) => update('otherDeity', event.target.value)} /></label> : null}
-          {form.duration === 'custom' ? <label className="text-sm font-medium">Custom duration<input className={inputClass} value={form.otherDuration} onChange={(event) => update('otherDuration', event.target.value)} /></label> : null}
-          <label className="text-sm font-medium">Japa / recitation count (optional)<input className={inputClass} inputMode="numeric" value={form.count} onChange={(event) => update('count', event.target.value)} /></label>
-          <label className="text-sm font-medium">Your name<input className={inputClass} value={form.name} onChange={(event) => update('name', event.target.value)} /></label>
-          <label className="text-sm font-medium">Gotra<input className={inputClass} value={form.gotra} onChange={(event) => update('gotra', event.target.value)} /></label>
-          <label className="text-sm font-medium">Father's name<input className={inputClass} value={form.father} onChange={(event) => update('father', event.target.value)} /></label>
-          <label className="text-sm font-medium">Mother's name<input className={inputClass} value={form.mother} onChange={(event) => update('mother', event.target.value)} /></label>
-          <label className="text-sm font-medium">Spouse's name<input className={inputClass} value={form.spouse} onChange={(event) => update('spouse', event.target.value)} /></label>
-          <label className="text-sm font-medium">Children's names<input className={inputClass} value={form.children} onChange={(event) => update('children', event.target.value)} /></label>
-          <label className="text-sm font-medium sm:col-span-2">Complete address<textarea className={inputClass} rows={3} value={form.address} onChange={(event) => update('address', event.target.value)} /></label>
+          <label className="text-sm font-medium">{helpLabel('ritual', t('sankalpaType'))}<select className={inputClass} value={form.ritual} onChange={(event) => update('ritual', event.target.value)}>{ritualGroups.map((group) => <optgroup key={group.label} label={t(`sankalpaGroup.${group.label}`, { defaultValue: group.label })}>{group.options.map((option) => <option key={option[0]} value={option[0]}>{localOption(t, language, 'ritual', option)}</option>)}</optgroup>)}</select></label>
+          <label className="text-sm font-medium">{helpLabel('purpose', t('sankalpaPurpose'))}<select className={inputClass} value={form.purpose} onChange={(event) => update('purpose', event.target.value)}>{purposes.map((option) => <option key={option[0]} value={option[0]}>{localOption(t, language, 'purpose', option)}</option>)}</select></label>
+          {form.ritual === 'other' ? <label className="text-sm font-medium">{helpLabel('otherRitual', t('sankalpaDescribeRitual'))}<input className={inputClass} value={form.otherRitual} onChange={(event) => update('otherRitual', event.target.value)} /></label> : null}
+          {form.purpose === 'other' ? <label className="text-sm font-medium">{helpLabel('otherPurpose', t('sankalpaDescribePurpose'))}<input className={inputClass} value={form.otherPurpose} onChange={(event) => update('otherPurpose', event.target.value)} /></label> : null}
+          <label className="text-sm font-medium">{helpLabel('deity', t('sankalpaDeity'))}<select className={inputClass} value={form.deity} onChange={(event) => update('deity', event.target.value)}>{deities.map((option) => <option key={option[0]} value={option[0]}>{localOption(t, language, 'deity', option)}</option>)}</select></label>
+          <label className="text-sm font-medium">{helpLabel('duration', t('sankalpaDuration'))}<select className={inputClass} value={form.duration} onChange={(event) => update('duration', event.target.value)}>{durations.map((option) => <option key={option[0]} value={option[0]}>{localOption(t, language, 'duration', option)}</option>)}</select></label>
+          {form.deity === 'other' ? <label className="text-sm font-medium">{helpLabel('otherDeity', t('sankalpaDescribeDeity'))}<input className={inputClass} value={form.otherDeity} onChange={(event) => update('otherDeity', event.target.value)} /></label> : null}
+          {form.duration === 'custom' ? <label className="text-sm font-medium">{helpLabel('otherDuration', t('sankalpaCustomDuration'))}<input className={inputClass} value={form.otherDuration} onChange={(event) => update('otherDuration', event.target.value)} /></label> : null}
+          <label className="text-sm font-medium">{helpLabel('count', t('sankalpaCount'))}<input className={inputClass} inputMode="numeric" value={form.count} onChange={(event) => update('count', event.target.value)} /></label>
+          <label className="text-sm font-medium">{helpLabel('name', t('sankalpaName'))}<input className={inputClass} value={form.name} onChange={(event) => update('name', event.target.value)} /></label>
+          <label className="text-sm font-medium">{helpLabel('gotra', t('sankalpaGotra'))}<input className={inputClass} value={form.gotra} onChange={(event) => update('gotra', event.target.value)} /></label>
+          <label className="text-sm font-medium">{helpLabel('father', t('sankalpaFather'))}<input className={inputClass} value={form.father} onChange={(event) => update('father', event.target.value)} /></label>
+          <label className="text-sm font-medium">{helpLabel('mother', t('sankalpaMother'))}<input className={inputClass} value={form.mother} onChange={(event) => update('mother', event.target.value)} /></label>
+          <label className="text-sm font-medium">{helpLabel('spouse', t('sankalpaSpouse'))}<input className={inputClass} value={form.spouse} onChange={(event) => update('spouse', event.target.value)} /></label>
+          <label className="text-sm font-medium">{helpLabel('children', t('sankalpaChildren'))}<input className={inputClass} value={form.children} onChange={(event) => update('children', event.target.value)} /></label>
+          <label className="text-sm font-medium sm:col-span-2">{helpLabel('address', t('sankalpaAddress'))}<textarea className={inputClass} rows={3} value={form.address} onChange={(event) => update('address', event.target.value)} /></label>
         </div>
       </div>
 
       {generated ? <div ref={documentRef} className="rounded-3xl border border-[#D7E7F0] bg-white p-6 shadow-sm">
-        <div className="border-b border-slate-200 pb-3"><div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">Gajaa Panchang</div><h3 className="mt-1 text-xl font-semibold">Sankalpa · {formatDisplayDate(selectedDate, language)}</h3><p className="text-sm text-slate-500">{locationName}</p></div>
-        <h4 className="mt-5 font-semibold">संस्कृत संकल्प</h4><p className="mt-2 whitespace-pre-line text-lg leading-9">{generated.sanskrit}</p>
+        <div className="border-b border-slate-200 pb-3"><div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">Gajaa Panchang</div><h3 className="mt-1 text-xl font-semibold">{t('sankalpa')} · {formatDisplayDate(selectedDate, language)}</h3><p className="text-sm text-slate-500">{locationName}</p></div>
+        <h4 className="mt-5 font-semibold">{t('sanskritSankalpa')}</h4><p className="mt-2 whitespace-pre-line text-lg leading-9">{generated.sanskrit}</p>
         <h4 className="mt-6 font-semibold">{t('sankalpaInSelectedLanguage')}</h4><p className="mt-2 leading-7 text-slate-700">{generated.translated}</p>
         {generated.family ? <p className="mt-4 text-sm text-slate-600">{generated.family}</p> : null}
         {generated.practice ? <p className="mt-2 text-sm text-slate-600">{generated.practice}</p> : null}
-        {generated.address ? <p className="mt-2 text-sm text-slate-600">Address: {generated.address}</p> : null}
-        <p className="mt-6 border-t border-slate-200 pt-3 text-xs text-slate-500">Generated privately on this device. Personal information was not uploaded or stored.</p>
+        {generated.address ? <p className="mt-2 text-sm text-slate-600">{t('sankalpaAddress')}: {generated.address}</p> : null}
+        <p className="mt-6 border-t border-slate-200 pt-3 text-xs text-slate-500">{t('sankalpaGeneratedNotice')}</p>
       </div> : null}
-      <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#163B63] px-4 py-3 font-semibold text-white disabled:opacity-60" disabled={downloading} onClick={downloadPdf} type="button"><Download className="h-5 w-5" />{downloading ? 'Preparing PDF…' : 'Download PDF and clear personal information'}</button>
+      <button className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#163B63] px-4 py-3 font-semibold text-white disabled:opacity-60" disabled={downloading} onClick={downloadPdf} type="button"><Download className="h-5 w-5" />{downloading ? t('sankalpaPreparingPdf') : t('sankalpaDownloadPdf')}</button>
     </section>
   )
 }
