@@ -15,7 +15,7 @@ export function FestivalsTab({ data, error = false }: Props) {
       <h2 className="text-lg font-semibold text-slate-900">{t('festivalsForYear')}</h2>
       <div className="mt-4 max-h-96 space-y-3 overflow-y-auto pr-1">
         {error ? <div className="text-sm text-red-600">{t('loading')}</div> : data?.festivals?.map((festival) => (
-          <div key={`${festival.date}-${festival.name}`} className="rounded-2xl border border-sky-100 p-4">
+          <div key={`${festival.date}-${festival.name}`} className="flex min-h-28 flex-col justify-center rounded-2xl border border-sky-100 p-5">
             <div className="font-medium text-slate-900">{festival.localized_name ?? festival.name}</div>
             <div className="text-sm text-slate-600">{formatDisplayDate(festival.date, i18n.language)}</div>
             {festival.localized_notes ?? (i18n.language === 'en' ? festival.notes : undefined) ? <div className="mt-1 text-xs text-slate-500">{festival.localized_notes ?? festival.notes}</div> : null}
