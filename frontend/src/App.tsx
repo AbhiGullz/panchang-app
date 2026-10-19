@@ -126,7 +126,7 @@ function AppShell() {
       <header aria-label={t('appName')} className="mx-auto w-full max-w-3xl rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <button type="button" onClick={() => setActiveTab('guide')} aria-label="Open Panchang guide"><PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" /></button>
+            <button type="button" className="cursor-pointer rounded-full transition-opacity hover:opacity-80 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400" onClick={() => setActiveTab('guide')} aria-label="Open Panchang guide"><PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" /></button>
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">{t('appName')}</div>
               <h1 className="text-xl font-semibold leading-tight sm:text-2xl">{preferences.location.city}</h1>
