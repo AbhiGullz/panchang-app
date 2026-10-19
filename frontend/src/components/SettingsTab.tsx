@@ -79,6 +79,7 @@ export function SettingsTab(props: Props) {
       </label>
 
       <button className="block text-sm font-medium text-sky-700 underline" onClick={() => props.onFeedback?.()} type="button">{t('feedback')}</button>
+      <a className="block text-sm font-medium text-sky-700 underline" href="/privacy.html">{t('privacy', { defaultValue: 'Privacy policy' })}</a>
     </section>
   )
 }

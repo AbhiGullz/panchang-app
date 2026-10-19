@@ -193,7 +193,6 @@ function AppShell() {
         </div>
       </div>
       <footer className="mx-auto flex w-full max-w-3xl justify-center gap-5 pb-24 text-xs text-slate-500">
-        <a className="underline" href="/guide.html">Panchang guide</a>
         <a className="underline" href="/privacy.html">Privacy</a>
       </footer>
       <BottomNav activeTab={activeTab} onTabChange={changeTab} />
