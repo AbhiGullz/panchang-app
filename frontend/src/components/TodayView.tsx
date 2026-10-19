@@ -8,6 +8,7 @@ import { formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyana
 
 interface Props {
   data?: PanchangResponse
+  onGuide?: () => void
 }
 
 function localized(value: string | object | undefined, lang: string) {
@@ -46,7 +47,7 @@ function MoonEventIcon({ direction }: { direction: 'rise' | 'set' }) {
   </span>
 }
 
-export function TodayView({ data }: Props) {
+export function TodayView({ data, onGuide }: Props) {
   const { i18n, t } = useTranslation()
   const help = (key: string) => t(`fieldHelp.${key}`)
   const labelWithHelp = (key: string, label: string, inverse = false) => <FieldHelp explanation={help(key)} inverse={inverse} label={label}>{label}</FieldHelp>
@@ -65,7 +66,7 @@ export function TodayView({ data }: Props) {
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-5 backdrop-blur-sm">
             <div className="mb-3 flex items-center justify-between gap-2 text-base sm:text-lg uppercase tracking-wide text-[#B7DDF4]">
-              <span className="flex items-center gap-2"><a href="/guide.html" aria-label="Open Panchang guide"><PanchangLogo className="h-8 w-8" /></a> <span>{labelWithHelp('tithi', t('tithi'), true)}</span></span>
+              <span className="flex items-center gap-2"><button type="button" onClick={onGuide} aria-label="Open Panchang guide"><PanchangLogo className="h-8 w-8" /></button> <span>{labelWithHelp('tithi', t('tithi'), true)}</span></span>
               <MoonPhase illumination={data.phase?.illumination} elongationDegrees={data.phase?.elongation_degrees} />
             </div>
             <div>
