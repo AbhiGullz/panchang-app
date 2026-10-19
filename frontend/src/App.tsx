@@ -8,6 +8,7 @@ import { BottomNav } from './components/BottomNav'
 import { AdvertisementSlot } from './components/AdvertisementSlot'
 import { FestivalsTab } from './components/FestivalsTab'
 import { FeedbackScreen } from './components/FeedbackScreen'
+import { GuideTab } from './components/GuideTab'
 import { PanchangLogo } from './components/PanchangLogo'
 import { MuhurtaTab } from './components/MuhurtaTab'
 import { OnboardingCard } from './components/OnboardingCard'
@@ -125,7 +126,7 @@ function AppShell() {
       <header aria-label={t('appName')} className="mx-auto w-full max-w-3xl rounded-3xl bg-white p-5 shadow-sm ring-1 ring-[#D7E7F0]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-center gap-3">
-            <PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" />
+            <a href="/guide.html" aria-label="Open Panchang guide"><PanchangLogo className="h-11 w-11 shrink-0 sm:h-12 sm:w-12" /></a>
             <div>
               <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#163B63]">{t('appName')}</div>
               <h1 className="text-xl font-semibold leading-tight sm:text-2xl">{preferences.location.city}</h1>
@@ -181,9 +182,10 @@ function AppShell() {
           onFeedback={() => setActiveTab('feedback')}
         />
       ) : null}
+      {activeTab === 'guide' ? <GuideTab /> : null}
       {activeTab === 'feedback' ? <FeedbackScreen onBack={() => setActiveTab('settings')} /> : null}
 
-      {canShowAds ? <AdvertisementSlot className="xl:hidden" /> : null}
+          {canShowAds ? <AdvertisementSlot className="xl:hidden" /> : null}
 
         </main>
         <div className="hidden min-w-0 xl:col-start-3 xl:row-start-1 xl:block">

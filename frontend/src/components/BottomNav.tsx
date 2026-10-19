@@ -1,8 +1,8 @@
-import { CalendarDays, Home, ScrollText, Settings, Sparkles } from 'lucide-react'
+import { BookOpen, CalendarDays, Home, ScrollText, Settings, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 interface Props {
-  activeTab: 'today' | 'muhurta' | 'sankalpa' | 'festivals' | 'settings' | 'feedback'
+  activeTab: 'today' | 'muhurta' | 'sankalpa' | 'festivals' | 'settings' | 'guide' | 'feedback'
   onTabChange: (tab: Props['activeTab']) => void
 }
 
@@ -14,6 +14,7 @@ export function BottomNav({ activeTab, onTabChange }: Props) {
     { key: 'sankalpa', label: t('sankalpa'), icon: ScrollText },
     { key: 'festivals', label: t('festivals'), icon: CalendarDays },
     { key: 'settings', label: t('settings'), icon: Settings },
+    { key: 'guide', label: 'Guide', icon: BookOpen },
   ] as const
 
   return (
