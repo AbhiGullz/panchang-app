@@ -45,9 +45,21 @@ function AppShell() {
     completeOnboarding,
   } = useAppStore()
   const [notice, setNotice] = useState('')
+  const [sankalpaDirty, setSankalpaDirty] = useState(false)
   const locationRefreshId = useRef(0)
 
   useRegisterSW()
+
+  useEffect(() => {
+    const handleDirty = (event: Event) => setSankalpaDirty(Boolean((event as CustomEvent<boolean>).detail))
+    window.addEventListener('gajaa:sankalpa-dirty', handleDirty)
+    return () => window.removeEventListener('gajaa:sankalpa-dirty', handleDirty)
+  }, [])
+
+  const changeTab = (nextTab: typeof activeTab) => {
+    if (activeTab === 'sankalpa' && nextTab !== 'sankalpa' && sankalpaDirty && !window.confirm('Sankalpa fields contain personal information. Leaving this page will clear them. Continue?')) return
+    setActiveTab(nextTab)
+  }
 
   useEffect(() => {
     void i18n.changeLanguage(preferences.language)
@@ -58,15 +70,15 @@ function AppShell() {
     // Refresh that label once per coordinate/language pair, without touching
     // the selected date or Panchang calculation.
     const labelKey = `gajaa-location-label:${preferences.location.lat.toFixed(4)}:${preferences.location.lng.toFixed(4)}`
-    if (localStorage.getItem(labelKey) === `v4:${preferences.language}`) return
     const requestId = ++locationRefreshId.current
     void reverseGeocode(preferences.location.lat, preferences.location.lng, preferences.language)
       .then((location) => {
         if (requestId !== locationRefreshId.current) return
         updateLocation(location)
-        localStorage.setItem(labelKey, `v4:${preferences.language}`)
+        localStorage.setItem(labelKey, `v5:${preferences.language}`)
       })
       .catch(() => undefined)
+    return () => { locationRefreshId.current += 1 }
   }, [preferences.language, preferences.location.lat, preferences.location.lng, updateLocation])
 
   const { data: panchangData } = usePanchang(
@@ -79,7 +91,7 @@ function AppShell() {
   )
 
   const festivalYear = useMemo(() => Number(selectedDate.slice(0, 4)), [selectedDate])
-  const { data: festivalsData } = useFestivals(festivalYear, preferences.calendar, preferences.language)
+  const { data: festivalsData, isError: festivalsError } = useFestivals(festivalYear, preferences.calendar, preferences.language)
   const hasPublisherContent = activeTab === 'festivals'
     ? Boolean(festivalsData?.festivals.length)
     : (activeTab === 'today' || activeTab === 'muhurta') && Boolean(panchangData)
@@ -157,7 +169,7 @@ function AppShell() {
       {activeTab === 'today' ? <TodayView data={panchangData} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
       {activeTab === 'sankalpa' ? <SankalpaTab data={panchangData} locationName={preferences.location.city} selectedDate={selectedDate} /> : null}
-      {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} /> : null}
+      {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} error={festivalsError} /> : null}
       {activeTab === 'settings' ? (
         <SettingsTab
           preferences={preferences}
@@ -182,7 +194,7 @@ function AppShell() {
         <a className="underline" href="/guide.html">Panchang guide</a>
         <a className="underline" href="/privacy.html">Privacy</a>
       </footer>
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabChange={changeTab} />
     </div>
   )
 }

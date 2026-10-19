@@ -1,6 +1,7 @@
 import i18n from 'i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 import { initReactI18next } from 'react-i18next'
+import { optionIds, sankalpaOption } from '../lib/sankalpa-locales'
 
 export const resources = {
   en: {
@@ -238,8 +239,19 @@ const sankalpaOptionTranslations = {
   pa: { sankalpaGroup: { Worship: 'ਪੂਜਾ', 'Spiritual practice': 'ਆਤਮਿਕ ਸਾਧਨਾ', 'Fire rites and offerings': 'ਹਵਨ ਅਤੇ ਅਰਪਣ', 'Life events': 'ਜੀਵਨ ਸਮਾਗਮ', Custom: 'ਹੋਰ' }, sankalpaOptions: { ritual: { 'daily-puja': 'ਰੋਜ਼ਾਨਾ ਪੂਜਾ', sadhana: 'ਸਾਧਨਾ', other: 'ਹੋਰ (ਆਪਣਾ ਲਿਖੋ)' }, purpose: { devotion: 'ਭਗਤੀ ਅਤੇ ਰੱਬੀ ਕਿਰਪਾ', other: 'ਹੋਰ (ਆਪਣਾ ਲਿਖੋ)' }, deity: { 'ishta-devata': 'ਇਸ਼ਟ ਦੇਵਤਾ / ਚੁਣਿਆ ਦੇਵਤਾ', other: 'ਹੋਰ' }, duration: { 'one-day': 'ਇੱਕ ਦਿਨ', custom: 'ਆਪਣੀ ਮਿਆਦ' } } },
 } as const
 
+const sankalpaPlaceholderTranslations = {
+  en: { sankalpaEnterValue: 'Enter value' }, hi: { sankalpaEnterValue: 'मान लिखें' }, mr: { sankalpaEnterValue: 'माहिती लिहा' }, ta: { sankalpaEnterValue: 'மதிப்பை உள்ளிடவும்' }, te: { sankalpaEnterValue: 'విలువను నమోదు చేయండి' }, kn: { sankalpaEnterValue: 'ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ' }, ml: { sankalpaEnterValue: 'വില നൽകുക' }, gu: { sankalpaEnterValue: 'મૂલ્ય લખો' }, bn: { sankalpaEnterValue: 'মান লিখুন' }, pa: { sankalpaEnterValue: 'ਮੁੱਲ ਲਿਖੋ' },
+} as const
+
+
 for (const language of Object.keys(resources) as Array<keyof typeof resources>) {
-  Object.assign(resources[language].translation, { fieldHelp }, sankalpaTranslations[language], sankalpaUiTranslations[language], sankalpaOptionTranslations[language])
+  Object.assign(resources[language].translation, { fieldHelp }, sankalpaTranslations[language], sankalpaUiTranslations[language], sankalpaOptionTranslations[language], sankalpaPlaceholderTranslations[language])
+  // Replace partial legacy tables with the complete catalogue in a single assignment.
+  Object.assign(resources[language].translation, { sankalpaOptions: Object.fromEntries(
+    (Object.keys(optionIds) as Array<keyof typeof optionIds>).map((group) => [group, Object.fromEntries(
+      optionIds[group].split('|').map((id) => [id, sankalpaOption(language, group, id)]),
+    )]),
+  ) })
 }
 
 void i18n

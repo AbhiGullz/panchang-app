@@ -13,7 +13,6 @@ export function FieldHelp({ label, explanation, inverse = false, children }: Pro
       <button
         aria-label={`${label}: ${explanation}`}
         className={`inline cursor-help rounded-sm bg-transparent p-0 text-inherit underline decoration-dotted decoration-1 underline-offset-4 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-1 ${inverse ? 'focus:ring-offset-[#0F2747]' : ''}`}
-        title={explanation}
         type="button"
       >
         {children}
