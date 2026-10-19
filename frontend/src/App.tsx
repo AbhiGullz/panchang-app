@@ -192,9 +192,7 @@ function AppShell() {
           {canShowAds ? <AdvertisementSlot className="sticky top-5 min-h-[520px]" format="vertical" /> : null}
         </div>
       </div>
-      <footer className="mx-auto flex w-full max-w-3xl justify-center gap-5 pb-24 text-xs text-slate-500">
-        <a className="underline" href="/privacy.html">Privacy</a>
-      </footer>
+      <footer className="mx-auto w-full max-w-3xl pb-24" aria-hidden="true" />
       <BottomNav activeTab={activeTab} onTabChange={changeTab} />
     </div>
   )
