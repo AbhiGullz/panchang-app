@@ -33,6 +33,17 @@ export function PersonalTithis({ preferences }: { preferences: AppPreferences })
     retry: false,
     staleTime: Infinity,
   })
+  const upcoming = useQuery({
+    queryKey: ['personal-upcoming', items, today, i18n.language],
+    enabled: items.length > 0,
+    queryFn: async () => (await Promise.all(items.map(async item => {
+      const years = [year, year + 1, year + 2]
+      const dates = (await Promise.all(years.map(nextYear => personalPreview(item, nextYear)))).flatMap(result => result.dates)
+        .filter(day => day >= today).sort().slice(0, 3)
+      return { item, dates }
+    }))).filter(row => row.dates.length > 0),
+    staleTime: Infinity,
+  })
   function persist(next: typeof items) {
     try { savePersonalTithis(next); setItems(next); setSaveError(false); return true }
     catch { setSaveError(true); return false }
@@ -64,6 +75,7 @@ export function PersonalTithis({ preferences }: { preferences: AppPreferences })
       <p className="font-semibold">{personalName(item.name, i18n.language)}</p>
       {item.place ? <p>{sankalpaScript(item.place, i18n.language as LanguageCode)}</p> : null}
       <p>{personalRuleLabel(item, i18n.language)}</p>
+      <p className="mt-1"><span className="font-medium">{copy[11]}:</span> {upcoming.data?.find(row => row.item.id === item.id)?.dates.map(day => formatDisplayDate(day, i18n.language)).join(' · ') ?? copy[10]}</p>
       <button type="button" className="mt-2 cursor-pointer text-red-700 underline" onClick={() => persist(items.filter(row => row.id !== item.id))}>{copy[6]}</button>
     </li>)}</ul>
   </section>

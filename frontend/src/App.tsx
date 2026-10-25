@@ -113,6 +113,8 @@ function AppShell() {
   const annualEvents = festivalsData ? { ...festivalsData, festivals: [...festivalsData.festivals, ...personalDates.filter(item => item.date.startsWith(String(festivalYear)))].sort((a, b) => a.date.localeCompare(b.date)) } : undefined
   const observances = [...(festivalsData?.festivals ?? []), ...personalDates].filter(item => item.date === selectedDate)
   const tomorrowObservances = [...(nextYearFestivals?.festivals ?? []), ...personalDates].filter(item => item.date === tomorrow)
+  const nextObservance = [...(festivalsData?.festivals ?? []), ...(nextYearFestivals?.festivals ?? []), ...personalDates]
+    .filter(item => item.date > selectedDate).sort((a, b) => a.date.localeCompare(b.date))[0]
   const hasPublisherContent = activeTab === 'festivals'
     ? Boolean(festivalsData?.festivals.length)
     : (activeTab === 'today' || activeTab === 'muhurta') && Boolean(panchangData)
@@ -177,7 +179,7 @@ function AppShell() {
 
       {notice ? <div className="rounded-2xl bg-[#DDF3FC] px-4 py-3 text-sm text-[#163B63]">{notice}</div> : null}
 
-      {activeTab === 'today' ? <TodayView data={panchangData} onGuide={() => changeTab('guide')} observances={observances} tomorrowObservances={tomorrowObservances} /> : null}
+      {activeTab === 'today' ? <TodayView data={panchangData} onGuide={() => changeTab('guide')} observances={observances} tomorrowObservances={tomorrowObservances} nextObservance={nextObservance} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
       {activeTab === 'sankalpa' ? <SankalpaTab data={panchangData} locationName={preferences.location.city} selectedDate={selectedDate} /> : null}
       {activeTab === 'festivals' ? <FestivalsTab data={annualEvents} error={festivalsError} /> : null}

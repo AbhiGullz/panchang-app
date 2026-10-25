@@ -13,6 +13,7 @@ interface Props {
   onGuide?: () => void
   observances?: FestivalItem[]
   tomorrowObservances?: FestivalItem[]
+  nextObservance?: FestivalItem
 }
 
 function localized(value: string | object | undefined, lang: string) {
@@ -50,8 +51,9 @@ function MoonEventIcon({ direction }: { direction: 'rise' | 'set' }) {
     <Arrow className="absolute -right-1 -top-1 h-2.5 w-2.5 stroke-[3]" />
   </span>
 }
+function daysUntil(from: string, to: string) { return Math.max(0, Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86400000)) }
 
-export function TodayView({ data, onGuide, observances = [], tomorrowObservances = [] }: Props) {
+export function TodayView({ data, onGuide, observances = [], tomorrowObservances = [], nextObservance }: Props) {
   const { i18n, t } = useTranslation()
   const help = (key: string) => t(`fieldHelp.${key}`)
   const labelWithHelp = (key: string, label: string, inverse = false) => <FieldHelp explanation={help(key)} inverse={inverse} label={label}>{label}</FieldHelp>
@@ -80,6 +82,7 @@ export function TodayView({ data, onGuide, observances = [], tomorrowObservances
               <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{valueWithHelp('month', t('month'), localized(data.month_name, i18n.language), true)}</div>
               {observances.length > 0 ? <p className="mt-3 border-t border-white/15 pt-3 text-base text-white"><span className="font-semibold">{observanceLabels(i18n.language)[0]}: </span>{observances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
               {tomorrowObservances.length > 0 ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[1]}: </span>{tomorrowObservances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
+              {nextObservance ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[9]}: </span>{nextObservance.localized_name ?? nextObservance.name} · {formatDisplayDate(nextObservance.date, i18n.language)} · {daysUntil(data.date, nextObservance.date)} {i18n.language.startsWith('hi') ? 'दिन बाद' : i18n.language.startsWith('ta') ? 'நாட்களில்' : i18n.language.startsWith('te') ? 'రోజుల్లో' : i18n.language.startsWith('kn') ? 'ದಿನಗಳಲ್ಲಿ' : i18n.language.startsWith('ml') ? 'ദിവസത്തിൽ' : i18n.language.startsWith('mr') ? 'दिवसांनी' : 'days'} </p> : null}
               {observances.filter(item => item.selection_note === 'regional-variation').map(item => <p key={item.id ?? item.name} className="mt-1 text-xs text-[#B7DDF4]">{festivalBasis(item, i18n.language)}</p>)}
             </div>
           </div>

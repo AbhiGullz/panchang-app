@@ -43,6 +43,7 @@ export async function personalEvents(items: PersonalTithi[], year: number, langu
   }))).flat()
 }
 export function personalName(value: string, language: string) {
+  language = language.split('-')[0] ?? language
   const names: Record<string, string> = { hi: 'माता की पुण्यतिथि', mr: 'आईची पुण्यतिथी', ta: 'அன்னையின் நினைவு திதி', te: 'అమ్మ పుణ్యతిథి', kn: 'ತಾಯಿಯ ಪುಣ್ಯತಿಥಿ', ml: 'അമ്മയുടെ പുണ്യതിഥി', gu: 'માતાની પુણ્યતિથિ', bn: 'মায়ের পুণ্যতিথি', pa: 'ਮਾਤਾ ਦੀ ਪੁੰਨ ਤਿਥੀ' }
   if (/^mother['’]?s\s+punyatithi$/i.test(value.trim()) && language !== 'en') return names[language] ?? value
   return sankalpaScript(value, language as LanguageCode)
@@ -57,6 +58,7 @@ export function personalId() {
   return Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('')
 }
 export function personalRuleLabel(item: Pick<PersonalTithi, 'calendar' | 'rule' | 'month_names' | 'tithi_names'>, language: string) {
+  language = language.split('-')[0] ?? language
   const adhika: Record<string, string> = { en: 'Adhika', hi: 'अधिक', mr: 'अधिक', ta: 'அதிக', te: 'అధిక', kn: 'ಅಧಿಕ', ml: 'അധിക', gu: 'અધિક', bn: 'অধিক', pa: 'ਅਧਿਕ' }
   return `${item.month_names[language] ?? item.month_names.en} · ${item.tithi_names[language] ?? item.tithi_names.en} · ${humanizeCalendar(item.calendar, language)}${item.rule.adhika ? ` · ${adhika[language] ?? adhika.en}` : ''}`
 }
