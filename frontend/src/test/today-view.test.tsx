@@ -26,6 +26,14 @@ const sample = {
 afterEach(() => cleanup())
 
 describe('TodayView', () => {
+  it('shows one reminder when the next observance is tomorrow', async () => {
+    await i18n.changeLanguage('en')
+    const event = { name: 'Family Punyatithi', date: '2026-08-05' }
+    renderWithProviders(<TodayView data={sample} tomorrowObservances={[event]} nextObservance={event} />)
+    expect(screen.getAllByText(/Family Punyatithi/)).toHaveLength(1)
+    expect(screen.queryByText('Tomorrow:')).not.toBeInTheDocument()
+    expect(screen.getByText(/in 1 day/)).toBeInTheDocument()
+  })
   it('shows localized selected-day and tomorrow observances below the month', async () => {
     await i18n.changeLanguage('mr')
     renderWithProviders(<TodayView data={sample} observances={[{ name: 'Rishi Panchami', localized_name: 'ऋषिपंचमी', date: sample.date }]} tomorrowObservances={[{ name: 'Kojagiri', localized_name: 'कोजागिरी पौर्णिमा', date: '2026-08-05' }]} />)

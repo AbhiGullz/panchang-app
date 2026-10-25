@@ -4,7 +4,7 @@ import type { LanguageCode } from '../types/api'
 const labels: Record<LanguageCode, string[]> = {
   en: ['Observances', 'Tomorrow', 'All traditions', 'Maharashtra', 'Tamil Nadu', 'Andhra / Karnataka / Telangana', 'North India', 'Kerala', 'Punjab', 'Next observance'],
   hi: ['पर्व व व्रत', 'कल', 'सभी परंपराएँ', 'महाराष्ट्र', 'तमिलनाडु', 'आंध्र / कर्नाटक / तेलंगाना', 'उत्तर भारत', 'केरल', 'पंजाब', 'अगला पर्व'],
-  mr: ['सण व व्रते', 'उद्या', 'सर्व परंपरा', 'महाराष्ट्र', 'तामिळनाडू', 'आंध्र / कर्नाटक / तेलंगणा', 'उत्तर भारत', 'केरळ', 'पंजाब', 'पुढील observance'],
+  mr: ['सण व व्रते', 'उद्या', 'सर्व परंपरा', 'महाराष्ट्र', 'तामिळनाडू', 'आंध्र / कर्नाटक / तेलंगणा', 'उत्तर भारत', 'केरळ', 'पंजाब', 'पुढील सण'],
   ta: ['விழாக்கள் மற்றும் விரதங்கள்', 'நாளை', 'அனைத்து மரபுகள்', 'மகாராஷ்டிரா', 'தமிழ்நாடு', 'ஆந்திரா / கர்நாடகா / தெலங்கானா', 'வட இந்தியா', 'கேரளா', 'பஞ்சாப்', 'அடுத்த விழா'],
   te: ['పండుగలు మరియు వ్రతాలు', 'రేపు', 'అన్ని సంప్రదాయాలు', 'మహారాష్ట్ర', 'తమిళనాడు', 'ఆంధ్ర / కర్ణాటక / తెలంగాణ', 'ఉత్తర భారతదేశం', 'కేరళ', 'పంజాబ్'],
   kn: ['ಹಬ್ಬಗಳು ಮತ್ತು ವ್ರತಗಳು', 'ನಾಳೆ', 'ಎಲ್ಲ ಸಂಪ್ರದಾಯಗಳು', 'ಮಹಾರಾಷ್ಟ್ರ', 'ತಮಿಳುನಾಡು', 'ಆಂಧ್ರ / ಕರ್ನಾಟಕ / ತೆಲಂಗಾಣ', 'ಉತ್ತರ ಭಾರತ', 'ಕೇರಳ', 'ಪಂಜಾಬ್'],
@@ -16,6 +16,7 @@ const labels: Record<LanguageCode, string[]> = {
 export const REGIONS = ['all', 'maharashtra', 'tamil-nadu', 'andhra-karnataka-telangana', 'north-india', 'kerala', 'punjab'] as const
 const nextLabels: Record<string, string> = { te: 'తదుపరి పండుగ', kn: 'ಮುಂದಿನ ಹಬ್ಬ', ml: 'അടുത്ത ഉത്സവം', gu: 'આગામી તહેવાર', bn: 'পরবর্তী উৎসব', pa: 'ਅਗਲਾ ਤਿਉਹਾਰ' }
 export function observanceLabels(language: string) {
+  language = language.split('-')[0] ?? language
   const base = labels[language as LanguageCode] ?? labels.en
   return base.length > 9 ? base : [...base, nextLabels[language] ?? labels.en[9]]
 }

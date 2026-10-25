@@ -6,7 +6,7 @@ import { FieldHelp } from './FieldHelp'
 import type { FestivalItem, PanchangResponse } from '../types/api'
 import { observanceLabels } from '../lib/observance-labels'
 import { festivalBasis } from '../lib/festival-basis'
-import { formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyanamsa, humanizeTimezone } from '../lib/utils'
+import { formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyanamsa, humanizeTimezone, localeWithNativeDigits } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
@@ -81,8 +81,8 @@ export function TodayView({ data, onGuide, observances = [], tomorrowObservances
               <div className="mt-3 text-base sm:text-lg text-[#DDF3FC]">{valueWithHelp('nakshatra', t('nakshatra'), localized(data.nakshatra.name, i18n.language), true)}</div>
               <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{valueWithHelp('month', t('month'), localized(data.month_name, i18n.language), true)}</div>
               {observances.length > 0 ? <p className="mt-3 border-t border-white/15 pt-3 text-base text-white"><span className="font-semibold">{observanceLabels(i18n.language)[0]}: </span>{observances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
-              {tomorrowObservances.length > 0 ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[1]}: </span>{tomorrowObservances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
-              {nextObservance ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[9]}: </span>{nextObservance.localized_name ?? nextObservance.name} · {formatDisplayDate(nextObservance.date, i18n.language)} · {daysUntil(data.date, nextObservance.date)} {i18n.language.startsWith('hi') ? 'दिन बाद' : i18n.language.startsWith('ta') ? 'நாட்களில்' : i18n.language.startsWith('te') ? 'రోజుల్లో' : i18n.language.startsWith('kn') ? 'ದಿನಗಳಲ್ಲಿ' : i18n.language.startsWith('ml') ? 'ദിവസത്തിൽ' : i18n.language.startsWith('mr') ? 'दिवसांनी' : 'days'} </p> : null}
+              {!nextObservance && tomorrowObservances.length > 0 ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[1]}: </span>{tomorrowObservances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
+              {nextObservance ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[9]}: </span>{nextObservance.localized_name ?? nextObservance.name} · {formatDisplayDate(nextObservance.date, i18n.language)} · {new Intl.RelativeTimeFormat(localeWithNativeDigits(i18n.language), { numeric: 'always' }).format(daysUntil(data.date, nextObservance.date), 'day')}</p> : null}
               {observances.filter(item => item.selection_note === 'regional-variation').map(item => <p key={item.id ?? item.name} className="mt-1 text-xs text-[#B7DDF4]">{festivalBasis(item, i18n.language)}</p>)}
             </div>
           </div>

@@ -5,6 +5,13 @@ import { DEFAULT_PREFERENCES } from '../lib/constants'
 import { loadPersonalTithis, personalEvents, personalId, personalName, todayAt } from '../lib/personal-tithis'
 import { renderWithProviders } from './render'
 import i18n from '../locales/i18n'
+import { sankalpaScript } from '../lib/sankalpa-script'
+
+it('renders saved Indic names and locations when switching back to English', () => {
+  expect(personalName('मातोश्री कल्पना गुलवाड़े की पुण्यतिथि', 'en-US')).toBe("Matoshri Kalpana Gulwade's Punyatithi")
+  expect(sankalpaScript('ಇಂದೋರ್, ಮಧ್ಯ ಪ್ರದೇಶ, ಭಾರತ', 'en')).toBe('Indore, Madhya Pradesh, India')
+  expect(sankalpaScript('इन्दौर, मध्य प्रदेश, भारत', 'en')).toBe('Indore, Madhya Pradesh, India')
+})
 
 afterEach(() => { cleanup(); localStorage.removeItem('gajaa-personal-tithis-v1'); vi.unstubAllGlobals() })
 

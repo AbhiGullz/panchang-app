@@ -34,7 +34,8 @@ function romanWord(word: string) {
 
 // Offline phonetic script conversion, not semantic translation. Keep the result editable.
 export function sankalpaScript(value: string, language: LanguageCode): string {
-  if (language === 'en') return value
+  language = (language.split('-')[0] ?? language) as LanguageCode
+  if (language === 'en') return englishScript(value)
   if (language === 'ta') value = value.replace(/[A-Za-z]+/g, (word) => tamilNames[word.toLowerCase()] ?? word)
   const target = starts[language] ?? 0x900
   // Preserve already-native spelling. Only convert spans from a different script.
@@ -59,4 +60,22 @@ export function sankalpaScript(value: string, language: LanguageCode): string {
     if (/[0-9]/.test(char)) return String.fromCodePoint(start + 0x66 + Number(char))
     return char
   }).join('')
+}
+
+// Render stored Indic text in Roman script without changing the saved original.
+export function englishScript(value: string): string {
+  const devanagari = Array.from(value).map(char => {
+    const point = char.codePointAt(0)!
+    for (const start of Object.values(starts)) {
+      if (point >= start && point < start + 128) return String.fromCodePoint(point - start + 0x900)
+    }
+    return char
+  }).join('')
+  const known: Record<string, string> = { 'इंदोर': 'Indore', 'इंदौर': 'Indore', 'इन्दौर': 'Indore', 'मध्य': 'Madhya', 'प्रदेश': 'Pradesh', 'भारत': 'India', 'मातोश्री': 'Matoshri', 'कल्पना': 'Kalpana', 'गुलवाड़े': 'Gulwade', 'की': "'s", 'पुण्यतिथि': 'Punyatithi' }
+  const letters: Record<string, string> = { 'अ':'a','आ':'aa','इ':'i','ई':'ee','उ':'u','ऊ':'oo','ऋ':'ri','ए':'e','ऐ':'ai','ओ':'o','औ':'au','क':'k','ख':'kh','ग':'g','घ':'gh','ङ':'ng','च':'ch','छ':'chh','ज':'j','झ':'jh','ञ':'ny','ट':'t','ठ':'th','ड':'d','ढ':'dh','ण':'n','त':'t','थ':'th','द':'d','ध':'dh','न':'n','प':'p','फ':'ph','ब':'b','भ':'bh','म':'m','य':'y','र':'r','ल':'l','व':'v','श':'sh','ष':'sh','स':'s','ह':'h','ळ':'l','ा':'aa','ि':'i','ी':'ee','ु':'u','ू':'oo','ृ':'ri','े':'e','ै':'ai','ो':'o','ौ':'au','ं':'n','ँ':'n','ः':'h','्':'','़':'' }
+  return devanagari.replace(/[\u0900-\u097f]+/g, word => known[word] ?? known[word.replace(/्$/, '')] ?? Array.from(word).map((char, i) => {
+    if (/[०-९]/.test(char)) return String(char.charCodeAt(0) - 0x966)
+    const next = word[i + 1]
+    return (letters[char] ?? char) + (/[क-हळ]/.test(char) && next && !/[ािीुूृेैोौंँः़्]/.test(next) ? 'a' : '')
+  }).join('')).replace(/\s+'s/g, "'s")
 }
