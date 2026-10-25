@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query'
+import { loadPersonalTithis, personalEvents } from './lib/personal-tithis'
 import { useTranslation } from 'react-i18next'
-import { CalendarDays } from 'lucide-react'
+import { DatePicker } from './components/DatePicker'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 import './locales/i18n'
 import { BottomNav } from './components/BottomNav'
@@ -18,7 +19,7 @@ import { TodayView } from './components/TodayView'
 import { useFestivals } from './hooks/use-festivals'
 import { usePanchang } from './hooks/use-panchang'
 import { reverseGeocode } from './lib/location'
-import { formatCompactDate } from './lib/utils'
+import { formatDateInput } from './lib/utils'
 import { useAppStore } from './store/app-store'
 
 const queryClient = new QueryClient({
@@ -46,6 +47,13 @@ function AppShell() {
     completeOnboarding,
   } = useAppStore()
   const [notice, setNotice] = useState('')
+  const [personalItems, setPersonalItems] = useState(loadPersonalTithis)
+  useEffect(() => {
+    const refresh = () => setPersonalItems(loadPersonalTithis())
+    window.addEventListener('gajaa:personal-tithis', refresh)
+    window.addEventListener('storage', refresh)
+    return () => { window.removeEventListener('gajaa:personal-tithis', refresh); window.removeEventListener('storage', refresh) }
+  }, [])
   const [sankalpaDirty, setSankalpaDirty] = useState(false)
   const locationRefreshId = useRef(0)
 
@@ -92,7 +100,19 @@ function AppShell() {
   )
 
   const festivalYear = useMemo(() => Number(selectedDate.slice(0, 4)), [selectedDate])
-  const { data: festivalsData, isError: festivalsError } = useFestivals(festivalYear, preferences.calendar, preferences.language)
+  const { data: festivalsData, isError: festivalsError } = useFestivals(festivalYear, preferences.calendar, preferences.language, preferences.location.lat, preferences.location.lng, preferences.location.tz)
+  const tomorrowDate = new Date(`${selectedDate}T12:00:00Z`)
+  tomorrowDate.setUTCDate(tomorrowDate.getUTCDate() + 1)
+  const tomorrow = tomorrowDate.toISOString().slice(0, 10)
+  const { data: nextYearFestivals } = useFestivals(Number(tomorrow.slice(0, 4)), preferences.calendar, preferences.language, preferences.location.lat, preferences.location.lng, preferences.location.tz)
+  const { data: personalDates = [] } = useQuery({
+    queryKey: ['personal-dates', personalItems, festivalYear, tomorrow.slice(0, 4), preferences.language],
+    queryFn: async () => (await Promise.all([...new Set([festivalYear, Number(tomorrow.slice(0, 4))])].map(year => personalEvents(personalItems, year, preferences.language)))).flat(),
+    staleTime: Infinity,
+  })
+  const annualEvents = festivalsData ? { ...festivalsData, festivals: [...festivalsData.festivals, ...personalDates.filter(item => item.date.startsWith(String(festivalYear)))].sort((a, b) => a.date.localeCompare(b.date)) } : undefined
+  const observances = [...(festivalsData?.festivals ?? []), ...personalDates].filter(item => item.date === selectedDate)
+  const tomorrowObservances = [...(nextYearFestivals?.festivals ?? []), ...personalDates].filter(item => item.date === tomorrow)
   const hasPublisherContent = activeTab === 'festivals'
     ? Boolean(festivalsData?.festivals.length)
     : (activeTab === 'today' || activeTab === 'muhurta') && Boolean(panchangData)
@@ -132,17 +152,7 @@ function AppShell() {
               <h1 className="text-xl font-semibold leading-tight sm:text-2xl">{preferences.location.city}</h1>
             </div>
           </div>
-          <label className="relative flex min-h-11 w-full shrink-0 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-[#D7E7F0] bg-[#F5FAFD] px-3 py-2 text-sm text-[#12233A] sm:w-auto">
-            <span aria-hidden="true">{formatCompactDate(selectedDate, i18n.language)}</span>
-            <CalendarDays aria-hidden="true" className="h-4 w-4" />
-            <input
-              aria-label={t('selectDate')}
-              className="absolute inset-0 cursor-pointer opacity-0"
-              type="date"
-              value={selectedDate}
-              onChange={(event) => setSelectedDate(event.target.value)}
-            />
-          </label>
+          <div className="w-full shrink-0 sm:w-auto"><DatePicker value={selectedDate} onChange={date => setSelectedDate(date || formatDateInput(new Date()))} language={i18n.language} label={t('selectDate')} /></div>
         </div>
 
       </header>
@@ -167,10 +177,10 @@ function AppShell() {
 
       {notice ? <div className="rounded-2xl bg-[#DDF3FC] px-4 py-3 text-sm text-[#163B63]">{notice}</div> : null}
 
-      {activeTab === 'today' ? <TodayView data={panchangData} onGuide={() => setActiveTab('guide')} /> : null}
+      {activeTab === 'today' ? <TodayView data={panchangData} onGuide={() => changeTab('guide')} observances={observances} tomorrowObservances={tomorrowObservances} /> : null}
       {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
       {activeTab === 'sankalpa' ? <SankalpaTab data={panchangData} locationName={preferences.location.city} selectedDate={selectedDate} /> : null}
-      {activeTab === 'festivals' ? <FestivalsTab data={festivalsData} error={festivalsError} /> : null}
+      {activeTab === 'festivals' ? <FestivalsTab data={annualEvents} error={festivalsError} /> : null}
       {activeTab === 'settings' ? (
         <SettingsTab
           preferences={preferences}

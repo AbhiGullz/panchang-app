@@ -3,12 +3,16 @@ import { useTranslation } from 'react-i18next'
 import { MoonPhase } from './MoonPhase'
 import { PanchangLogo } from './PanchangLogo'
 import { FieldHelp } from './FieldHelp'
-import type { PanchangResponse } from '../types/api'
+import type { FestivalItem, PanchangResponse } from '../types/api'
+import { observanceLabels } from '../lib/observance-labels'
+import { festivalBasis } from '../lib/festival-basis'
 import { formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyanamsa, humanizeTimezone } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
   onGuide?: () => void
+  observances?: FestivalItem[]
+  tomorrowObservances?: FestivalItem[]
 }
 
 function localized(value: string | object | undefined, lang: string) {
@@ -47,7 +51,7 @@ function MoonEventIcon({ direction }: { direction: 'rise' | 'set' }) {
   </span>
 }
 
-export function TodayView({ data, onGuide }: Props) {
+export function TodayView({ data, onGuide, observances = [], tomorrowObservances = [] }: Props) {
   const { i18n, t } = useTranslation()
   const help = (key: string) => t(`fieldHelp.${key}`)
   const labelWithHelp = (key: string, label: string, inverse = false) => <FieldHelp explanation={help(key)} inverse={inverse} label={label}>{label}</FieldHelp>
@@ -74,6 +78,9 @@ export function TodayView({ data, onGuide }: Props) {
               <div className="mt-2 text-base sm:text-lg text-[#DDF3FC]">{valueWithHelp('moonSign', t('moonSign'), localized(data.moon_sign, i18n.language), true)}</div>
               <div className="mt-3 text-base sm:text-lg text-[#DDF3FC]">{valueWithHelp('nakshatra', t('nakshatra'), localized(data.nakshatra.name, i18n.language), true)}</div>
               <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{valueWithHelp('month', t('month'), localized(data.month_name, i18n.language), true)}</div>
+              {observances.length > 0 ? <p className="mt-3 border-t border-white/15 pt-3 text-base text-white"><span className="font-semibold">{observanceLabels(i18n.language)[0]}: </span>{observances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
+              {tomorrowObservances.length > 0 ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[1]}: </span>{tomorrowObservances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
+              {observances.filter(item => item.selection_note === 'regional-variation').map(item => <p key={item.id ?? item.name} className="mt-1 text-xs text-[#B7DDF4]">{festivalBasis(item, i18n.language)}</p>)}
             </div>
           </div>
           <div className="rounded-3xl bg-[#0F2747] ring-1 ring-white/10 p-5 backdrop-blur-sm">

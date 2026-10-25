@@ -500,7 +500,14 @@ async def get_festivals(
     year: int = Query(...),
     calendar: str = Query("amanta"),
     lang: str = Query("en"),
+    lat: float = Query(18.5204, ge=-90, le=90),
+    lng: float = Query(73.8567, ge=-180, le=180),
+    tz: str = Query("Asia/Kolkata"),
 ) -> FestivalsResponseModel:
+    try:
+        ZoneInfo(tz)
+    except (ZoneInfoNotFoundError, ValueError):
+        raise HTTPException(status_code=400, detail="Unsupported timezone")
     if calendar not in VALID_CALENDARS:
         raise HTTPException(status_code=400, detail=f"Unsupported calendar: {calendar}")
     if lang not in LANGUAGES:
@@ -509,8 +516,38 @@ async def get_festivals(
         year=year,
         calendar=calendar,
         lang=lang,
-        festivals=compute_festivals_for_year(year, calendar=calendar, lang=lang),
+        festivals=compute_festivals_for_year(year, calendar=calendar, lang=lang, lat=lat, lng=lng, tz=tz),
     )
+
+
+@app.get('/api/v1/personal-tithi')
+async def personal_tithi(
+    date_iso: str = Query(..., alias='date'),
+    year: int = Query(..., ge=1900, le=2100),
+    calendar: str = Query(...),
+    lat: float = Query(..., ge=-90, le=90),
+    lng: float = Query(..., ge=-180, le=180),
+    tz: str = Query(...),
+    month: int | None = Query(None, ge=1, le=12),
+    tithi: int | None = Query(None, ge=1, le=30),
+    adhika: bool | None = Query(None),
+):
+    from engine.personal_tithis import lunar_rule, recurrence_dates
+    if calendar not in {'amanta', 'purnimanta'}:
+        raise HTTPException(status_code=400, detail='Select Amanta or Purnimanta for personal tithis')
+    try:
+        source = date.fromisoformat(date_iso)
+        ZoneInfo(tz)
+        rule = lunar_rule(source, lat, lng, tz, calendar)
+        if any(value is not None for value in (month, tithi, adhika)):
+            if any(value is None for value in (month, tithi, adhika)):
+                raise ValueError('Provide the complete saved lunar rule')
+            rule = {'month': month, 'tithi': tithi, 'adhika': adhika, 'calendar': calendar}
+        dates = recurrence_dates(year, rule['month'], rule['tithi'], rule['adhika'], lat, lng, tz, calendar)
+    except (ValueError, ZoneInfoNotFoundError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    from engine.i18n.names import get_month_name_map, get_name_map
+    return {'rule': rule, 'dates': dates, 'month_names': get_month_name_map(calendar, rule['month']), 'tithi_names': get_name_map('tithi', rule['tithi'])}
 
 
 # The production web server may serve the PWA itself. This optional mount lets

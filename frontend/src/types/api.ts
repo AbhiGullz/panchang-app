@@ -167,6 +167,15 @@ export interface MuhurtaResponse {
 }
 
 export interface FestivalItem {
+  calculation_basis?: string
+  ritual_window?: string
+  selection_note?: string
+  tithi_start?: string
+  tithi_end?: string
+  observance_start?: string | null
+  observance_end?: string | null
+  region?: string
+  id?: string
   name: string
   date: string
   lunar_month?: string

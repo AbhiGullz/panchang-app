@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { FestivalsTab } from '../components/FestivalsTab'
 import { fetchFestivals } from '../lib/api'
 import i18n from '../locales/i18n'
@@ -10,6 +10,19 @@ afterEach(() => {
 })
 
 describe('festival language requests', () => {
+  it('keeps common observances while filtering regional events independently of language', async () => {
+    await i18n.changeLanguage('en')
+    render(<FestivalsTab data={{ year: 2026, calendar: 'amanta', lang: 'en', source: 'test', festivals: [
+      { name: 'Kojagiri', date: '2026-10-25', region: 'pan-India' },
+      { name: 'Prakat Din', date: '2026-02-08', region: 'maharashtra' },
+      { name: 'Thaipusam', date: '2026-02-01', region: 'tamil-nadu' },
+    ] }} />)
+    fireEvent.change(screen.getByRole('combobox'), { target: { value: 'tamil-nadu' } })
+    expect(screen.getByText('Thaipusam')).toBeInTheDocument()
+    expect(screen.getByText('Kojagiri')).toBeInTheDocument()
+    expect(screen.queryByText('Prakat Din')).not.toBeInTheDocument()
+  })
+
   it('refetches with the selected language and renders the returned localized festival', async () => {
     const fetchMock = vi.fn(async (input: string) => {
       const language = new URL(input, 'http://localhost').searchParams.get('lang')

@@ -62,11 +62,17 @@ export function fetchFestivals(params: {
   year: number
   calendar: CalendarSchool
   lang: LanguageCode
+  lat?: number
+  lng?: number
+  tz?: string
 }) {
   const search = new URLSearchParams({
     year: String(params.year),
     calendar: params.calendar,
     lang: params.lang,
   })
+  if (params.lat !== undefined) search.set('lat', String(params.lat))
+  if (params.lng !== undefined) search.set('lng', String(params.lng))
+  if (params.tz) search.set('tz', params.tz)
   return request<FestivalsResponse>(`/festivals?${search.toString()}`)
 }

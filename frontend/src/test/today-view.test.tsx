@@ -26,6 +26,16 @@ const sample = {
 afterEach(() => cleanup())
 
 describe('TodayView', () => {
+  it('shows localized selected-day and tomorrow observances below the month', async () => {
+    await i18n.changeLanguage('mr')
+    renderWithProviders(<TodayView data={sample} observances={[{ name: 'Rishi Panchami', localized_name: 'ऋषिपंचमी', date: sample.date }]} tomorrowObservances={[{ name: 'Kojagiri', localized_name: 'कोजागिरी पौर्णिमा', date: '2026-08-05' }]} />)
+    expect(screen.getByText('सण व व्रते:')).toBeInTheDocument()
+    expect(screen.getByText('उद्या:')).toBeInTheDocument()
+    expect(screen.getByText(/कोजागिरी पौर्णिमा/)).toBeInTheDocument()
+    expect(screen.queryByText('Kojagiri')).not.toBeInTheDocument()
+    await i18n.changeLanguage('en')
+  })
+
   it('renders tithi details', () => {
     renderWithProviders(<TodayView data={sample} />)
     expect(screen.getByText('Krishna Panchami')).toBeInTheDocument()

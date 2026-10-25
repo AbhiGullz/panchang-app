@@ -8,6 +8,8 @@ import swisseph as swe
 
 from .core import init_swisseph
 from .i18n.names import get_month_name
+from .observances import regional_observances
+from .diwali import diwali_observances
 
 LUNAR_MONTH_NAMES = [
     "Chaitra",
@@ -162,10 +164,12 @@ def _find_solar_date(year: int, rashi_name: str, timezone_name: str = "Asia/Kolk
     return None
 
 
-def compute_festivals_for_year(year: int, calendar: str = "amanta", lang: str = "en") -> list[dict[str, str | list[str]]]:
+def compute_festivals_for_year(year: int, calendar: str = "amanta", lang: str = "en", lat: float = 18.5204, lng: float = 73.8567, tz: str = "Asia/Kolkata") -> list[dict[str, str | list[str]]]:
     init_swisseph()
     festivals: list[dict[str, str | list[str]]] = []
     for rule in FESTIVAL_RULES:
+        if rule.name == 'Diwali':
+            continue  # Replaced by local Amavasya/pradosha interval selection.
         if rule.calendar_school == "solar":
             mapping = {
                 "solar-makara": "Makara",
@@ -203,5 +207,9 @@ def compute_festivals_for_year(year: int, calendar: str = "amanta", lang: str = 
         if rule.duration_days > 1:
             item["dates"] = [(target + timedelta(days=i)).isoformat() for i in range(rule.duration_days)]
         festivals.append(item)
+    festivals.extend(dict(item, calendar_school=calendar) for item in regional_observances(year, lat, lng, tz, lang))
+    for item in diwali_observances(year, lat, lng, tz, lang):
+        month_index = 8 if calendar == 'purnimanta' or item['id'] in {'govardhan', 'bhai-dooj'} else 7
+        festivals.append(dict(item, calendar_school=calendar, lunar_month=get_month_name(calendar, month_index, lang)))
     festivals.sort(key=lambda item: item["date"])
     return festivals

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AYANAMSA_OPTIONS, SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } from '../types/api'
 import { formatLocalTime, humanizeAyanamsa, humanizeCalendar, humanizeTimezone } from '../lib/utils'
 import { LocationPicker } from './LocationPicker'
+import { PersonalTithis } from './PersonalTithis'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
 
 interface Props {
@@ -78,6 +79,7 @@ export function SettingsTab(props: Props) {
         </select>
       </label>
 
+      <PersonalTithis preferences={props.preferences} />
       <button className="block text-sm font-medium text-sky-700 underline" onClick={() => props.onFeedback?.()} type="button">{t('feedback')}</button>
       <a className="block text-sm font-medium text-sky-700 underline" href="/privacy.html">{t('privacy', { defaultValue: 'Privacy policy' })}</a>
     </section>
