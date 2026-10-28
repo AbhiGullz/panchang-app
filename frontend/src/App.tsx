@@ -161,7 +161,6 @@ function AppShell() {
 
       <div className="xl:grid xl:grid-cols-[240px_minmax(0,768px)_240px] xl:items-start xl:justify-center xl:gap-5">
         <div className="hidden min-w-0 xl:col-start-1 xl:row-start-1 xl:block">
-          {canShowAds ? <AdvertisementSlot className="sticky top-5 min-h-[520px]" format="vertical" /> : null}
         </div>
         <main className="min-w-0 space-y-4 xl:col-start-2 xl:row-start-1">
       {!preferences.onboardingComplete ? (
@@ -197,11 +196,10 @@ function AppShell() {
       {activeTab === 'guide' ? <GuideTab /> : null}
       {activeTab === 'feedback' ? <FeedbackScreen onBack={() => setActiveTab('settings')} /> : null}
 
-          {canShowAds ? <AdvertisementSlot className="xl:hidden" /> : null}
+          {canShowAds ? <AdvertisementSlot /> : null}
 
         </main>
         <div className="hidden min-w-0 xl:col-start-3 xl:row-start-1 xl:block">
-          {canShowAds ? <AdvertisementSlot className="sticky top-5 min-h-[520px]" format="vertical" /> : null}
         </div>
       </div>
       <footer className="mx-auto w-full max-w-3xl pb-24" aria-hidden="true" />

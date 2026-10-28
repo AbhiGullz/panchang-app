@@ -1,42 +1,19 @@
-import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AdvertisingPreferences } from './AdvertisingPreferences'
+import { useAdvertisingConsent } from '../lib/advertising-consent'
 
-interface Props {
-  className?: string
-  format?: 'horizontal' | 'vertical' | 'rectangle'
-}
+// Public ad-unit identifiers supplied by the publisher, not credentials.
+export const ADSTERRA_BANNER_DOCUMENT = `<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>html,body{margin:0;padding:0;width:300px;height:250px;overflow:hidden}</style></head><body><script>window.atOptions={key:'a8ef1e50997d46e2444461c8209f2948',format:'iframe',height:250,width:300,params:{}};</script><script src="https://bauval.org/22/a8ef1e50997d46e2444461c8209f2948"></script></body></html>`
 
-declare global {
-  interface Window { adsbygoogle?: unknown[] }
-}
-
-export function AdvertisementSlot({ className = '', format = 'horizontal' }: Props) {
+export function AdvertisementSlot({ className = '' }: { className?: string }) {
   const { t } = useTranslation()
-  const initialized = useRef(false)
-  const client = import.meta.env.VITE_ADSENSE_CLIENT as string | undefined
-  const slot = (format === 'vertical' ? import.meta.env.VITE_ADSENSE_VERTICAL_SLOT : import.meta.env.VITE_ADSENSE_CONTENT_SLOT) as string | undefined
-  const enabled = import.meta.env.PROD && Boolean(client && slot)
-
-  useEffect(() => {
-    if (!enabled || initialized.current) return
-    initialized.current = true
-    if (!document.querySelector('script[data-gajaa-adsense]')) {
-      const script = document.createElement('script')
-      script.async = true
-      script.crossOrigin = 'anonymous'
-      script.dataset.gajaaAdsense = 'true'
-      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client!)}`
-      document.head.appendChild(script)
-    }
-    window.adsbygoogle = window.adsbygoogle || []
-    window.adsbygoogle.push({})
-  }, [client, enabled])
-
-  if (enabled) {
-    return <aside aria-label={t('advertisement')} className={className}>
-      <ins className="adsbygoogle block" data-ad-client={client} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true" />
-    </aside>
-  }
-
-  return null
+  const consent = useAdvertisingConsent()
+  if (!import.meta.env.PROD || consent === 'denied') return null
+  if (consent !== 'granted') return <AdvertisingPreferences />
+  return <aside aria-label={t('advertisement')} className={`flex flex-col items-center gap-2 overflow-hidden ${className}`}>
+    <span className="text-xs text-slate-500">{t('advertisement')}</span>
+    <iframe title={t('advertisement')} width="300" height="250" className="max-w-full border-0"
+      sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox"
+      referrerPolicy="strict-origin-when-cross-origin" srcDoc={ADSTERRA_BANNER_DOCUMENT} />
+  </aside>
 }
