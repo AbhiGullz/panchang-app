@@ -5,8 +5,26 @@ import { AdvertisingPreferences } from '../components/AdvertisingPreferences'
 import { renderWithProviders } from './render'
 import i18n from '../locales/i18n'
 import { chooseAdvertisingConsent } from '../lib/advertising-consent'
+import { advertisingDecision, advertisingCountry } from '../lib/advertising-policy'
 
-afterEach(() => { cleanup(); vi.restoreAllMocks(); chooseAdvertisingConsent('denied'); localStorage.removeItem('gajaa-adsterra-consent-v1'); vi.unstubAllEnvs() })
+afterEach(() => { cleanup(); vi.restoreAllMocks(); chooseAdvertisingConsent('denied'); localStorage.removeItem('gajaa-adsterra-consent-v1'); vi.unstubAllEnvs(); vi.unstubAllGlobals() })
+
+it('uses regional defaults without overriding refusals, consent regions, or privacy signals', () => {
+  expect(advertisingDecision(null, 'US')).toBe('allowed')
+  expect(advertisingDecision(null, 'IN')).toBe('allowed')
+  expect(advertisingDecision(null, 'GB')).toBe('ask')
+  expect(advertisingDecision(null, 'DE')).toBe('ask')
+  expect(advertisingDecision(null, null)).toBe('ask')
+  expect(advertisingDecision('denied', 'US')).toBe('blocked')
+  expect(advertisingDecision('granted', 'US', true)).toBe('blocked')
+})
+
+it('extracts only the network country and fails safely on lookup errors', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('ip=redacted\nloc=US\n')))
+  expect(await advertisingCountry()).toBe('US')
+  vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('offline')))
+  expect(await advertisingCountry()).toBeNull()
+})
 
 it('visibly switches both settings buttons even when browser storage is blocked', async () => {
   await i18n.changeLanguage('en')
@@ -32,9 +50,10 @@ it('does not create an ad frame until consent and removes it immediately on with
   fireEvent.click(screen.getByRole('button', { name: 'Allow ads' }))
   const frame = view.container.querySelector('iframe')!
   expect(frame).not.toBeNull()
-  expect(frame.getAttribute('src')).toBe('/advertising/banner.html')
+  expect(frame.getAttribute('src')).toBe('https://ads.gajaapanchang.org/advertising/banner.html')
   expect(frame.hasAttribute('srcdoc')).toBe(false)
-  expect(frame.getAttribute('sandbox')).not.toContain('allow-same-origin')
+  expect(new URL(frame.src).origin).not.toBe(window.location.origin)
+  expect(frame.getAttribute('sandbox')).toContain('allow-same-origin')
   expect(frame.getAttribute('sandbox')).not.toContain('allow-top-navigation')
   renderWithProviders(<AdvertisingPreferences />)
   fireEvent.click(screen.getByRole('button', { name: 'No thanks' }))

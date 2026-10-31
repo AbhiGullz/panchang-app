@@ -1,0 +1,10 @@
+# Worker infrastructure configuration. Keep credentials outside Git.
+tunnel: c19f7acd-338e-44a7-b8fe-74f3e4b56400
+credentials-file: /home/abhishek/.cloudflared/c19f7acd-338e-44a7-b8fe-74f3e4b56400.json
+ingress:
+  - hostname: gajaapanchang.org
+    service: http://127.0.0.1:8080
+  - hostname: ads.gajaapanchang.org
+    path: ^/advertising/banner\.html$
+    service: http://127.0.0.1:8080
+  - service: http_status:404

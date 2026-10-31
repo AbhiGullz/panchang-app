@@ -22,7 +22,21 @@
     <p>“My Tithis” saves your personal observance names, reference dates, lunar rules and reference locations in this browser on this device. You can delete individual records in Settings. Clearing site data also removes them; they do not sync across devices. Observance names are not sent to our calculation API. The reference date, lunar rule, coordinates and time zone are sent to calculate future dates.</p>
     <p>Requests must pass through the site’s hosting and network providers to deliver the app. Those providers may process technical request information such as IP address, browser details, and request time under their own privacy terms. OpenStreetMap’s privacy information is available at <a href="https://wiki.osmfoundation.org/wiki/Privacy_Policy" rel="noopener">OpenStreetMap Foundation Privacy Policy</a>.</p>
     <h2>Advertising and consent</h2>
-    <p>Optional display advertising is provided by Adsterra. Its banner loads only after you choose “Allow ads.” Adsterra and its advertising partners may process your IP address, browser/device information, ad interactions, and cookies or similar technologies to serve and measure advertising. See <a href="https://adsterra.com/privacy-policy/" rel="noopener">Adsterra’s Privacy Policy</a>. Your choice is stored in this browser. You can decline or withdraw permission in Settings under Optional advertising; withdrawal stops future banner loading and removes the current banner. It does not erase data already received by the provider or its cookies. Browser privacy controls can remove those cookies. Ads are not displayed on the Sankalpa form, Settings, feedback, or Guide screens. The integration does not send personal observance names or Sankalpa form inputs to the advertising provider.</p>
+    <p>Display advertising supports this free app and is provided by Adsterra. Ads load by default for visits identified by Cloudflare as coming from the United States or India, unless you previously declined or your browser sends Global Privacy Control. For other or unknown regions, ads wait for your permission. Cloudflare's country lookup uses the network connection, not your selected Panchang location. Adsterra and its advertising partners may process your IP address, browser/device information, ad interactions, and cookies or similar technologies to serve and measure advertising. See <a href="https://adsterra.com/privacy-policy/" rel="noopener">Adsterra’s Privacy Policy</a>. The banner runs on a separate advertising origin and cannot access the app's local storage or form fields. Ads are absent from Sankalpa, Settings, feedback and Guide screens.</p>
+    <p>You can change your advertising choice below. A refusal is remembered and respected even in default-on regions. Withdrawal stops future ad loading; it does not erase data already received by the provider or its cookies. Browser controls can remove those cookies.</p>
+    <p><button type="button" id="allow-ads">Allow ads</button> <button type="button" id="decline-ads">Decline advertising / withdraw consent</button></p>
+    <p id="ad-choice" role="status"></p>
+    <script>
+      (() => {
+        const key = 'gajaa-adsterra-consent-v1';
+        const status = document.getElementById('ad-choice');
+        const show = () => { try { const value = localStorage.getItem(key); status.textContent = value === 'granted' ? 'Your choice: ads allowed.' : value === 'denied' ? 'Your choice: advertising declined.' : 'No saved choice. Regional defaults apply.'; } catch { status.textContent = 'Browser storage is unavailable.'; } };
+        const choose = value => { try { localStorage.setItem(key, value); window.dispatchEvent(new Event('gajaa-advertising-consent')); show(); } catch { status.textContent = 'Unable to save your choice in this browser.'; } };
+        document.getElementById('allow-ads').onclick = () => choose('granted');
+        document.getElementById('decline-ads').onclick = () => choose('denied');
+        show();
+      })();
+    </script>
     <h2>Children and contact</h2>
     <p>The app is a general calendar reference and is not designed to collect information directly from children. For a privacy question or data request, use the feedback option in the app and include “Privacy” in your message.</p>
     <h2>Updates</h2>

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { chooseAdvertisingConsent as choose, useAdvertisingConsent } from '../lib/advertising-consent'
 const COPY: Record<string, [string, string, string, string]> = {
-  en: ['Optional advertising', 'Allow Adsterra to load ads? It may use cookies and process your IP address and browser information for advertising and measurement. You can change this choice in Settings.', 'Allow ads', 'No thanks'],
+  en: ['Advertising privacy', 'Allow Adsterra to load ads? It may use cookies and process your IP address and browser information for advertising and measurement. You can change this choice on the Privacy page.', 'Allow ads', 'No thanks'],
   hi: ['वैकल्पिक विज्ञापन', 'Adsterra के विज्ञापन दिखाने की अनुमति दें? यह विज्ञापन और मापन के लिए कुकीज़, आपका IP पता और ब्राउज़र जानकारी उपयोग कर सकता है। सेटिंग्स में यह विकल्प बदल सकते हैं।', 'विज्ञापन की अनुमति दें', 'नहीं, धन्यवाद'],
   mr: ['ऐच्छिक जाहिराती', 'Adsterra जाहिराती दाखवू द्यायच्या? जाहिराती व मोजणीसाठी कुकीज, तुमचा IP पत्ता व ब्राउझर माहिती वापरली जाऊ शकते. सेटिंगमध्ये निवड बदलू शकता.', 'जाहिरातींना परवानगी द्या', 'नको, धन्यवाद'],
   ta: ['விருப்ப விளம்பரங்கள்', 'Adsterra விளம்பரங்களை அனுமதிக்கவா? விளம்பரம் மற்றும் அளவீட்டிற்கு குக்கீகள், IP முகவரி மற்றும் உலாவித் தகவலைப் பயன்படுத்தலாம். அமைப்புகளில் இந்தத் தேர்வை மாற்றலாம்.', 'விளம்பரங்களை அனுமதி', 'வேண்டாம், நன்றி'],
