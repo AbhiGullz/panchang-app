@@ -4,8 +4,25 @@ import { AdvertisementSlot } from '../components/AdvertisementSlot'
 import { AdvertisingPreferences } from '../components/AdvertisingPreferences'
 import { renderWithProviders } from './render'
 import i18n from '../locales/i18n'
+import { chooseAdvertisingConsent } from '../lib/advertising-consent'
 
-afterEach(() => { cleanup(); localStorage.removeItem('gajaa-adsterra-consent-v1'); vi.unstubAllEnvs() })
+afterEach(() => { cleanup(); vi.restoreAllMocks(); chooseAdvertisingConsent('denied'); localStorage.removeItem('gajaa-adsterra-consent-v1'); vi.unstubAllEnvs() })
+
+it('visibly switches both settings buttons even when browser storage is blocked', async () => {
+  await i18n.changeLanguage('en')
+  vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new DOMException('Storage blocked', 'SecurityError') })
+  renderWithProviders(<AdvertisingPreferences />)
+  const allow = screen.getByRole('button', { name: 'Allow ads' })
+  const decline = screen.getByRole('button', { name: 'No thanks' })
+  fireEvent.click(allow)
+  expect(allow).toHaveAttribute('aria-pressed', 'true')
+  expect(allow).toHaveClass('bg-sky-800')
+  expect(decline).not.toHaveClass('bg-sky-800')
+  fireEvent.click(decline)
+  expect(decline).toHaveAttribute('aria-pressed', 'true')
+  expect(decline).toHaveClass('bg-sky-800')
+  expect(allow).toHaveAttribute('aria-pressed', 'false')
+})
 
 it('does not create an ad frame until consent and removes it immediately on withdrawal', async () => {
   vi.stubEnv('PROD', true)
@@ -15,7 +32,8 @@ it('does not create an ad frame until consent and removes it immediately on with
   fireEvent.click(screen.getByRole('button', { name: 'Allow ads' }))
   const frame = view.container.querySelector('iframe')!
   expect(frame).not.toBeNull()
-  expect(frame.srcdoc).toContain('https://bauval.org/22/a8ef1e50997d46e2444461c8209f2948')
+  expect(frame.getAttribute('src')).toBe('/advertising/banner.html')
+  expect(frame.hasAttribute('srcdoc')).toBe(false)
   expect(frame.getAttribute('sandbox')).not.toContain('allow-same-origin')
   expect(frame.getAttribute('sandbox')).not.toContain('allow-top-navigation')
   renderWithProviders(<AdvertisingPreferences />)

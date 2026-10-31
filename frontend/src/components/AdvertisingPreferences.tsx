@@ -16,12 +16,13 @@ export function AdvertisingPreferences() {
   const { i18n, t } = useTranslation()
   const consent = useAdvertisingConsent()
   const copy = COPY[i18n.language.split('-')[0] ?? 'en'] ?? COPY.en!
+  const buttonClass = (selected: boolean) => `cursor-pointer rounded-xl border px-3 py-2 transition-colors focus-visible:outline-2 focus-visible:outline-sky-700 ${selected ? 'border-sky-800 bg-sky-800 font-semibold text-white shadow-sm' : 'border-sky-300 bg-white text-sky-900 hover:bg-sky-100'}`
   return <section className="rounded-2xl border border-sky-100 bg-sky-50 p-4 text-sm">
     <h3 className="font-semibold">{copy[0]}</h3>
     <p className="mt-2 text-slate-600">{copy[1]} <a className="underline" href="/privacy.html">{t('privacy', { defaultValue: 'Privacy policy' })}</a></p>
     <div className="mt-3 flex flex-wrap gap-3">
-      <button type="button" aria-pressed={consent === 'granted'} onClick={() => choose('granted')} className="cursor-pointer rounded-xl border border-sky-300 bg-white px-3 py-2">{copy[2]}</button>
-      <button type="button" aria-pressed={consent === 'denied'} onClick={() => choose('denied')} className="cursor-pointer rounded-xl border border-sky-300 bg-white px-3 py-2">{copy[3]}</button>
+      <button type="button" aria-pressed={consent === 'granted'} onClick={() => choose('granted')} className={buttonClass(consent === 'granted')}>{consent === 'granted' ? <span aria-hidden="true">✓ </span> : null}{copy[2]}</button>
+      <button type="button" aria-pressed={consent === 'denied'} onClick={() => choose('denied')} className={buttonClass(consent === 'denied')}>{consent === 'denied' ? <span aria-hidden="true">✓ </span> : null}{copy[3]}</button>
     </div>
   </section>
 }

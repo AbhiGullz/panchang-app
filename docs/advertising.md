@@ -9,12 +9,15 @@ One banner appears below loaded Home, Muhurta, or Festivals content after the us
 chooses Allow ads. It is absent on onboarding, loading-only screens, Sankalpa,
 Settings, Guide and Feedback. Development builds never load the tag.
 
-The banner has its own sandboxed opaque-origin frame, keeping synchronous
+The banner has its own sandboxed opaque-origin frame at /advertising/banner.html, keeping synchronous
 document.write and atOptions out of the application document. Scripts and opening
 advertiser pages are allowed; parent-page navigation, same-origin access, downloads,
-and forms are not. Do not add allow-same-origin to the srcdoc frame.
+and forms are not. Do not add allow-same-origin to the frame. A real URL replaces
+srcdoc so provider code sees the registered hostname rather than about:srcdoc.
 
 Consent is stored in gajaa-adsterra-consent-v1 and can be withdrawn in Settings.
+Selected buttons are highlighted with a check mark. If browser storage is blocked,
+the choice applies in memory until the page closes or reloads.
 No provider request is created before permission. Existing Google consent is not
 reused for Adsterra. Withdrawal unmounts the frame; it cannot erase provider data.
 The old Google ads.txt authorization remains as historical account configuration;

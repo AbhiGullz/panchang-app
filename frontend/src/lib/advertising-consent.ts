@@ -2,8 +2,11 @@ import { useSyncExternalStore } from 'react'
 
 const KEY = 'gajaa-adsterra-consent-v1'
 const EVENT = 'gajaa-advertising-consent'
+let sessionConsent: string | null = null
+let storageUnavailable = false
 function readConsent() {
-  try { return localStorage.getItem(KEY) } catch { return null }
+  if (storageUnavailable) return sessionConsent
+  try { return localStorage.getItem(KEY) } catch { return sessionConsent }
 }
 function subscribe(callback: () => void) {
   window.addEventListener(EVENT, callback)
@@ -12,6 +15,7 @@ function subscribe(callback: () => void) {
 }
 export function useAdvertisingConsent() { return useSyncExternalStore(subscribe, readConsent, () => null) }
 export function chooseAdvertisingConsent(value: 'granted' | 'denied') {
-  try { localStorage.setItem(KEY, value) } catch { return }
+  sessionConsent = value
+  try { localStorage.setItem(KEY, value); storageUnavailable = false } catch { storageUnavailable = true }
   window.dispatchEvent(new Event(EVENT))
 }
