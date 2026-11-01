@@ -16,13 +16,14 @@ export function usePanchang(date: string, lat: number, lng: number, tz: string, 
       const key = cacheKey(date, lat, lng, tz, calendar, lang)
       try {
         const payload = await fetchPanchang({ date, lat, lng, tz, calendar, lang })
-        await saveOfflineDay(key, payload)
-        const entries = loadOfflineCacheIndex().filter((entry) => entry !== key)
-        saveOfflineCacheIndex([...entries, key])
+        try {
+          await saveOfflineDay(key, payload)
+          const entries = loadOfflineCacheIndex().filter((entry) => entry !== key)
+          saveOfflineCacheIndex([...entries, key])
+        } catch { /* Private/storage-limited browsers can still show live data. */ }
         return payload
       } catch (error) {
-        const cached = await loadOfflineDay(key)
-        if (cached) return cached
+        try { const cached = await loadOfflineDay(key); if (cached) return cached } catch { /* Preserve the original network failure. */ }
         throw error
       }
     },

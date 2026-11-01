@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { DEFAULT_PREFERENCES } from '../lib/constants'
-import { loadPreferences, savePreferences } from '../lib/storage'
+import { loadPreferences, savePreferences, readStoredValue, writeStoredValue, validStoredDate } from '../lib/storage'
 import { formatDateInput } from '../lib/utils'
 import i18n from '../locales/i18n'
 import type { AppPreferences, CalendarSchool, LanguageCode, LocationPreference } from '../types/api'
@@ -20,8 +20,9 @@ interface AppState {
 }
 
 const initialPreferences = typeof window === 'undefined' ? DEFAULT_PREFERENCES : loadPreferences()
-const initialDate = typeof window === 'undefined' ? formatDateInput(new Date()) : window.localStorage.getItem('gajaa-selected-date') ?? formatDateInput(new Date())
-const storedTab = typeof window === 'undefined' ? null : window.localStorage.getItem('gajaa-active-tab')
+const storedDate = readStoredValue('gajaa-selected-date')
+const initialDate = validStoredDate(storedDate) ? storedDate! : formatDateInput(new Date())
+const storedTab = readStoredValue('gajaa-active-tab')
 const initialTab: AppState['activeTab'] = storedTab === 'muhurta' || storedTab === 'sankalpa' || storedTab === 'festivals' || storedTab === 'settings' || storedTab === 'guide' || storedTab === 'feedback' ? storedTab : 'today'
 
 const persist = (preferences: AppPreferences) => {
@@ -33,8 +34,8 @@ export const useAppStore = create<AppState>((set) => ({
   preferences: initialPreferences,
   activeTab: initialTab,
   selectedDate: initialDate,
-  setActiveTab: (activeTab) => { if (typeof window !== 'undefined') window.localStorage.setItem('gajaa-active-tab', activeTab); set({ activeTab }) },
-  setSelectedDate: (selectedDate) => { if (typeof window !== 'undefined') window.localStorage.setItem('gajaa-selected-date', selectedDate); set({ selectedDate }) },
+  setActiveTab: (activeTab) => { writeStoredValue('gajaa-active-tab', activeTab); set({ activeTab }) },
+  setSelectedDate: (selectedDate) => { const date = validStoredDate(selectedDate) ? selectedDate : formatDateInput(new Date()); writeStoredValue('gajaa-selected-date', date); set({ selectedDate: date }) },
   updateLocation: (location) =>
     set((state) => ({
       preferences: persist({ ...state.preferences, location }),
