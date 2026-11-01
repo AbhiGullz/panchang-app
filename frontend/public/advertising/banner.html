@@ -5,15 +5,23 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="robots" content="noindex,nofollow">
   <title>Advertisement</title>
-  <style>html,body{margin:0;padding:0;width:300px;height:250px;overflow:hidden}</style>
+  <style>html,body{margin:0;padding:0;overflow:hidden}</style>
 </head>
 <body>
   <script>
-    atOptions = {
-      key: 'a8ef1e50997d46e2444461c8209f2948',
-      format: 'iframe', height: 250, width: 300, params: {}
+    var units = {
+      mobile: { key: '280c9efcc5babc645b772eef79d7a5ef', width: 320, height: 50 },
+      desktop: { key: 'acf3bdddd58d628d55e89a39b0af80ca', width: 728, height: 90 },
+      side: { key: '659720b85dcfec5b1e99de936d81d808', width: 160, height: 600 },
+      legacy: { key: 'a8ef1e50997d46e2444461c8209f2948', width: 300, height: 250 }
     };
+    var requested = new URLSearchParams(location.search).get('unit');
+    var unit = Object.prototype.hasOwnProperty.call(units, requested) ? units[requested] : units.legacy;
+    atOptions = { key: unit.key, format: 'iframe', height: unit.height, width: unit.width, params: {} };
+    document.documentElement.style.width = unit.width + 'px';
+    document.documentElement.style.height = unit.height + 'px';
+    // Keep the supplied synchronous embed semantics inside this isolated page.
+    document.write('<script src="https://bauval.org/22/' + unit.key + '"><\/script>');
   </script>
-  <script src="https://bauval.org/22/a8ef1e50997d46e2444461c8209f2948"></script>
 </body>
 </html>

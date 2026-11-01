@@ -51,7 +51,7 @@ it('does not create an ad frame until consent and removes it immediately on with
   const frame = view.container.querySelector('iframe')!
   expect(frame).not.toBeNull()
   expect(screen.queryByText('Advertisement')).not.toBeInTheDocument()
-  expect(frame.getAttribute('src')).toBe('https://ads.gajaapanchang.org/advertising/banner.html')
+  expect(frame.getAttribute('src')).toBe('https://ads.gajaapanchang.org/advertising/banner.html?unit=desktop')
   expect(frame.hasAttribute('srcdoc')).toBe(false)
   expect(new URL(frame.src).origin).not.toBe(window.location.origin)
   expect(frame.getAttribute('sandbox')).toContain('allow-same-origin')
@@ -67,6 +67,28 @@ it('keeps live advertising disabled during development even with stored permissi
   localStorage.setItem('gajaa-adsterra-consent-v1', 'granted')
   const view = renderWithProviders(<AdvertisementSlot />)
   expect(view.container).toBeEmptyDOMElement()
+})
+
+it('loads only the mobile bottom unit and no hidden side frames on a phone', () => {
+  vi.stubEnv('PROD', true)
+  vi.stubGlobal('innerWidth', 390)
+  chooseAdvertisingConsent('granted')
+  const view = renderWithProviders(<><AdvertisementSlot /><AdvertisementSlot placement="side" /><AdvertisementSlot placement="side" /></>)
+  const frames = view.container.querySelectorAll('iframe')
+  expect(frames).toHaveLength(1)
+  expect(frames[0]).toHaveAttribute('width', '320')
+  expect(frames[0]).toHaveAttribute('height', '50')
+  expect(frames[0]).toHaveAttribute('src', 'https://ads.gajaapanchang.org/advertising/banner.html?unit=mobile')
+})
+
+it('uses the tall unit for a wide-screen side placement', () => {
+  vi.stubEnv('PROD', true)
+  vi.stubGlobal('innerWidth', 1440)
+  chooseAdvertisingConsent('granted')
+  const view = renderWithProviders(<AdvertisementSlot placement="side" />)
+  expect(view.container.querySelector('iframe')).toHaveAttribute('width', '160')
+  expect(view.container.querySelector('iframe')).toHaveAttribute('height', '600')
+  expect(view.container.querySelector('iframe')).toHaveAttribute('src', 'https://ads.gajaapanchang.org/advertising/banner.html?unit=side')
 })
 
 it('localizes the consent choice and lets a visitor decline without loading an ad', async () => {

@@ -161,6 +161,7 @@ function AppShell() {
 
       <div className="xl:grid xl:grid-cols-[240px_minmax(0,768px)_240px] xl:items-start xl:justify-center xl:gap-5">
         <div className="hidden min-w-0 xl:col-start-1 xl:row-start-1 xl:block">
+          {canShowAds ? <AdvertisementSlot placement="side" /> : null}
         </div>
         <main className="min-w-0 space-y-4 xl:col-start-2 xl:row-start-1">
       {!preferences.onboardingComplete ? (
@@ -200,6 +201,7 @@ function AppShell() {
 
         </main>
         <div className="hidden min-w-0 xl:col-start-3 xl:row-start-1 xl:block">
+          {canShowAds ? <AdvertisementSlot placement="side" /> : null}
         </div>
       </div>
       <footer className="mx-auto w-full max-w-3xl pb-24" aria-hidden="true" />
