@@ -12,7 +12,6 @@ export function AdvertisementSlot({ className = '' }: { className?: string }) {
   if (!import.meta.env.PROD || decision === 'blocked') return null
   if (decision !== 'allowed') return <AdvertisingPreferences />
   return <aside aria-label={t('advertisement')} className={`flex flex-col items-center gap-2 overflow-hidden ${className}`}>
-    <span className="text-xs text-slate-500">{t('advertisement')}</span>
     <iframe title={t('advertisement')} width="300" height="250" className="max-w-full border-0"
       sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
       referrerPolicy="strict-origin-when-cross-origin" src="https://ads.gajaapanchang.org/advertising/banner.html" />

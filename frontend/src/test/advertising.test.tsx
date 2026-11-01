@@ -50,6 +50,7 @@ it('does not create an ad frame until consent and removes it immediately on with
   fireEvent.click(screen.getByRole('button', { name: 'Allow ads' }))
   const frame = view.container.querySelector('iframe')!
   expect(frame).not.toBeNull()
+  expect(screen.queryByText('Advertisement')).not.toBeInTheDocument()
   expect(frame.getAttribute('src')).toBe('https://ads.gajaapanchang.org/advertising/banner.html')
   expect(frame.hasAttribute('srcdoc')).toBe(false)
   expect(new URL(frame.src).origin).not.toBe(window.location.origin)

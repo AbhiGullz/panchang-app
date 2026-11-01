@@ -6,10 +6,13 @@ export function advertisingDecision(consent: string | null, country: string | nu
 }
 
 export async function advertisingCountry(): Promise<string | null> {
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 5000)
   try {
-    const response = await fetch('/cdn-cgi/trace', { cache: 'no-store', signal: AbortSignal.timeout(5000) })
+    // AbortSignal.timeout is unavailable in older Safari versions.
+    const response = await fetch('/cdn-cgi/trace', { cache: 'no-store', signal: controller.signal })
     if (!response.ok) return null
     // Read only Cloudflare's country code; never store the trace/IP address.
     return /^loc=([A-Z]{2})$/m.exec(await response.text())?.[1] ?? null
-  } catch { return null }
+  } catch { return null } finally { clearTimeout(timeout) }
 }
