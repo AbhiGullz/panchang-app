@@ -12,7 +12,7 @@ export function daysUntil(from: string, to: string): number | null {
   const civilDay = (value: string) => {
     const match = /^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value)
     if (!match) return NaN
-    const [, y, m, d] = match.map(Number)
+    const y = Number(match[1]), m = Number(match[2]), d = Number(match[3])
     const instant = Date.UTC(y, m - 1, d)
     const parsed = new Date(instant)
     return parsed.getUTCFullYear() === y && parsed.getUTCMonth() === m - 1 && parsed.getUTCDate() === d ? instant : NaN
