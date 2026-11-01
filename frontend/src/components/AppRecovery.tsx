@@ -15,9 +15,12 @@ const MESSAGES: Record<string, string> = {
   pa: 'ਇਹ ਪੰਨਾ ਦਿਖਾਇਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਸੰਭਾਲੀਆਂ ਤਿਥੀਆਂ ਮਿਟਾਈਆਂ ਨਹੀਂ ਗਈਆਂ। ਦੁਬਾਰਾ ਲੋਡ ਕਰੋ ਜਾਂ ਮੁੱਖ ਪੰਨੇ ਉੱਤੇ ਜਾਓ।',
 }
 
-export class AppRecovery extends Component<{ children: ReactNode }, { failed: boolean }> {
-  state = { failed: false }
-  static getDerivedStateFromError() { return { failed: true } }
+export class AppRecovery extends Component<{ children: ReactNode }, { failed: boolean; diagnostic: string }> {
+  state = { failed: false, diagnostic: '' }
+  static getDerivedStateFromError(error: unknown) {
+    const diagnostic = error instanceof Error ? `${error.name}: ${error.message}`.slice(0, 240) : 'Unknown rendering error'
+    return { failed: true, diagnostic }
+  }
   componentDidCatch(error: Error) { console.error('Gajaa Panchang render failure:', error) }
   render() {
     if (!this.state.failed) return this.props.children
@@ -25,6 +28,7 @@ export class AppRecovery extends Component<{ children: ReactNode }, { failed: bo
     return <main role="alert" className="mx-auto mt-8 max-w-xl space-y-4 rounded-3xl bg-white p-6 text-slate-900 shadow-sm">
       <h1 className="text-xl font-semibold">{i18n.t('appName')}</h1>
       <p>{MESSAGES[lang] ?? MESSAGES.en}</p>
+      <p className="break-words rounded-xl bg-slate-100 p-3 font-mono text-xs" dir="ltr">{this.state.diagnostic}</p>
       <div className="flex gap-3">
         <button type="button" className="cursor-pointer rounded-xl bg-sky-800 px-4 py-2 text-white" onClick={() => window.location.reload()}>{i18n.t('retry')}</button>
         <button type="button" className="cursor-pointer rounded-xl border border-sky-300 px-4 py-2" onClick={() => { useAppStore.getState().setActiveTab('today'); this.setState({ failed: false }) }}>{i18n.t('home')}</button>
