@@ -7,6 +7,20 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function daysUntil(from: string, to: string): number | null {
+  // Parse civil dates numerically: Safari must not guess a date-string format.
+  const civilDay = (value: string) => {
+    const match = /^(\d{4})-(\d{2})-(\d{2})(?:T|$)/.exec(value)
+    if (!match) return NaN
+    const [, y, m, d] = match.map(Number)
+    const instant = Date.UTC(y, m - 1, d)
+    const parsed = new Date(instant)
+    return parsed.getUTCFullYear() === y && parsed.getUTCMonth() === m - 1 && parsed.getUTCDate() === d ? instant : NaN
+  }
+  const days = Math.round((civilDay(to) - civilDay(from)) / 86400000)
+  return Number.isFinite(days) ? Math.max(0, days) : null
+}
+
 export function formatDateInput(value: Date) {
   const year = value.getFullYear()
   const month = String(value.getMonth() + 1).padStart(2, '0')

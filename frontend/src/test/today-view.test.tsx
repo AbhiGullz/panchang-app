@@ -1,6 +1,7 @@
 import { cleanup, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { TodayView } from '../components/TodayView'
+import { daysUntil } from '../lib/utils'
 import { renderWithProviders } from './render'
 import i18n from '../locales/i18n'
 const sample = {
@@ -26,6 +27,18 @@ const sample = {
 afterEach(() => cleanup())
 
 describe('TodayView', () => {
+  it('calculates finite civil-day countdowns without browser date-string guessing', () => {
+    expect(daysUntil('2026-11-01', '2026-11-06')).toBe(5)
+    expect(daysUntil('2026-11-01T00:00:00', '2026-11-06T00:00:00')).toBe(5)
+    expect(daysUntil('2026-02-30', '2026-11-06')).toBeNull()
+    expect(daysUntil('invalid', '2026-11-06')).toBeNull()
+  })
+  it('keeps the page visible if a saved observance has an invalid countdown date', async () => {
+    await i18n.changeLanguage('en')
+    renderWithProviders(<TodayView data={sample} nextObservance={{ name: 'Saved reminder', date: 'invalid' }} />)
+    expect(screen.getByText(/Saved reminder/)).toBeInTheDocument()
+    expect(screen.getByText('Krishna Panchami')).toBeInTheDocument()
+  })
   it('shows one reminder when the next observance is tomorrow', async () => {
     await i18n.changeLanguage('en')
     const event = { name: 'Family Punyatithi', date: '2026-08-05' }

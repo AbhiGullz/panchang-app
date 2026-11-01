@@ -6,7 +6,7 @@ import { FieldHelp } from './FieldHelp'
 import type { FestivalItem, PanchangResponse } from '../types/api'
 import { observanceLabels } from '../lib/observance-labels'
 import { festivalBasis } from '../lib/festival-basis'
-import { formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyanamsa, humanizeTimezone, localeWithNativeDigits } from '../lib/utils'
+import { daysUntil, formatDisplayDate, formatTimeWithTimezone, formatWeekday, humanizeAyanamsa, humanizeTimezone, localeWithNativeDigits } from '../lib/utils'
 
 interface Props {
   data?: PanchangResponse
@@ -51,7 +51,6 @@ function MoonEventIcon({ direction }: { direction: 'rise' | 'set' }) {
     <Arrow className="absolute -right-1 -top-1 h-2.5 w-2.5 stroke-[3]" />
   </span>
 }
-function daysUntil(from: string, to: string) { return Math.max(0, Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86400000)) }
 
 export function TodayView({ data, onGuide, observances = [], tomorrowObservances = [], nextObservance }: Props) {
   const { i18n, t } = useTranslation()
@@ -65,6 +64,7 @@ export function TodayView({ data, onGuide, observances = [], tomorrowObservances
   if (!data) {
     return <div className="rounded-3xl border border-[#D7E7F0] bg-white p-6 text-sm text-[#64748B]">{t('loading')}</div>
   }
+  const countdown = nextObservance ? daysUntil(data.date, nextObservance.date) : null
 
   return (
     <section className="space-y-4">
@@ -82,7 +82,7 @@ export function TodayView({ data, onGuide, observances = [], tomorrowObservances
               <div className="mt-1.5 text-base sm:text-lg text-[#DDF3FC]">{valueWithHelp('month', t('month'), localized(data.month_name, i18n.language), true)}</div>
               {observances.length > 0 ? <p className="mt-3 border-t border-white/15 pt-3 text-base text-white"><span className="font-semibold">{observanceLabels(i18n.language)[0]}: </span>{observances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
               {!nextObservance && tomorrowObservances.length > 0 ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[1]}: </span>{tomorrowObservances.map(item => item.localized_name ?? item.name).join(' · ')}</p> : null}
-              {nextObservance ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[9]}: </span>{nextObservance.localized_name ?? nextObservance.name} · {formatDisplayDate(nextObservance.date, i18n.language)} · {new Intl.RelativeTimeFormat(localeWithNativeDigits(i18n.language), { numeric: 'always' }).format(daysUntil(data.date, nextObservance.date), 'day')}</p> : null}
+              {nextObservance ? <p className="mt-2 text-sm text-[#B7DDF4]"><span className="font-semibold">{observanceLabels(i18n.language)[9]}: </span>{nextObservance.localized_name ?? nextObservance.name} · {formatDisplayDate(nextObservance.date, i18n.language)}{countdown !== null ? ` · ${new Intl.RelativeTimeFormat(localeWithNativeDigits(i18n.language), { numeric: 'always' }).format(countdown, 'day')}` : ''}</p> : null}
               {observances.filter(item => item.selection_note === 'regional-variation').map(item => <p key={item.id ?? item.name} className="mt-1 text-xs text-[#B7DDF4]">{festivalBasis(item, i18n.language)}</p>)}
             </div>
           </div>
