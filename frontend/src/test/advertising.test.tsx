@@ -5,9 +5,16 @@ import { AdvertisingPreferences } from '../components/AdvertisingPreferences'
 import { renderWithProviders } from './render'
 import i18n from '../locales/i18n'
 import { chooseAdvertisingConsent } from '../lib/advertising-consent'
-import { advertisingDecision, advertisingCountry } from '../lib/advertising-policy'
+import { advertisingDecision, advertisingCountry, pageSupportsAdvertising } from '../lib/advertising-policy'
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); chooseAdvertisingConsent('denied'); localStorage.removeItem('gajaa-adsterra-consent-v1'); vi.unstubAllEnvs(); vi.unstubAllGlobals() })
+
+it('allows ads on requested content tabs but keeps feedback and removed tabs ad-free', () => {
+  for (const tab of ['settings', 'guide', 'sankalpa', 'today', 'muhurta', 'festivals']) expect(pageSupportsAdvertising(tab, true, true)).toBe(true)
+  expect(pageSupportsAdvertising('sankalpa', false, true)).toBe(false)
+  expect(pageSupportsAdvertising('feedback', true, true)).toBe(false)
+  expect(pageSupportsAdvertising('month', true, true)).toBe(false)
+})
 
 it('uses regional defaults without overriding refusals, consent regions, or privacy signals', () => {
   expect(advertisingDecision(null, 'US')).toBe('allowed')

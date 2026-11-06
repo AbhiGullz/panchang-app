@@ -1,5 +1,6 @@
 import { BookOpen, CalendarDays, Home, ScrollText, Settings, Sparkles } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { guideLabel } from '../lib/new-feature-copy'
 
 interface Props {
   activeTab: 'today' | 'muhurta' | 'sankalpa' | 'festivals' | 'settings' | 'guide' | 'feedback'
@@ -7,14 +8,14 @@ interface Props {
 }
 
 export function BottomNav({ activeTab, onTabChange }: Props) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const tabs = [
     { key: 'today', label: t('home'), icon: Home },
     { key: 'muhurta', label: t('muhurta'), icon: Sparkles },
     { key: 'sankalpa', label: t('sankalpa'), icon: ScrollText },
     { key: 'festivals', label: t('festivals'), icon: CalendarDays },
     { key: 'settings', label: t('settings'), icon: Settings },
-    { key: 'guide', label: 'Guide', icon: BookOpen },
+    { key: 'guide', label: guideLabel(i18n.language), icon: BookOpen },
   ] as const
 
   return (

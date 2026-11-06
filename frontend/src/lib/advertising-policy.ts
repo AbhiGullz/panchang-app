@@ -1,4 +1,9 @@
 // Default-on launch regions. All other/unknown regions retain prior consent.
+export function pageSupportsAdvertising(tab: string, dailyReady: boolean, festivalsReady: boolean) {
+  if (tab === 'settings' || tab === 'guide') return true
+  if (tab === 'festivals') return festivalsReady
+  return ['today', 'muhurta', 'sankalpa'].includes(tab) && dailyReady
+}
 export function advertisingDecision(consent: string | null, country: string | null, globalPrivacyControl = false) {
   if (globalPrivacyControl || consent === 'denied') return 'blocked'
   if (consent === 'granted' || country === 'US' || country === 'IN') return 'allowed'

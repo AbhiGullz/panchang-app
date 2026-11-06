@@ -4,6 +4,7 @@ import { AYANAMSA_OPTIONS, SUPPORTED_CALENDARS, SUPPORTED_LANGUAGE_OPTIONS } fro
 import { formatLocalTime, humanizeAyanamsa, humanizeCalendar, humanizeTimezone } from '../lib/utils'
 import { LocationPicker } from './LocationPicker'
 import { PersonalTithis } from './PersonalTithis'
+import { BackupControls } from './BackupControls'
 import type { AppPreferences, CalendarSchool, LanguageCode } from '../types/api'
 
 interface Props {
@@ -80,8 +81,9 @@ export function SettingsTab(props: Props) {
       </label>
 
       <PersonalTithis preferences={props.preferences} />
+      <BackupControls />
       <button className="block text-sm font-medium text-sky-700 underline" onClick={() => props.onFeedback?.()} type="button">{t('feedback')}</button>
-      <a className="block text-sm font-medium text-sky-700 underline" href="/privacy.html">{t('privacy', { defaultValue: 'Privacy policy' })}</a>
+      <a className="block text-sm font-medium text-sky-700 underline" href={`/privacy.html?lang=${props.preferences.language}`}>{t('privacy', { defaultValue: 'Privacy policy' })}</a>
     </section>
   )
 }

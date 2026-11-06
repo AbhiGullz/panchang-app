@@ -244,7 +244,13 @@ const sankalpaPlaceholderTranslations = {
 } as const
 
 
+const privacyLabels = {
+  en: 'Privacy policy', hi: 'गोपनीयता नीति', mr: 'गोपनीयता धोरण', ta: 'தனியுரிமைக் கொள்கை',
+  te: 'గోప్యతా విధానం', kn: 'ಗೌಪ್ಯತಾ ನೀತಿ', ml: 'സ്വകാര്യതാ നയം', gu: 'ગોપનીયતા નીતિ', bn: 'গোপনীয়তা নীতি', pa: 'ਨਿੱਜਤਾ ਨੀਤੀ',
+}
+
 for (const language of Object.keys(resources) as Array<keyof typeof resources>) {
+  Object.assign(resources[language].translation, { privacy: privacyLabels[language] })
   Object.assign(resources[language].translation, { fieldHelp }, sankalpaTranslations[language], sankalpaUiTranslations[language], sankalpaOptionTranslations[language], sankalpaPlaceholderTranslations[language])
   // Replace partial legacy tables with the complete catalogue in a single assignment.
   Object.assign(resources[language].translation, { sankalpaOptions: Object.fromEntries(

@@ -7,11 +7,13 @@ import { useRegisterSW } from 'virtual:pwa-register/react'
 import './locales/i18n'
 import { BottomNav } from './components/BottomNav'
 import { AdvertisementSlot } from './components/AdvertisementSlot'
+import { pageSupportsAdvertising } from './lib/advertising-policy'
 import { FestivalsTab } from './components/FestivalsTab'
 import { FeedbackScreen } from './components/FeedbackScreen'
 import { GuideTab } from './components/GuideTab'
 import { PanchangLogo } from './components/PanchangLogo'
 import { MuhurtaTab } from './components/MuhurtaTab'
+import { PujaMuhurta } from './components/PujaMuhurta'
 import { OnboardingCard } from './components/OnboardingCard'
 import { SettingsTab } from './components/SettingsTab'
 import { SankalpaTab } from './components/SankalpaTab'
@@ -47,6 +49,9 @@ function AppShell() {
     completeOnboarding,
   } = useAppStore()
   const [notice, setNotice] = useState('')
+  useEffect(() => {
+    if (!['today', 'muhurta', 'sankalpa', 'festivals', 'settings', 'guide', 'feedback'].includes(activeTab)) setActiveTab('today')
+  }, [activeTab, setActiveTab])
   const [personalItems, setPersonalItems] = useState(loadPersonalTithis)
   useEffect(() => {
     const refresh = () => setPersonalItems(loadPersonalTithis())
@@ -115,9 +120,7 @@ function AppShell() {
   const tomorrowObservances = [...(nextYearFestivals?.festivals ?? []), ...personalDates].filter(item => item.date === tomorrow)
   const nextObservance = [...(festivalsData?.festivals ?? []), ...(nextYearFestivals?.festivals ?? []), ...personalDates]
     .filter(item => item.date > selectedDate).sort((a, b) => a.date.localeCompare(b.date))[0]
-  const hasPublisherContent = activeTab === 'festivals'
-    ? Boolean(festivalsData?.festivals.length)
-    : (activeTab === 'today' || activeTab === 'muhurta') && Boolean(panchangData)
+  const hasPublisherContent = pageSupportsAdvertising(activeTab, Boolean(panchangData), Boolean(festivalsData?.festivals.length))
   const canShowAds = preferences.onboardingComplete && hasPublisherContent
 
   const useCurrentLocation = async () => {
@@ -180,9 +183,9 @@ function AppShell() {
       {notice ? <div className="rounded-2xl bg-[#DDF3FC] px-4 py-3 text-sm text-[#163B63]">{notice}</div> : null}
 
       {activeTab === 'today' ? <TodayView data={panchangData} onGuide={() => changeTab('guide')} observances={observances} tomorrowObservances={tomorrowObservances} nextObservance={nextObservance} /> : null}
-      {activeTab === 'muhurta' ? <MuhurtaTab data={panchangData} /> : null}
+      {activeTab === 'muhurta' ? <><PujaMuhurta festivals={annualEvents?.festivals ?? []} timezone={preferences.location.tz} /><MuhurtaTab data={panchangData} /></> : null}
       {activeTab === 'sankalpa' ? <SankalpaTab data={panchangData} locationName={preferences.location.city} selectedDate={selectedDate} /> : null}
-      {activeTab === 'festivals' ? <FestivalsTab data={annualEvents} error={festivalsError} /> : null}
+      {activeTab === 'festivals' ? <FestivalsTab data={annualEvents} error={festivalsError} timezone={preferences.location.tz} /> : null}
       {activeTab === 'settings' ? (
         <SettingsTab
           preferences={preferences}

@@ -4,13 +4,15 @@ import { REGIONS, regionLabel } from '../lib/observance-labels'
 import { festivalBasis } from '../lib/festival-basis'
 import type { FestivalsResponse } from '../types/api'
 import { formatDisplayDate } from '../lib/utils'
+import { PujaWindow } from './PujaMuhurta'
 
 interface Props {
   data?: FestivalsResponse
   error?: boolean
+  timezone?: string
 }
 
-export function FestivalsTab({ data, error = false }: Props) {
+export function FestivalsTab({ data, error = false, timezone }: Props) {
   const { t, i18n } = useTranslation()
   const [region, setRegion] = useState('all')
 
@@ -25,6 +27,7 @@ export function FestivalsTab({ data, error = false }: Props) {
           <div key={`${festival.date}-${festival.name}`} className="flex min-h-24 flex-col justify-center rounded-2xl border border-sky-100 p-4">
             <div className="font-medium text-slate-900">{festival.localized_name ?? festival.name}</div>
             <div className="text-sm text-slate-600">{formatDisplayDate(festival.date, i18n.language)}</div>
+            {timezone && <PujaWindow item={festival} timezone={timezone} />}
             {festivalBasis(festival, i18n.language) ? <p className="mt-1 text-xs leading-relaxed text-slate-500">{festivalBasis(festival, i18n.language)}</p> : null}
             {festival.localized_notes ?? (i18n.language === 'en' ? festival.notes : undefined) ? <div className="mt-1 text-xs text-slate-500">{festival.localized_notes ?? festival.notes}</div> : null}
           </div>
