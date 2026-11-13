@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Connect an assistant | Gajaa Panchang</title>
+<style>
+body{font:16px/1.55 system-ui,sans-serif;background:#f0f9ff;color:#10243b;margin:0}
+main{max-width:58rem;margin:auto;padding:1.5rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:1rem}
+section,article{background:white;border:1px solid #dbeafe;border-radius:1rem;padding:1rem}
+h2{font-size:1.15rem;margin-top:0}a{color:#075985}button{font:inherit;color:white;background:#075985;border:0;border-radius:.5rem;padding:.45rem .8rem;cursor:pointer}
+code,pre{overflow-wrap:anywhere;white-space:pre-wrap}header{margin-bottom:1rem}
+</style>
+<script src="/connect.js" defer></script>
+</head>
+<body><main>
+<header><a href="/">Gajaa Panchang</a><h1>Connect an AI assistant</h1>
+<p>Look up daily Panchang, festival dates and local puja windows using the same calendar engine as this website.</p>
+<p>The connector is read-only. It receives the city or coordinates, date and calendar options supplied by your assistant. It cannot access My Tithis, Sankalpa, or saved preferences. Share city names, not street addresses.</p></header>
+<section><h2>Connector address</h2><p><code id="endpoint">https://gajaapanchang.org/api/v1/mcp</code></p><button data-copy="endpoint">Copy address</button>
+<p>Use Streamable HTTP. No Panchang account or API key is required. Your assistant's own plan and permissions still apply.</p><p id="copy-status" role="status"></p></section>
+<h2>Choose your platform</h2>
+<div class="grid">
+<article><h2>ChatGPT / Codex</h2><p>In ChatGPT Plugins, add a custom MCP server using the address above. Review the tools before enabling it. This is a custom connection, not a directory listing.</p><a href="https://developers.openai.com/api/docs/guides/custom-mcp-server">Official setup</a></article>
+<article><h2>Claude</h2><p>In Settings → Connectors, add a custom connector and paste the address above.</p><a href="https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp">Official setup</a></article>
+<article><h2>Grok</h2><p>Choose New Connector → Custom and paste the address above.</p><a href="https://grok.com/connectors">Open Grok Connectors</a></article>
+<article><h2>Gemini CLI</h2><pre id="gemini">gemini mcp add --transport http gajaa-panchang https://gajaapanchang.org/api/v1/mcp</pre><button data-copy="gemini">Copy command</button><p>This is for Gemini CLI, not the Gemini web app.</p></article>
+<article><h2>OpenClaw</h2><p>Add the address in the MCP configuration, using the Streamable HTTP transport.</p><pre id="openclaw">{"mcp":{"servers":{"gajaa-panchang":{"url":"https://gajaapanchang.org/api/v1/mcp","transport":"streamable-http"}}}}</pre><button data-copy="openclaw">Copy configuration</button><p>Merge into existing settings; don't replace them.</p><a href="https://docs.openclaw.ai/gateway/config-extensions">Official setup</a></article>
+<article><h2>Hermes Agent</h2><pre id="hermes">hermes mcp add gajaa-panchang --url https://gajaapanchang.org/api/v1/mcp</pre><button data-copy="hermes">Copy command</button></article>
+<article><h2>VS Code</h2><p>Open the editor's installation review. Nothing installs until you confirm.</p><a id="vscode" href="https://code.visualstudio.com/api/extension-guides/ai/mcp">Open install review</a></article>
+<article><h2>Cursor</h2><p>Merge this entry into your Cursor MCP configuration.</p><pre id="cursor">{"mcpServers":{"gajaa-panchang":{"url":"https://gajaapanchang.org/api/v1/mcp"}}}</pre><button data-copy="cursor">Copy configuration</button><p><a href="https://cursor.com/docs/mcp">Official setup</a></p></article>
+<article><h2>Meta Muse</h2><p>A public Muse listing requires platform review. Gajaa Panchang is not listed there yet.</p><a href="https://platform.muse.ai/">Muse Connector Platform</a></article>
+<article><h2>Other MCP clients</h2><p>If your agent supports custom remote MCP over Streamable HTTP, paste the connector address into its server settings. Compatibility depends on the client.</p><button data-copy="endpoint">Copy address</button></article>
+</div>
+<h2>Try asking</h2><p>“What is today's Panchang for Pune?” or “What is the local Diwali puja window in Flemington, New Jersey, in 2027?”</p>
+<a href="/privacy.html">Privacy policy</a>
+</main></body>
+</html>

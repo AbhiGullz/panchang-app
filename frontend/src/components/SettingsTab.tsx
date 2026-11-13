@@ -84,6 +84,7 @@ export function SettingsTab(props: Props) {
       <BackupControls />
       <button className="block text-sm font-medium text-sky-700 underline" onClick={() => props.onFeedback?.()} type="button">{t('feedback')}</button>
       <a className="block text-sm font-medium text-sky-700 underline" href={`/privacy.html?lang=${props.preferences.language}`}>{t('privacy', { defaultValue: 'Privacy policy' })}</a>
+      <a className="block text-sm font-medium text-sky-700 underline" href="/connect.html">Connect an AI assistant</a>
     </section>
   )
 }

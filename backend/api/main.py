@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 from timezonefinder import TimezoneFinder
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
+from .connector import router as connector_router
 
 from engine.core import AYANAMSA, ENGINE_VERSION, _window_with_iso, compute_daily_panchang
 from engine.festivals import compute_festivals_for_year
@@ -549,6 +550,8 @@ async def personal_tithi(
     from engine.i18n.names import get_month_name_map, get_name_map
     return {'rule': rule, 'dates': dates, 'month_names': get_month_name_map(calendar, rule['month']), 'tithi_names': get_name_map('tithi', rule['tithi'])}
 
+
+app.include_router(connector_router)
 
 # The production web server may serve the PWA itself. This optional mount lets
 # a private Tailscale preview expose one HTTPS origin for both UI and API.
