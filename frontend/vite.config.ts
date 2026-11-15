@@ -35,6 +35,8 @@ export default defineConfig({
         ]
       },
       workbox: {
+        // These are real documents, never substitutes for the SPA shell.
+        navigateFallbackDenylist: [/\.html(?:\?|$)/, /^\/api\//],
         globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
         runtimeCaching: [
           {

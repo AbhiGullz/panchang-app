@@ -26,7 +26,7 @@ from .yoga import compute_yoga
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 AYANAMSA = swe.SIDM_LAHIRI
-ENGINE_VERSION = "m5"
+ENGINE_VERSION = "m6"
 
 KARANA_NAME_TO_INDEX = {
     "Bava": 1,
@@ -90,6 +90,13 @@ def _calc_ecliptic_longitude(julian_day_ut: float, body: int, sidereal: bool = F
         flags |= swe.FLG_SIDEREAL
     result, _ = swe.calc_ut(julian_day_ut, body, flags)
     return result[0] % 360.0
+
+
+def _amanta_index(boundary: datetime) -> int:
+    utc = boundary.astimezone(timezone.utc)
+    jd = swe.julday(utc.year, utc.month, utc.day,
+                   utc.hour + utc.minute / 60 + (utc.second + utc.microsecond / 1e6) / 3600)
+    return int(_calc_ecliptic_longitude(jd, swe.SUN, sidereal=True) // 30) + 1
 
 
 def compute_daily_panchang(
@@ -163,13 +170,27 @@ def compute_daily_panchang(
     amrit_kala = compute_amrit_kala(sun_events["rise_dt"], sun_events["set_dt"], yoga["index"])
     disha_shool = compute_disha_shool(sun_events["rise_dt"])
 
-    school_month_index = next(
-        index
-        for index in range(1, 13)
+    amanta_end = None
+    if calendar_school == "amanta":
+        # Bracket from before sunrise so the solver's near-target tolerance
+        # cannot skip a conjunction just after the observation instant.
+        amanta_end = next_phase_boundary(sunrise_utc - timedelta(hours=1), 0.0)
+        if amanta_end <= sunrise_utc:
+            amanta_end = next_phase_boundary(sunrise_utc + timedelta(hours=12), 0.0)
+        amanta_end = amanta_end.astimezone(sunrise_dt.tzinfo)
+    school_month_index = _amanta_index(amanta_end) if amanta_end else next(
+        index for index in range(1, 13)
         if get_month_name_map(calendar_school, index)["en"] == school.month_name
     )
     month_transition = None
-    if calendar_school == "purnimanta":
+    if amanta_end:
+        following_end = next_phase_boundary(amanta_end + timedelta(hours=12), 0.0)
+        change_at = amanta_end.isoformat(timespec="seconds")
+        month_transition = {
+            "end": change_at,
+            "next": {"name": get_month_name_map("amanta", _amanta_index(following_end)), "at": change_at},
+        }
+    elif calendar_school == "purnimanta":
         assert purnima_end is not None
         # Move safely past the boundary. The phase solver works on modulo
         # angles, so starting only a second after a computed opposition can

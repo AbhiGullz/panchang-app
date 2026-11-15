@@ -51,7 +51,7 @@ def test_gujarati_month_reckoning_is_amanta_style_with_gujarati_names():
     purnimanta = _panchang("2027-10-24", "purnimanta", AHMEDABAD)
 
     assert gujarati["paksha"] == amanta["paksha"] == "Krishna"
-    assert amanta["month_name"]["en"] == "Kartika"
+    assert amanta["month_name"]["en"] == "Ashwin"
     assert gujarati["month_name"]["en"] == "Aso"
     assert gujarati["month_name"]["en"] != purnimanta["month_name"]["en"]
 

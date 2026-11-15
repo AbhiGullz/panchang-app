@@ -1,5 +1,7 @@
 // Standalone documents only. Embedded Guide uses the app's existing ad slots.
 (() => {
+  const providerApproved = false; // Pause until gambling inventory can be reliably excluded.
+  if (!providerApproved) return;
   if (window.self !== window.top || location.hostname !== 'gajaapanchang.org') return;
   const mount = document.createElement('aside');
   mount.style.cssText = 'display:flex;justify-content:center;max-width:100%;overflow:hidden;margin:24px auto';

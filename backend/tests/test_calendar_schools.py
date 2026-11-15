@@ -3,7 +3,7 @@ from engine.core import compute_daily_panchang
 
 def test_purnimanta_month_is_based_on_upcoming_full_moon_not_amanta_month():
     purnimanta = compute_daily_panchang(
-        date_iso="2027-10-20",
+        date_iso="2026-11-25",
         latitude=28.6139,
         longitude=77.2090,
         timezone_name="Asia/Kolkata",
@@ -11,7 +11,7 @@ def test_purnimanta_month_is_based_on_upcoming_full_moon_not_amanta_month():
         calendar_school="purnimanta",
     )
     amanta = compute_daily_panchang(
-        date_iso="2027-10-20",
+        date_iso="2026-11-25",
         latitude=28.6139,
         longitude=77.2090,
         timezone_name="Asia/Kolkata",
@@ -20,8 +20,21 @@ def test_purnimanta_month_is_based_on_upcoming_full_moon_not_amanta_month():
     )
     assert purnimanta["paksha"] == "Krishna"
     assert amanta["paksha"] == "Krishna"
-    assert purnimanta["month_name"]["en"] == "Ashwin"
+    assert purnimanta["month_name"]["en"] == "Margashirsha"
     assert amanta["month_name"]["en"] == "Kartika"
+
+
+def test_flemington_amanta_stays_kartika_until_the_december_new_moon():
+    location = dict(latitude=40.5123, longitude=-74.859, timezone_name="America/New_York",
+                    location_name="Flemington", calendar_school="amanta")
+    for day in ("2026-11-18", "2026-11-25", "2026-12-08"):
+        daily = compute_daily_panchang(date_iso=day, **location)
+        assert daily["month_name"]["en"] == "Kartika"
+        transition = daily["month_transition"]
+        assert transition["end"].startswith("2026-12-08T19:51:")
+        assert transition["next"]["at"] == transition["end"]
+        assert transition["next"]["name"]["en"] == "Margashirsha"
+    assert compute_daily_panchang(date_iso="2026-12-09", **location)["month_name"]["en"] == "Margashirsha"
 
 
 def test_purnimanta_2026_bhadrapada_purnima_rolls_to_ashwin():

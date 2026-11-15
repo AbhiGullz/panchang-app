@@ -9,7 +9,13 @@ function subscribeViewport(callback: () => void) {
   window.addEventListener('resize', callback)
   return () => window.removeEventListener('resize', callback)
 }
-export function AdvertisementSlot({ className = '', placement = 'bottom' }: { className?: string; placement?: 'bottom' | 'side' }) {
+// Provider served gambling creatives. Pause until filtering is verified.
+type SlotProps = { className?: string; placement?: 'bottom' | 'side' }
+export function AdvertisementSlot(_props: SlotProps) {
+  return null
+}
+
+export function ConfiguredAdvertisementSlot({ className = '', placement = 'bottom' }: SlotProps) {
   const { t } = useTranslation()
   const width = useSyncExternalStore(subscribeViewport, () => window.innerWidth, () => 390)
   const consent = useAdvertisingConsent()

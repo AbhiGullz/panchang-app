@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest'
 import { cleanup, fireEvent, screen } from '@testing-library/react'
-import { AdvertisementSlot } from '../components/AdvertisementSlot'
+import { AdvertisementSlot as LiveSlot, ConfiguredAdvertisementSlot as AdvertisementSlot } from '../components/AdvertisementSlot'
 import { AdvertisingPreferences } from '../components/AdvertisingPreferences'
 import { renderWithProviders } from './render'
 import i18n from '../locales/i18n'
@@ -8,6 +8,12 @@ import { chooseAdvertisingConsent } from '../lib/advertising-consent'
 import { advertisingDecision, advertisingCountry, pageSupportsAdvertising } from '../lib/advertising-policy'
 
 afterEach(() => { cleanup(); vi.restoreAllMocks(); chooseAdvertisingConsent('denied'); localStorage.removeItem('gajaa-adsterra-consent-v1'); vi.unstubAllEnvs(); vi.unstubAllGlobals() })
+
+it('keeps production ad slots paused even with consent', () => {
+  vi.stubEnv('PROD', true)
+  chooseAdvertisingConsent('granted')
+  expect(renderWithProviders(<LiveSlot />).container).toBeEmptyDOMElement()
+})
 
 it('allows ads on requested content tabs but keeps feedback and removed tabs ad-free', () => {
   for (const tab of ['settings', 'guide', 'sankalpa', 'today', 'muhurta', 'festivals']) expect(pageSupportsAdvertising(tab, true, true)).toBe(true)
